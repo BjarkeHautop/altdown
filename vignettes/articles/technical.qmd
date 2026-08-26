@@ -1,10 +1,5 @@
 ---
 title: "Technical details"
-
-vignette: >
-  %\VignetteIndexEntry{Technical details}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
 ---
 
 This page explains how the site is put together. It is a Quarto website

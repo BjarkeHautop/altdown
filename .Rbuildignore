@@ -1,5 +1,6 @@
 ^docs$
 ^altdoc$
+^vignettes/articles$
 ^_quarto$
 ^LICENSE\.md$
 ^README\.qmd$
