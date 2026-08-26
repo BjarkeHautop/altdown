@@ -4,7 +4,7 @@
     "href": "CITATION.html",
     "title": "Citation",
     "section": "",
-    "text": "Citation\nTo cite package ‘altdown’ in publications use:\n\nHautop Kristensen B (????). altdown: A ‘pkgdown’-Style Theme for ‘altdoc’ Websites. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown."
+    "text": "Citation\nTo cite package ‘altdown’ in publications use:\n\nHautop Kristensen B (2026). altdown: A ‘pkgdown’-Style Theme for ‘altdoc’ Websites. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown."
   },
   {
     "objectID": "man/use_altdown.html",
