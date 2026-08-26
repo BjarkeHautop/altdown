@@ -358,6 +358,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#altdown" id="toc-altdown" class="nav-link active" data-scroll-target="#altdown">altdown</a>
   <ul class="collapse">
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
+  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
   <li><a href="#why" id="toc-why" class="nav-link" data-scroll-target="#why">Why?</a></li>
   </ul></li>
   </ul>
@@ -401,19 +404,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </div></div><section id="altdown" class="level1">
 <h1>altdown</h1>
-<p>altdown is a toy R package built to demonstrate <a href="https://altdoc.etiennebacher.com/">altdoc</a> using Quarto, but mirroring the output style of pkgdown (Bootstrap 5).</p>
+<p>altdown is an R package that provides a theme for <a href="https://altdoc.etiennebacher.com/">altdoc</a> websites built with Quarto, styled to mirror the output of pkgdown (Bootstrap 5).</p>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<p>Install from GitHub:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"https://github.com/BjarkeHautop/altdown"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="usage" class="level2">
+<h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <p>Browse around to see how it looks! If you like what you see, and want to use it for your own package, run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>altdown<span class="sc">::</span><span class="fu">use_altdown</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>altdown<span class="sc">::</span><span class="fu">use_altdown</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This copies <code>altdoc/build-site.R</code>, <code>altdoc/altdown.scss</code>, and <code>altdoc/quarto_website_static.yml</code> into your package as-is, and writes a starter <code>altdoc/reference.yml</code> listing your package’s current functions in one section. From there:</p>
 <ul>
 <li>Edit <code>reference.yml</code> to group the functions however you’d like.</li>
 <li>Adjust the navbar links/vignettes in <code>quarto_website_static.yml</code> if needed (e.g.&nbsp;add an <code>Articles</code> menu once you have one).</li>
 </ul>
 <p>Then build the site:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"altdoc/build-site.R"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">build_site</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"altdoc/build-site.R"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">build_site</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A preview can then be viewed using <code>altdoc::preview_docs()</code>.</p>
-<p>Re-run <code>altdown::use_altdown(overwrite = TRUE)</code> later to pick up altdown updates to the three template files - this discards any local edits to them, so <code>reference.yml</code> (which is never overwritten unless you pass <code>overwrite = TRUE</code> too) is where your own customization belongs instead.</p>
+<p>Re-run <code>altdown::use_altdown(overwrite = TRUE)</code> later to pick up altdown updates to the three template files.</p>
+</section>
+<section id="see-also" class="level2">
+<h2 class="anchored" data-anchor-id="see-also">See also</h2>
+<p><a href="https://github.com/BjarkeHautop/reftip">reftip</a> adds hover tooltips to the function reference links that altdoc creates in a rendered R code block. <a href="https://github.com/bjarkehautop/alttip">alttip</a> shows an example site using altdown and reftip together.</p>
+</section>
 <section id="why" class="level2">
 <h2 class="anchored" data-anchor-id="why">Why?</h2>
 <p>pkgdown support Quarto (see <a href="https://pkgdown.r-lib.org/dev/articles/quarto.html"><code>vignette("quarto")</code></a>), but the way it’s implemented is hard to maintain and lags behind in features, as they say themselves. What I personally wanted was <a href="https://quarto.org/docs/authoring/callouts.html">callout blocks</a>, since I’ve grown fond of them.</p>

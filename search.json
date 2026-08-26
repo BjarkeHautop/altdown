@@ -4,7 +4,7 @@
     "href": "CITATION.html",
     "title": "Citation",
     "section": "",
-    "text": "Citation\nTo cite package ‘altdown’ in publications use:\n\nHautop Kristensen B (????). altdown: Toy Package Demonstrating ‘altdoc’ Styled Like ‘pkgdown’. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown."
+    "text": "Citation\nTo cite package ‘altdown’ in publications use:\n\nHautop Kristensen B (????). altdown: A ‘pkgdown’-Style Theme for ‘altdoc’ Websites. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown."
   },
   {
     "objectID": "man/use_altdown.html",
@@ -103,6 +103,27 @@
     "title": "altdown",
     "section": "",
     "text": "Browse source code\nReport a bug\n\n\n\nFull license\nMIT + file LICENSE\n\n\n\nContributing guide\n\n\n\nCiting altdown\n\n\n\nBjarke Hautop Kristensen\nAuthor, maintainer"
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "altdown",
+    "section": "Installation",
+    "text": "Installation\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/altdown\")"
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "altdown",
+    "section": "Usage",
+    "text": "Usage\nBrowse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis copies altdoc/build-site.R, altdoc/altdown.scss, and altdoc/quarto_website_static.yml into your package as-is, and writes a starter altdoc/reference.yml listing your package’s current functions in one section. From there:\n\nEdit reference.yml to group the functions however you’d like.\nAdjust the navbar links/vignettes in quarto_website_static.yml if needed (e.g. add an Articles menu once you have one).\n\nThen build the site:\nsource(\"altdoc/build-site.R\")\nbuild_site()\nA preview can then be viewed using altdoc::preview_docs().\nRe-run altdown::use_altdown(overwrite = TRUE) later to pick up altdown updates to the three template files."
+  },
+  {
+    "objectID": "index.html#see-also",
+    "href": "index.html#see-also",
+    "title": "altdown",
+    "section": "See also",
+    "text": "See also\nreftip adds hover tooltips to the function reference links that altdoc creates in a rendered R code block. alttip shows an example site using altdown and reftip together."
   },
   {
     "objectID": "index.html#why",
