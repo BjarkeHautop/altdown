@@ -3,7 +3,7 @@ project:
   output-dir: ../docs/
 
 language:
-  search-text-placeholder: "Search for"
+  search-text-placeholder: " Search for"
 
 # Note: freeze functionality can be set at a project level or for individual .qmd files
 # execute:
@@ -35,11 +35,11 @@ website:
     left: |
       $ALTDOC_DEVELOPED_BY
     right: |
-      Site built with [altdoc](https://altdoc.etiennebacher.com/) and [Quarto](https://quarto.org/).
+      Site built with [altdoc](https://altdoc.etiennebacher.com/) and [Quarto](https://quarto.org/), using [altdown](https://github.com/BjarkeHautop/altdown) theme.
 
 format:
   html:
-    theme: [default, pkgdown-look.scss]
+    theme: [default, altdown.scss]
     code-link: true
     toc: true
     # A fixed CSS padding can't align the navbar title with the body text
@@ -80,7 +80,7 @@ format:
           // <version>" (see `website.title` in quarto_website_static.yml) -
           // Quarto gives us no way to style just the version at the YAML
           // level. Split it out into its own `<small>` here so
-          // pkgdown-look.scss can shrink it, pkgdown style.
+          // altdown.scss can shrink it, pkgdown style.
           function shrinkNavbarVersion() {
             var title = document.querySelector(".navbar-title");
             if (!title || title.querySelector(".navbar-version")) return;

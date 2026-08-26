@@ -8,6 +8,15 @@
 // Leaving navbar colors at Quarto's theme defaults for now (not fighting
 // the dark/light `data-bs-theme` scoping). Only the structural layout is
 // adjusted below.
+//
+// A pkgdown-matching navbar color was tried here and reverted: patching
+// just `.navbar`'s background isn't enough, because Quarto hardcodes
+// `data-bs-theme="dark"` on `<nav>` unconditionally (see
+// `nav-before-body.ejs`), and that scoping also drives the link/brand/
+// toggler text colors (`--bs-emphasis-color-rgb` etc), not just the
+// background. Getting a real pkgdown-style light navbar means overriding
+// the full set of `--bs-navbar-*` custom properties `<nav>` inherits under
+// that dark scoping, not just one or two of them piecemeal.
 
 // pkgdown's navbar content sits inside a fixed-width, centered Bootstrap
 // `.container`, so it never stretches edge-to-edge. Quarto uses

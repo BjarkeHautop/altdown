@@ -2,11 +2,7 @@
 
 <!-- badges: start -->
 
-[![Codecov test
-coverage](https://codecov.io/gh/disco-coders/causaldisco/branch/main/graph/badge.svg)](https://app.codecov.io/github/disco-coders/causaldisco/tree/main)
-[![R-CMD-check](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/causalDisco.png)](https://CRAN.R-project.org/package=causalDisco)
+[![](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 # altdown
@@ -15,30 +11,18 @@ altdown is a toy R package built to demonstrate
 [altdoc](https://altdoc.etiennebacher.com/) using Quarto, but mirroring
 the output style of pkgdown (Bootstrap 5).
 
-Browse around to see how it looks!
-
-## Installation
-
-``` r
-# install.packages("pak")
-pak::pak("bjarkehautop/altdown")
-```
-
-## Example
+Browse around to see how it looks! If you like what you see, and want to
+use it for your own package, you just need to copy `altdoc/` into your
+package, then adjust `quarto_website_static.yml` (title, navbar links,
+and the vignettes they point to) and `reference.yml` (your own
+functions). Finally run:
 
 ``` r
-library(altdown)
-
-greet("world")
+source("altdoc/build-site.R")
+build_site()
 ```
 
-    [1] "Hello, world!"
-
-``` r
-add(1, 2)
-```
-
-    [1] 3
+A preview can be viewed using `altdoc::preview_docs()`.
 
 ## Why?
 
@@ -47,26 +31,14 @@ pkgdown support Quarto (see
 but the way it’s implemented is hard to maintain and lags behind in
 features, as they say themselves. What I actually wanted was [callout
 blocks](https://quarto.org/docs/authoring/callouts.html), since I’ve
-grown fond of them. pkgdown hardcodes `theme: "none"` and
-`minimal: TRUE` so it can supply its own CSS/Bootstrap instead of
-Quarto’s. Without a real theme, Quarto’s callout filter just drops
-`::: {.callout-note}` blocks down to a
-[Blockquote](https://quarto.org/docs/authoring/markdown-basics.html#other-blocks).
+grown fond of them.
 
-The same underlying issue means TOC for `.qmd` files disappear. The only
-fix would be patching pkgdown itself, but it is more work than it
-sounds. A properly themed Quarto page is a full standalone document, and
-hence you’d end up merging two competing asset systems. Hence I use
-altdoc, and manually construct my layout for something that looks like
-pkgdown.
+pkgdown hardcodes `theme: "none"` and `minimal: TRUE` so it can supply
+its own CSS instead of Quarto’s. This makes callout blocks be converted
+to plain Blockquotes. The same underlying issue means TOC for `.qmd`
+files disappear.
 
-If you are used to the pkgdown layout, but want some of these features
-this is for you! Simply just copy the contents of `/altdoc` to your
-package. Then you build docs using
-
-``` r
-source('altdoc/build-site.R')
-build_site(verbose = FALSE)
-```
-
-and view them using `altdoc::preview_docs()`.
+The fix would be patching pkgdown itself, but it’s a bit more work than
+one would first think. The tldr is you have to merge two competing asset
+systems, which is not trivial. Hence I use altdoc, and manually
+construct my layout for something that looks like pkgdown.
