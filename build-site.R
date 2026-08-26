@@ -1,13 +1,5 @@
 # Pre-processing script for the altdoc/Quarto build.
 #
-# altdoc has no mid-pipeline hook (see the "Pre and post-processing" section
-# of its customize vignette): for Quarto/MkDocs the supported pattern is to
-# edit *source* files with a script, then call the public `render_docs()`.
-# This script is that pre-processing step. It regenerates, from package
-# metadata, the pieces of the site that mirror pkgdown's home-page sidebar
-# and footer - see `build_website_readme()` and `update_quarto_settings()`
-# below for how each is built.
-#
 # Usage:
 #   Rscript altdoc/build-site.R
 # or, from an R session:
@@ -17,10 +9,6 @@ pkg_path <- "."
 
 # ---- shared helpers --------------------------------------------------------
 
-# Roles are stored on DESCRIPTION's Authors@R as MARC relator codes (e.g.
-# "aut", "cre"). This is the same lookup table pkgdown uses in
-# `role_lookup()` (R/build-home-authors.R), trimmed to the roles that
-# actually appear in CRAN packages.
 role_lookup <- function(abbr) {
   roles <- c(
     aut = "author",
@@ -95,16 +83,14 @@ data_sidebar_links <- function(path = pkg_path) {
 }
 
 # Badges live between `<!-- badges: start -->`/`<!-- badges: end -->` in
-# README.md (the usethis/pkgdown convention). We pull them out of the page
-# body and surface them in the sidebar instead, matching pkgdown's "Dev
-# status" section.
+# README.md (the usethis/pkgdown convention).
 data_sidebar_devstatus <- function(badges) {
   bullets <- if (length(badges) == 0) character() else paste(badges, collapse = "\n")
   sidebar_section("Dev status", bullets)
 }
 
 # License abbreviation -> link table shipped with every R installation
-# (`R.home("share")/licenses/license.db`), the exact source pkgdown reads in
+# (`R.home("share")/licenses/license.db`). Same thing pkgdown reads in
 # `licenses_db()` (R/build-home-license.R).
 autolink_license <- function(license_field, has_license_file) {
   db_path <- file.path(R.home("share"), "licenses", "license.db")
@@ -175,10 +161,6 @@ data_sidebar_community <- function(path = pkg_path) {
 }
 
 data_sidebar_citation <- function(path = pkg_path) {
-  # pkgdown always shows this section for an R package (it falls back to an
-  # auto-generated citation from DESCRIPTION when inst/CITATION is absent -
-  # see `data_citations()` in R/build-home-authors.R), so no presence check
-  # is needed here.
   pkg_name <- desc::desc_get_field("Package", file = path)
   sidebar_section("Citation", sprintf("[Citing %s](CITATION.html)", pkg_name))
 }
@@ -193,7 +175,7 @@ data_sidebar_authors <- function(path = pkg_path, roles = default_roles()) {
     authors,
     function(x) {
       sprintf(
-        "%s\\\n[%s]{.roles}",
+        "%s\\\n<small>%s</small>",
         author_name(x),
         author_roles_text(x)
       )
@@ -233,8 +215,6 @@ data_developed_by <- function(path = pkg_path, roles = default_roles()) {
 
 # ---- README.md -> website-home transform -----------------------------------
 
-# Returns the non-blank lines between the badges markers (or character()
-# if there's no such block, or it's empty).
 extract_readme_badges <- function(lines) {
   start <- which(lines == "<!-- badges: start -->")
   end <- which(lines == "<!-- badges: end -->")
@@ -245,8 +225,6 @@ extract_readme_badges <- function(lines) {
   badges[nzchar(trimws(badges))]
 }
 
-# Deletes a `<!-- marker: start -->` ... `<!-- marker: end -->` block
-# entirely (markers included), if present.
 remove_marker_block <- function(lines, start_marker, end_marker) {
   start <- which(lines == start_marker)
   end <- which(lines == end_marker)
@@ -256,11 +234,6 @@ remove_marker_block <- function(lines, start_marker, end_marker) {
   lines[-seq(start, end)]
 }
 
-# Builds the version of README.md used as the site's home page: badges are
-# pulled out (into the sidebar's "Dev status" section, see
-# `data_sidebar_devstatus()`) and the sidebar is inserted right after the
-# title, matching where pkgdown's home sidebar sits relative to the page
-# title. This never touches the README.md on disk - see `build_site()`.
 build_website_readme <- function(lines, path = pkg_path) {
   badges <- extract_readme_badges(lines)
   lines <- remove_marker_block(lines, "<!-- badges: start -->", "<!-- badges: end -->")

@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-412ad366bffb3b3c59375bb11f5792e8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-a6e41d0b4faaa7b9bd4d4c617b6d8c88.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
-    "search-text-placeholder": "Search for",
+    "search-text-placeholder": " Search for",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -176,8 +176,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#altdown" id="toc-altdown" class="nav-link active" data-scroll-target="#altdown">altdown</a>
   <ul class="collapse">
-  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
-  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
   <li><a href="#why" id="toc-why" class="nav-link" data-scroll-target="#why">Why?</a></li>
   </ul></li>
   </ul>
@@ -212,43 +210,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="developers" class="level4">
 <h4 class="anchored" data-anchor-id="developers">Developers</h4>
 <p>Bjarke Hautop Kristensen<br>
-<span class="roles">Author, maintainer</span></p>
+<small>Author, maintainer</small></p>
 </section>
 <section id="dev-status" class="level4">
 <h4 class="anchored" data-anchor-id="dev-status">Dev status</h4>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg" class="img-fluid figure-img"></a></p>
-<figcaption>R-CMD-check</figcaption>
-</figure>
-</div>
+<p><a href="https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg" class="img-fluid"></a></p>
 </section>
 </div></div><section id="altdown" class="level1">
 <h1>altdown</h1>
 <p>altdown is a toy R package built to demonstrate <a href="https://altdoc.etiennebacher.com/">altdoc</a> using Quarto, but mirroring the output style of pkgdown (Bootstrap 5).</p>
-<p>Browse around to see how it looks!</p>
-<section id="installation" class="level2">
-<h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("pak")</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"bjarkehautop/altdown"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(altdown)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">greet</span>(<span class="st">"world"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre><code>[1] "Hello, world!"</code></pre>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">add</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre><code>[1] 3</code></pre>
-</section>
+<p>Browse around to see how it looks! If you like what you see, and want to use it for your own package, you just need to copy <code>altdoc/</code> into your package, then adjust <code>quarto_website_static.yml</code> (title, navbar links, and the vignettes they point to) and <code>reference.yml</code> (your own functions). Finally run:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"altdoc/build-site.R"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">build_site</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A preview can be viewed using <code>altdoc::preview_docs()</code>.</p>
 <section id="why" class="level2">
 <h2 class="anchored" data-anchor-id="why">Why?</h2>
-<p>pkgdown support Quarto (see <a href="https://pkgdown.r-lib.org/dev/articles/quarto.html"><code>vignette("quarto")</code></a>), but the way it’s implemented is hard to maintain and lags behind in features, as they say themselves. What I actually wanted was <a href="https://quarto.org/docs/authoring/callouts.html">callout blocks</a>, since I’ve grown fond of them. pkgdown hardcodes <code>theme: "none"</code> and <code>minimal: TRUE</code> so it can supply its own CSS/Bootstrap instead of Quarto’s. Without a real theme, Quarto’s callout filter just drops <code>::: {.callout-note}</code> blocks down to a <a href="https://quarto.org/docs/authoring/markdown-basics.html#other-blocks">Blockquote</a>.</p>
-<p>The same underlying issue means TOC for <code>.qmd</code> files disappear. The only fix would be patching pkgdown itself, but it is more work than it sounds. A properly themed Quarto page is a full standalone document, and hence you’d end up merging two competing asset systems. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown.</p>
-<p>If you are used to the pkgdown layout, but want some of these features this is for you! Simply just copy the contents of <code>/altdoc</code> to your package. Then you build docs using</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">'altdoc/build-site.R'</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">build_site</span>(<span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>and view them using <code>altdoc::preview_docs()</code>.</p>
+<p>pkgdown support Quarto (see <a href="https://pkgdown.r-lib.org/dev/articles/quarto.html"><code>vignette("quarto")</code></a>), but the way it’s implemented is hard to maintain and lags behind in features, as they say themselves. What I actually wanted was <a href="https://quarto.org/docs/authoring/callouts.html">callout blocks</a>, since I’ve grown fond of them.</p>
+<p>pkgdown hardcodes <code>theme: "none"</code> and <code>minimal: TRUE</code> so it can supply its own CSS instead of Quarto’s. This makes callout blocks be converted to plain Blockquotes. The same underlying issue means TOC for <code>.qmd</code> files disappear.</p>
+<p>The fix would be patching pkgdown itself, but it’s a bit more work than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown.</p>
 
 
 </section>
@@ -665,7 +644,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       &nbsp;
     </div>
     <div class="nav-footer-right">
-<p>Site built with <a href="https://altdoc.etiennebacher.com/">altdoc</a> and <a href="https://quarto.org/">Quarto</a>.</p>
+<p>Site built with <a href="https://altdoc.etiennebacher.com/">altdoc</a> and <a href="https://quarto.org/">Quarto</a>, using <a href="https://github.com/BjarkeHautop/altdown">altdown</a> theme.</p>
 </div>
   </div>
 </footer>
@@ -699,7 +678,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   // <version>" (see `website.title` in quarto_website_static.yml) -
   // Quarto gives us no way to style just the version at the YAML
   // level. Split it out into its own `<small>` here so
-  // pkgdown-look.scss can shrink it, pkgdown style.
+  // altdown.scss can shrink it, pkgdown style.
   function shrinkNavbarVersion() {
     var title = document.querySelector(".navbar-title");
     if (!title || title.querySelector(".navbar-version")) return;

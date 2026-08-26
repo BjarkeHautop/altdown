@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-412ad366bffb3b3c59375bb11f5792e8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-a6e41d0b4faaa7b9bd4d4c617b6d8c88.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -101,7 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
-    "search-text-placeholder": "Search for",
+    "search-text-placeholder": " Search for",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -181,7 +181,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-footer" id="toc-the-footer" class="nav-link" data-scroll-target="#the-footer">The footer</a></li>
   </ul></li>
   <li><a href="#matching-the-pkgdown-look" id="toc-matching-the-pkgdown-look" class="nav-link" data-scroll-target="#matching-the-pkgdown-look">Matching the pkgdown look</a></li>
-  <li><a href="#reusing-this-in-your-own-package" id="toc-reusing-this-in-your-own-package" class="nav-link" data-scroll-target="#reusing-this-in-your-own-package">Reusing this in your own package</a></li>
   </ul>
 </nav>
     </div>
@@ -213,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ├── build-site.R               # pre-processing script, see below
 ├── quarto_website_static.yml  # source of quarto_website.yml
 ├── quarto_website.yml         # generated - not edited directly
-├── pkgdown-look.scss          # pkgdown-style theme on top of Quarto's HTML
+├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
 ├── reference.yml              # source of reference.qmd
 └── reference.qmd              # generated - not edited directly</code></pre>
 <section id="why-a-pre-processing-script" class="level2">
@@ -240,8 +239,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="matching-the-pkgdown-look" class="level2">
 <h2 class="anchored" data-anchor-id="matching-the-pkgdown-look">Matching the pkgdown look</h2>
-<p><code>pkgdown-look.scss</code> is a Quarto theme layer:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">default</span><span class="kw">,</span><span class="at"> pkgdown-look.scss</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>altdown.scss</code> is a Quarto theme layer:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">default</span><span class="kw">,</span><span class="at"> altdown.scss</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>It is based on pkgdown’s own <code>pkgdown.scss</code>, but the selectors have been adapted to Quarto’s HTML.</p>
 <p>It does the following:</p>
 <ul>
@@ -250,12 +249,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Styling the margin sidebar and reference index (<code>&lt;dl class="ref-index"&gt;</code>) to look like their pkgdown counterparts.</li>
 </ul>
 <p>There is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefor, the generated <code>quarto_website.yml</code> includes a small <code>include-after-body</code> script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly.</p>
-</section>
-<section id="reusing-this-in-your-own-package" class="level2">
-<h2 class="anchored" data-anchor-id="reusing-this-in-your-own-package">Reusing this in your own package</h2>
-<p>Copy <code>altdoc/</code> into your package, then adjust <code>quarto_website_static.yml</code> (title, navbar links, and the vignettes they point to) and <code>reference.yml</code> (your own functions). Finally run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"altdoc/build-site.R"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">build_site</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 </section>
@@ -671,7 +664,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       &nbsp;
     </div>
     <div class="nav-footer-right">
-<p>Site built with <a href="https://altdoc.etiennebacher.com/">altdoc</a> and <a href="https://quarto.org/">Quarto</a>.</p>
+<p>Site built with <a href="https://altdoc.etiennebacher.com/">altdoc</a> and <a href="https://quarto.org/">Quarto</a>, using <a href="https://github.com/BjarkeHautop/altdown">altdown</a> theme.</p>
 </div>
   </div>
 </footer>
@@ -705,7 +698,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   // <version>" (see `website.title` in quarto_website_static.yml) -
   // Quarto gives us no way to style just the version at the YAML
   // level. Split it out into its own `<small>` here so
-  // pkgdown-look.scss can shrink it, pkgdown style.
+  // altdown.scss can shrink it, pkgdown style.
   function shrinkNavbarVersion() {
     var title = document.querySelector(".navbar-title");
     if (!title || title.querySelector(".navbar-version")) return;
