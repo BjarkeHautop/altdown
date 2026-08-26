@@ -49,6 +49,13 @@ A preview can then be viewed using `altdoc::preview_docs()`.
 Re-run `altdown::use_altdown(overwrite = TRUE)` later to pick up altdown
 updates to the three template files.
 
+## See also
+
+[reftip](https://github.com/BjarkeHautop/reftip) adds hover tooltips to
+the function reference links that altdoc creates in a rendered R code
+block. [alttip](https://github.com/bjarkehautop/alttip) shows an example
+site using altdown and reftip together.
+
 ## Why?
 
 pkgdown support Quarto (see
