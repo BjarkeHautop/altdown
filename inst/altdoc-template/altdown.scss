@@ -314,6 +314,27 @@ dl.ref-index dd {
   font-size: 1rem;
 }
 
+// Below Quarto's own single-column breakpoint (see the `page-columns`
+// comment above), the sidebar stacks below the README body as plain
+// content with no visual separation. pkgdown draws the same box
+// (BS5/assets/pkgdown.scss's `.row>aside` rule, `media-breakpoint-down(md)`)
+// around its sidebar on mobile - replicate that here.
+@media (max-width: 767.98px) {
+  .column-margin {
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    background-color: RGBA(var(--bs-body-color-rgb), 0.1);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+  }
+
+  // The box's own padding already provides top spacing, so the first
+  // heading doesn't also need its default top margin.
+  .column-margin h4:first-of-type {
+    margin-top: 0;
+  }
+}
+
 /* footer ===================================================================== */
 
 .nav-footer {

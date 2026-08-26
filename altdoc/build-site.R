@@ -247,7 +247,13 @@ build_website_readme <- function(lines, path = pkg_path) {
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {
-    c(title, "", sidebar, "", body)
+    # `.column-margin` is explicitly grid-positioned into the margin
+    # column on desktop regardless of source order, but Quarto's page
+    # grid collapses to a single column below 768px, at which point
+    # everything just stacks in DOM order - put the body first so the
+    # sidebar (Links/License/Citation/Developers) renders below it on
+    # small screens instead of above.
+    c(title, "", body, "", sidebar)
   }
 }
 
