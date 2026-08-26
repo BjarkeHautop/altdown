@@ -5,18 +5,102 @@
 
 /* navbar ==================================================================== */
 
-// Leaving navbar colors at Quarto's theme defaults for now (not fighting
-// the dark/light `data-bs-theme` scoping). Only the structural layout is
-// adjusted below.
+// pkgdown-style navbar colors, following the page's own light/dark theme
+// rather than Quarto's defaults.
 //
-// A pkgdown-matching navbar color was tried here and reverted: patching
-// just `.navbar`'s background isn't enough, because Quarto hardcodes
-// `data-bs-theme="dark"` on `<nav>` unconditionally (see
-// `nav-before-body.ejs`), and that scoping also drives the link/brand/
-// toggler text colors (`--bs-emphasis-color-rgb` etc), not just the
-// background. Getting a real pkgdown-style light navbar means overriding
-// the full set of `--bs-navbar-*` custom properties `<nav>` inherits under
-// that dark scoping, not just one or two of them piecemeal.
+// Quarto hardcodes `data-bs-theme="dark"` on `<nav>` unconditionally (see
+// `nav-before-body.ejs`), so `<nav>` always picks up bootstrap's *dark*
+// `--bs-navbar-*`/`--bs-emphasis-color-rgb` custom properties, regardless
+// of which light/dark stylesheet the page has active - patching just
+// `.navbar`'s background isn't enough. Since this file is compiled once per
+// theme variant (see `website.format.html.theme` in quarto_website.yml),
+// each compile already has its own `$body-bg`/`$body-color` baked in as
+// plain values (not runtime `var()` lookups) - deriving the navbar colors
+// from those directly, rather than from bootstrap's own light/dark navbar
+// variables, bypasses the hardcoded dark scoping entirely and needs no
+// light/dark branching of our own.
+//
+// `!important` is needed on every custom property below: bootstrap's own
+// `.navbar-dark, .navbar[data-bs-theme=dark]` rule (which is what actually
+// applies here, since `<nav>` carries that attribute) outranks a plain
+// `.navbar` selector on specificity alone, regardless of source order.
+$altdown-navbar-toggler-icon-bg: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$body-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>"));
+
+// pkgdown deliberately avoids a bold, single-color navbar bar (bootstrap's
+// own assumption): "we prefer a mildly coloured navbar that's just
+// different enough from the body to stand out" (pkgdown's own
+// BS5/assets/pkgdown.scss). It gets there at runtime with `color-mix()`
+// against `--bs-body-bg`/`--bs-primary`/`--bs-body-color`; since those
+// custom properties are exactly what's stuck in the hardcoded dark scope
+// here, we replicate the same two 95/5 mixes at Sass-compile time instead,
+// off the real `$body-bg`/`$primary`/`$body-color` for this variant.
+$altdown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
+
+.navbar {
+  background-color: $altdown-navbar-bg !important;
+  // `darkly` (the dark theme variant) sets a taller `$navbar-padding-y`
+  // than `default` (0.5rem vs 1rem) - pin it so the navbar doesn't visibly
+  // grow/shrink when toggling between them.
+  --bs-navbar-padding-y: 0.5rem !important;
+  --bs-navbar-color: #{rgba($body-color, 0.85)} !important;
+  --bs-navbar-hover-color: #{$primary} !important;
+  --bs-navbar-active-color: #{$primary} !important;
+  --bs-navbar-disabled-color: #{rgba($body-color, 0.45)} !important;
+  --bs-navbar-brand-color: #{$body-color} !important;
+  --bs-navbar-brand-hover-color: #{$primary} !important;
+  --bs-navbar-toggler-border-color: #{rgba($body-color, 0.15)} !important;
+  --bs-navbar-toggler-icon-bg: #{$altdown-navbar-toggler-icon-bg} !important;
+}
+
+// Bootstrap also redeclares `--bs-navbar-toggler-icon-bg` directly on
+// `[data-bs-theme=dark] .navbar-toggler-icon` itself (not just on
+// `.navbar`), and a declaration on the element itself always wins over one
+// inherited from an ancestor - `.navbar`'s `!important` above doesn't reach
+// past it.
+.navbar-toggler-icon {
+  --bs-navbar-toggler-icon-bg: #{$altdown-navbar-toggler-icon-bg} !important;
+}
+
+// `.quarto-navigation-tool` (the GitHub icon's wrapper, and the light/
+// dark-mode toggle button) is styled by Quarto with a *literal* color, not
+// a `--bs-navbar-*` custom property, so none of the overrides above reach
+// it - it's baked at compile time from `$navbar-dark-color`, i.e. always
+// assumed to sit on a dark navbar. Same story for the toggle's on/off
+// icons: Quarto bakes two whole SVG `background-image`s (one per state)
+// with the fill color hardcoded in, rather than reading a CSS variable.
+// Quarto also dims every `.quarto-navigation-tool` to 0.7 opacity at a
+// shrunk 0.875rem, which reads as a faint afterthought next to the regular
+// nav-links. pkgdown's own lightswitch dodges that by rendering as a full
+// nav-link (same size, same hover treatment) rather than a bare icon -
+// bring the toggle up to that same weight here.
+.navbar .quarto-navigation-tool {
+  color: $body-color !important;
+  opacity: 1 !important;
+  padding: 0.375rem 0.5rem !important;
+  border-radius: var(--bs-border-radius);
+}
+
+.navbar .quarto-navigation-tool:hover {
+  color: $primary !important;
+  background: #{rgba($primary, 0.1)};
+}
+
+.navbar .quarto-color-scheme-toggle .bi::before {
+  width: 1.25rem;
+  height: 1.25rem;
+  // Quarto's own rule hardcodes `background-size: 1rem 1rem` - left as-is,
+  // the 16px icon would sit top-left (the default `background-position`)
+  // inside this now-larger box instead of filling it.
+  background-size: 1.25rem 1.25rem;
+}
+
+.navbar .quarto-color-scheme-toggle:not(.alternate) .bi::before {
+  background-image: #{escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='#{$body-color}' class='bi bi-toggle-off' viewBox='0 0 16 16'><path d='M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z'/></svg>"))} !important;
+}
+
+.navbar .quarto-color-scheme-toggle.alternate .bi::before {
+  background-image: #{escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='#{$body-color}' class='bi bi-toggle-on' viewBox='0 0 16 16'><path d='M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/></svg>"))} !important;
+}
 
 // pkgdown's navbar content sits inside a fixed-width, centered Bootstrap
 // `.container`, so it never stretches edge-to-edge. Quarto uses
@@ -96,14 +180,11 @@
     margin-left: 0 !important;
   }
 
-  // Quarto always emits this div for a light/dark-mode switch or a tools
-  // dropdown, even when neither is enabled - it's then a genuine (if
-  // empty) flex item at `order: 900`, still competing for layout in the
-  // row above. We use neither feature, so it's always empty in this
-  // build: drop it from the flex layout entirely instead of trying to
-  // out-order it, so it can't interfere with the search/GitHub spacing.
+  // Quarto emits this div for the light/dark-mode toggle at `order: 900`,
+  // so it naturally lands after search/GitHub above - pkgdown style, the
+  // moon/sun icon sits at the far right.
   .quarto-navbar-tools {
-    display: none !important;
+    order: 4 !important;
   }
 }
 
