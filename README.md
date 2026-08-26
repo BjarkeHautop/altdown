@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 
-[![](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml)
+[![](https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 # altdown

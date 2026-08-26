@@ -2,3 +2,5 @@
 ^altdoc$
 ^_quarto$
 ^LICENSE\.md$
+^README\.qmd$
+^\.github$
