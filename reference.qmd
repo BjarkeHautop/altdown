@@ -1,0 +1,13 @@
+---
+title: "Function reference"
+---
+
+## All functions
+
+<dl class="ref-index">
+<dt><code><a href="man/greet.qmd">greet()</a></code></dt>
+<dd>Greet someone</dd>
+
+<dt><code><a href="man/add.qmd">add()</a></code></dt>
+<dd>Add two numbers</dd>
+</dl>

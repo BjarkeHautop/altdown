@@ -1,0 +1,142 @@
+[
+  {
+    "objectID": "CITATION.html",
+    "href": "CITATION.html",
+    "title": "Citation",
+    "section": "",
+    "text": "Citation\nTo cite package ‘altdown’ in publications use:\n\nHautop Kristensen B (????). altdown: Toy Package Demonstrating ‘altdoc’ Styled Like ‘pkgdown’. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown."
+  },
+  {
+    "objectID": "man/add.html",
+    "href": "man/add.html",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of x and y.\n\n\n\n\nlibrary(\"altdown\")\n\nadd(1, 2)\n\n[1] 3"
+  },
+  {
+    "objectID": "man/add.html#add-two-numbers",
+    "href": "man/add.html#add-two-numbers",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of x and y.\n\n\n\n\nlibrary(\"altdown\")\n\nadd(1, 2)\n\n[1] 3"
+  },
+  {
+    "objectID": "reference.html",
+    "href": "reference.html",
+    "title": "Function reference",
+    "section": "",
+    "text": "greet()\n\n\nGreet someone\n\n\nadd()\n\n\nAdd two numbers"
+  },
+  {
+    "objectID": "reference.html#all-functions",
+    "href": "reference.html#all-functions",
+    "title": "Function reference",
+    "section": "",
+    "text": "greet()\n\n\nGreet someone\n\n\nadd()\n\n\nAdd two numbers"
+  },
+  {
+    "objectID": "NEWS.html",
+    "href": "NEWS.html",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "altdown 0.0.0.9000\n\nInitial release."
+  },
+  {
+    "objectID": "vignettes/getting-started.html",
+    "href": "vignettes/getting-started.html",
+    "title": "Getting started with altdown",
+    "section": "",
+    "text": "This vignette shows off the two toy functions in the package, and a few Quarto callout blocks along the way. Callouts like these render natively because this site is built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\nlibrary(altdown)"
+  },
+  {
+    "objectID": "vignettes/getting-started.html#saying-hello",
+    "href": "vignettes/getting-started.html#saying-hello",
+    "title": "Getting started with altdown",
+    "section": "Saying hello",
+    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
+  },
+  {
+    "objectID": "vignettes/getting-started.html#adding-numbers",
+    "href": "vignettes/getting-started.html#adding-numbers",
+    "title": "Getting started with altdown",
+    "section": "Adding numbers",
+    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nadd() does no input validation, so passing non-numeric arguments will raise a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator\n\n\n\n\n\n\n\n\nImportant\n\n\n\nThis package is a toy, built only to demonstrate altdoc and Quarto callout blocks alongside pkgdown-style theming. Don’t expect real functionality here."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html",
+    "href": "vignettes/articles/technical.html",
+    "title": "Technical details",
+    "section": "",
+    "text": "This page explains how the site is put together. It is a Quarto website built with altdoc, with some extra styling and JavaScript to make it look like a pkgdown (Bootstrap 5) site.\nHere is an overview of the customization implemented:"
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#why-a-pre-processing-script",
+    "href": "vignettes/articles/technical.html#why-a-pre-processing-script",
+    "title": "Technical details",
+    "section": "Why a pre-processing script?",
+    "text": "Why a pre-processing script?\nFor a Quarto backend, the intended approach is to modify the source files with a script and then call altdoc::render_docs() yourself (see altdoc’s customization vignette).\nThat is what is done in altdoc/build-site.R. It does three main things, explained in more details below:\n\nThe home page\naltdoc always uses README.md as the home page. The script reads it, makes the necessary changes, writes the modified version temporarily, and restores the original when it is done. If you use a README.qmd, the script renders it to README.md, via quarto::quarto_render(readme_qmd, output_format = \"gfm\").\nThe changes it makes are mostly there to make the page look like a pkgdown home page:\n\nA .column-margin sidebar is added, like pkgdown has, and badges are automatically moved into the sidebar.\n\n\n\nThe reference index\naltdoc does not currently have a _pkgdown.yml-style reference: field for controlling how the function index is grouped and ordered (etiennebacher/altdoc#326).\nSo this package has its own altdoc/reference.yml, using the same basic structure as pkgdown’s reference: field. The build script uses it together with the \\name{} and \\alias{} entries in man/*.Rd to generate altdoc/reference.qmd.\n\n\nThe footer\naltdoc/quarto_website.yml is generated from altdoc/quarto_website_static.yml. As part of this, the build script replaces $ALTDOC_DEVELOPED_BY with the “Developed by .” text used by pkgdown, based on Authors@R."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#matching-the-pkgdown-look",
+    "href": "vignettes/articles/technical.html#matching-the-pkgdown-look",
+    "title": "Technical details",
+    "section": "Matching the pkgdown look",
+    "text": "Matching the pkgdown look\npkgdown-look.scss is a Quarto theme layer:\ntheme: [default, pkgdown-look.scss]\nIt is based on pkgdown’s own pkgdown.scss, but the selectors have been adapted to Quarto’s HTML.\nIt does the following:\n\nLimiting the navbar to a centered, fixed-width container.\nPutting the navbar items (title, links, search, GitHub icon) in the same order as pkgdown.\nStyling the margin sidebar and reference index (&lt;dl class=\"ref-index\"&gt;) to look like their pkgdown counterparts.\n\nThere is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefor, the generated quarto_website.yml includes a small include-after-body script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#reusing-this-in-your-own-package",
+    "href": "vignettes/articles/technical.html#reusing-this-in-your-own-package",
+    "title": "Technical details",
+    "section": "Reusing this in your own package",
+    "text": "Reusing this in your own package\nCopy altdoc/ into your package, then adjust quarto_website_static.yml (title, navbar links, and the vignettes they point to) and reference.yml (your own functions). Finally run:\nsource(\"altdoc/build-site.R\")\nbuild_site()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "altdown",
+    "section": "",
+    "text": "altdown is a toy R package built to demonstrate altdoc using Quarto, but mirroring the output style of pkgdown (Bootstrap 5).\nBrowse around to see how it looks!\n\n\n# install.packages(\"pak\")\npak::pak(\"bjarkehautop/altdown\")\n\n\n\nlibrary(altdown)\n\ngreet(\"world\")\n[1] \"Hello, world!\"\nadd(1, 2)\n[1] 3\n\n\n\npkgdown support Quarto (see vignette(\"quarto\")), but the way it’s implemented is hard to maintain and lags behind in features, as they say themselves. What I actually wanted was callout blocks, since I’ve grown fond of them. pkgdown hardcodes theme: \"none\" and minimal: TRUE so it can supply its own CSS/Bootstrap instead of Quarto’s. Without a real theme, Quarto’s callout filter just drops ::: {.callout-note} blocks down to a Blockquote.\nThe same underlying issue means TOC for .qmd files disappear. The only fix would be patching pkgdown itself, but it is more work than it sounds. A properly themed Quarto page is a full standalone document, and hence you’d end up merging two competing asset systems. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown.\nIf you are used to the pkgdown layout, but want some of these features this is for you! Simply just copy the contents of /altdoc to your package. Then you build docs using\nsource('altdoc/build-site.R')\nbuild_site(verbose = FALSE)\nand view them using altdoc::preview_docs()."
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "altdown",
+    "section": "",
+    "text": "# install.packages(\"pak\")\npak::pak(\"bjarkehautop/altdown\")"
+  },
+  {
+    "objectID": "index.html#example",
+    "href": "index.html#example",
+    "title": "altdown",
+    "section": "",
+    "text": "library(altdown)\n\ngreet(\"world\")\n[1] \"Hello, world!\"\nadd(1, 2)\n[1] 3"
+  },
+  {
+    "objectID": "index.html#why",
+    "href": "index.html#why",
+    "title": "altdown",
+    "section": "",
+    "text": "pkgdown support Quarto (see vignette(\"quarto\")), but the way it’s implemented is hard to maintain and lags behind in features, as they say themselves. What I actually wanted was callout blocks, since I’ve grown fond of them. pkgdown hardcodes theme: \"none\" and minimal: TRUE so it can supply its own CSS/Bootstrap instead of Quarto’s. Without a real theme, Quarto’s callout filter just drops ::: {.callout-note} blocks down to a Blockquote.\nThe same underlying issue means TOC for .qmd files disappear. The only fix would be patching pkgdown itself, but it is more work than it sounds. A properly themed Quarto page is a full standalone document, and hence you’d end up merging two competing asset systems. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown.\nIf you are used to the pkgdown layout, but want some of these features this is for you! Simply just copy the contents of /altdoc to your package. Then you build docs using\nsource('altdoc/build-site.R')\nbuild_site(verbose = FALSE)\nand view them using altdoc::preview_docs()."
+  },
+  {
+    "objectID": "LICENSE.html",
+    "href": "LICENSE.html",
+    "title": "MIT License",
+    "section": "",
+    "text": "MIT License\nCopyright (c) 2026 altdown authors\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  },
+  {
+    "objectID": "man/greet.html",
+    "href": "man/greet.html",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If TRUE, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\nlibrary(\"altdown\")\n\ngreet(\"world\")\n\n[1] \"Hello, world!\"\n\ngreet(\"world\", loud = TRUE)\n\n[1] \"HELLO, WORLD!\""
+  },
+  {
+    "objectID": "man/greet.html#greet-someone",
+    "href": "man/greet.html#greet-someone",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If TRUE, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\nlibrary(\"altdown\")\n\ngreet(\"world\")\n\n[1] \"Hello, world!\"\n\ngreet(\"world\", loud = TRUE)\n\n[1] \"HELLO, WORLD!\""
+  }
+]

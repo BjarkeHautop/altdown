@@ -1,0 +1,109 @@
+project:
+  type: website
+  output-dir: ../docs/
+
+language:
+  search-text-placeholder: "Search for"
+
+# Note: freeze functionality can be set at a project level or for individual .qmd files
+# execute:
+#   freeze: false
+
+website:
+  title: "$ALTDOC_PACKAGE_NAME $ALTDOC_PACKAGE_VERSION"
+  search:
+    location: navbar
+    type: textbox
+  navbar:
+    search: true
+    left:
+      - text: Get started
+        file: vignettes/getting-started.qmd
+      - text: Articles
+        menu:
+          - text: Technical details
+            file: vignettes/articles/technical.qmd
+      - text: Reference
+        file: reference.qmd
+      - text: Changelog
+        file: $ALTDOC_NEWS
+    right:
+      - icon: github
+        href: $ALTDOC_PACKAGE_URL_GITHUB
+        aria-label: GitHub
+  page-footer:
+    left: |
+      $ALTDOC_DEVELOPED_BY
+    right: |
+      Site built with [altdoc](https://altdoc.etiennebacher.com/) and [Quarto](https://quarto.org/).
+
+format:
+  html:
+    theme: [default, pkgdown-look.scss]
+    code-link: true
+    toc: true
+    # A fixed CSS padding can't align the navbar title with the body text
+    # on every page: Quarto lays pages out differently depending on
+    # whether they have margin content (like the home page's Links/License
+    # column) or not, so the body's left edge lands at a different pixel
+    # offset per page type — no single constant works everywhere. Measure
+    # it for real instead, on every page, after layout settles.
+    include-after-body:
+      text: |
+        <script>
+        (function () {
+          function contentLeft(main) {
+            // On pages with margin content (e.g. the home page's
+            // Links/License column), <main> itself becomes a "page-full"
+            // grid spanning the whole viewport, so its own box tells us
+            // nothing about where the visible text starts — look at the
+            // title/first heading instead. On every other page, main's own
+            // edge already sits flush with the text and is the more
+            // reliable target (man pages have no <h1>, only unnumbered
+            // <h2> titles, so this avoids depending on heading level).
+            if (main.classList.contains("page-full")) {
+              var heading = main.querySelector("h1, h2.unnumbered");
+              if (heading) return heading.getBoundingClientRect().left;
+            }
+            return main.getBoundingClientRect().left;
+          }
+          function alignNavbarToContent() {
+            var main = document.querySelector("#quarto-document-content");
+            var navContainer = document.querySelector(".navbar-container");
+            if (!main || !navContainer) return;
+            navContainer.style.paddingLeft = "";
+            var diff = contentLeft(main) -
+              navContainer.getBoundingClientRect().left;
+            navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
+          }
+          // The navbar title is emitted as one plain-text node, "<pkg name>
+          // <version>" (see `website.title` in quarto_website_static.yml) -
+          // Quarto gives us no way to style just the version at the YAML
+          // level. Split it out into its own `<small>` here so
+          // pkgdown-look.scss can shrink it, pkgdown style.
+          function shrinkNavbarVersion() {
+            var title = document.querySelector(".navbar-title");
+            if (!title || title.querySelector(".navbar-version")) return;
+            var text = title.textContent;
+            var spaceIndex = text.indexOf(" ");
+            if (spaceIndex === -1) return;
+            title.textContent = text.slice(0, spaceIndex);
+            var version = document.createElement("small");
+            version.className = "navbar-version";
+            version.textContent = text.slice(spaceIndex + 1);
+            title.appendChild(document.createTextNode(" "));
+            title.appendChild(version);
+          }
+          // This script is injected right before </body>, so everything it
+          // reads is already in the DOM — no need to wait for "load" (which
+          // fires only once every image/font/subresource finishes, causing
+          // a visible flash where the navbar sits unaligned for a moment).
+          // Run once immediately, then keep "load"/"resize" as safety nets
+          // in case something later shifts the layout (e.g. a web font
+          // swap, though this theme doesn't use one).
+          shrinkNavbarVersion();
+          alignNavbarToContent();
+          window.addEventListener("load", alignNavbarToContent);
+          window.addEventListener("resize", alignNavbarToContent);
+        })();
+        </script>

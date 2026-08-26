@@ -1,0 +1,224 @@
+/*-- scss:rules --*/
+// Adapted from pkgdown's BS5/assets/pkgdown.scss, retargeted at the DOM
+// that Quarto websites actually produce (Quarto uses different class names
+// for the navbar/sidebar/footer than pkgdown's own templates).
+
+/* navbar ==================================================================== */
+
+// Leaving navbar colors at Quarto's theme defaults for now (not fighting
+// the dark/light `data-bs-theme` scoping). Only the structural layout is
+// adjusted below.
+
+// pkgdown's navbar content sits inside a fixed-width, centered Bootstrap
+// `.container`, so it never stretches edge-to-edge. Quarto uses
+// `.container-fluid` (full width) by default, which is why the search box
+// and GitHub icon otherwise end up pinned far off to the right. Cap and
+// center it to match the body content's width below.
+//
+// The title/brand's left alignment with the body text is handled
+// separately, in JS (see `include-after-body` in quarto_website.yml) —
+// a fixed CSS padding can't do it, since Quarto lays out the home page
+// (which has margin content) differently than other pages, putting the
+// body's left edge at a different pixel offset on each.
+.navbar-container.container-fluid {
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navbar-nav .nav-link {
+  border-radius: var(--bs-border-radius);
+}
+
+.navbar-version {
+  font-size: 0.65em;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.navbar-nav .nav-link:hover {
+  background: RGBA(var(--bs-primary-rgb), 0.1);
+}
+
+// underline the active top-level nav item, pkgdown/tinyplot style
+.navbar-nav .nav-link.active {
+  border-bottom: 3px solid var(--bs-primary);
+}
+
+// Quarto places the search box (order: 999) after the whole collapsible
+// nav (order: 20, which holds both the left-hand links and the GitHub
+// icon), so search always renders after *everything*, including GitHub.
+// `display: contents` unwraps the collapse div so its children become
+// direct flex items of the navbar alongside search, which lets us
+// interleave them: title, links, search, then GitHub (pkgdown's order).
+// Scoped to the desktop breakpoint so the mobile collapse/hamburger still
+// works normally below it.
+@media (min-width: 992px) {
+  // Bootstrap's own `.navbar-expand-lg .navbar-collapse{display:flex!important}`
+  // rule at this same breakpoint has higher specificity than a bare
+  // `.navbar-collapse`, so it wins even against `!important`. Match its
+  // selector (and add `!important` too) to actually override it.
+  .navbar-expand-lg .navbar-collapse {
+    display: contents !important;
+  }
+
+  .navbar-brand-container {
+    order: 0 !important;
+  }
+
+  .navbar-nav.me-auto {
+    order: 1 !important;
+  }
+
+  // Bootstrap's `.me-auto`/`.ms-auto` both carry an `auto` margin on the
+  // side that faces the other nav group, since normally they're the only
+  // two groups sharing the bar. With search wedged between them, that
+  // leaves *two* auto-margins in the same flex row, so the leftover space
+  // gets split into two gaps instead of one: a gap after the links, then
+  // another gap before GitHub. Dropping ms-auto's margin merges those into
+  // a single gap after the links, so search and GitHub end up flush next
+  // to each other at the far right, like pkgdown.
+  #quarto-search {
+    order: 2 !important;
+  }
+
+  .navbar-nav.ms-auto {
+    order: 3 !important;
+    margin-left: 0 !important;
+  }
+
+  // Quarto always emits this div for a light/dark-mode switch or a tools
+  // dropdown, even when neither is enabled - it's then a genuine (if
+  // empty) flex item at `order: 900`, still competing for layout in the
+  // row above. We use neither feature, so it's always empty in this
+  // build: drop it from the flex layout entirely instead of trying to
+  // out-order it, so it can't interfere with the search/GitHub spacing.
+  .quarto-navbar-tools {
+    display: none !important;
+  }
+}
+
+// Autocomplete.js renders a magnifying-glass icon inside the textbox by
+// default; pkgdown's search field has plain placeholder text instead.
+#quarto-search.type-textbox .aa-InputWrapperPrefix {
+  display: none;
+}
+
+/* Tighten the main body container in landing page */
+// Quarto doesn't expose the page's root-relative offset as a body attribute
+// (that only exists as a <meta> tag for the JS side), so target the landing
+// page structurally instead: it's the only page whose margin content (the
+// pkgdown-style Links/License/Citation/Developers sidebar, added by
+// build-site.R) turns `#quarto-document-content` into a full-bleed
+// `page-full` grid. (Used to key off a `fullcontent` class Quarto put on
+// every *other* page's <body> - but enabling `toc: true` below adds a
+// margin sidebar, and thus drops that class, from every page, home
+// included, so it no longer distinguishes anything.)
+#quarto-document-content.page-full {
+  padding-top: 0 !important;
+  margin-top: -10px !important;
+}
+
+// The "On this page" jump-around nav belongs on Get started/reference/man
+// pages, pkgdown style, but not on the home page - only the home page has
+// its own bespoke pkgdown-style margin sidebar (Links/License/Citation/
+// Developers). `page-full` (see above) is what marks that page, but it's
+// on `#quarto-document-content`, a *sibling* of `#quarto-margin-sidebar`
+// (both live under `#quarto-content`) - `:has()` on their shared parent is
+// what lets us reach across to the TOC nav from here.
+#quarto-content:has(#quarto-document-content.page-full) {
+  #quarto-margin-sidebar nav#TOC,
+  #quarto-toc-toggle {
+    display: none !important;
+  }
+}
+
+/* typography ================================================================ */
+
+h2 {
+  margin-top: 1.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+h3 {
+  margin-top: 1.25rem;
+  font-weight: bold;
+}
+
+/* code ======================================================================= */
+
+pre {
+  padding: 0.75rem;
+  border-radius: var(--bs-border-radius);
+}
+
+pre code {
+  word-wrap: normal;
+}
+
+code {
+  overflow-wrap: break-word;
+}
+
+/* reference tables (man pages) ============================================== */
+
+table {
+  --bs-table-bg: transparent;
+}
+
+table code {
+  white-space: nowrap;
+}
+
+/* reference index list (reference.qmd) ======================================
+   Mirrors pkgdown's own reference-index markup: a <dl> of <dt> (function
+   name, linked) / <dd> (one-line description) pairs per exported function,
+   rather than a plain two-column table. */
+
+dl.ref-index {
+  margin-bottom: 0;
+}
+
+dl.ref-index dt {
+  font-weight: normal;
+}
+
+// Don't allow breaking within a function name, pkgdown style.
+dl.ref-index dt code {
+  word-wrap: normal;
+}
+
+dl.ref-index dd {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* margin sidebar (home page Links/License/Citation/Developers) ============== */
+
+// Quarto styles `.column-margin` content in a muted gray-blue, shrunk to
+// .825rem, by default. Use the normal body text color and size instead
+// (headings still come out smaller than main content automatically, since
+// they're h3s here vs h1/h2 in the body — that alone matches pkgdown).
+.column-margin {
+  color: var(--bs-body-color);
+  font-size: 1rem;
+}
+
+// Author role text under "Developers" (e.g. "Author, maintainer"), applied
+// in README.md via the pandoc bracketed-span syntax `[text]{.roles}`. A
+// raw `<small>` tag here gets silently stripped somewhere in Quarto's
+// markdown pipeline for this file, so this uses a real markdown construct
+// instead. Named `.roles` to match pkgdown's own class for the same text.
+.roles {
+  font-size: 0.9em;
+  color: RGBA(var(--bs-body-color-rgb), 0.8);
+}
+
+/* footer ===================================================================== */
+
+.nav-footer {
+  border-top: 1px solid var(--bs-border-color);
+  color: RGBA(var(--bs-body-color-rgb), 0.8);
+  font-size: 0.875em;
+}
