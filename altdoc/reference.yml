@@ -10,9 +10,20 @@
 ## file. Every exported topic must appear in exactly one block, or
 ## build_site() will warn (topic missing here) or error (name here with no
 ## matching Rd).
+##
+## `greet` and `add` aren't real package functions - they're a toy API
+## staged into man/ only for the duration of the build (see
+## altdoc/demo/demo.R and stage_demo() in build-site.R), so they only show
+## up here while a build is running.
 
 reference:
   - title: All functions
+    contents:
+      - use_altdown
+  - title: Toy demo functions
+    desc: >
+      Not part of the real package API. Injected doing site
+      build for showcase.
     contents:
       - greet
       - add

@@ -12,10 +12,22 @@ altdown is a toy R package built to demonstrate
 the output style of pkgdown (Bootstrap 5).
 
 Browse around to see how it looks! If you like what you see, and want to
-use it for your own package, you just need to copy `altdoc/` into your
-package, then adjust `quarto_website_static.yml` (title, navbar links,
-and the vignettes they point to) and `reference.yml` (your own
-functions). Finally run:
+use it for your own package, run:
+
+``` r
+altdown::use_altdown()
+```
+
+This copies `altdoc/build-site.R`, `altdoc/altdown.scss`, and
+`altdoc/quarto_website_static.yml` into your package as-is, and writes a
+starter `altdoc/reference.yml` listing your package’s current functions
+in one section. From there:
+
+- Edit `reference.yml` to group the functions however you’d like.
+- Adjust the navbar links/vignettes in `quarto_website_static.yml` if
+  needed (e.g. add an `Articles` menu once you have one).
+
+Then build the site:
 
 ``` r
 source("altdoc/build-site.R")
@@ -23,6 +35,11 @@ build_site()
 ```
 
 A preview can then be viewed using `altdoc::preview_docs()`.
+
+Re-run `altdown::use_altdown(overwrite = TRUE)` later to pick up altdown
+updates to the three template files - this discards any local edits to
+them, so `reference.yml` (which is never overwritten unless you pass
+`overwrite = TRUE` too) is where your own customization belongs instead.
 
 ## Why?
 

@@ -21,3 +21,11 @@ Thumbs.db
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Staged by altdoc/build-site.R's stage_demo() for the duration of the
+# build; removed afterward, but ignored as a safety net in case a build is
+# interrupted.
+R/zzz-demo.R
+man/greet.Rd
+man/add.Rd
+vignettes/getting-started.qmd
