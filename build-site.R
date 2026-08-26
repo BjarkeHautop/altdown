@@ -314,6 +314,7 @@ build_reference_qmd <- function(path = pkg_path) {
     }, character(1))
     c(
       paste0("## ", block$title), "",
+      if (!is.null(block$desc)) c(trimws(block$desc), ""),
       '<dl class="ref-index">',
       paste(entries, collapse = "\n\n"),
       "</dl>", ""
@@ -342,6 +343,95 @@ update_quarto_settings <- function(path = pkg_path) {
   invisible(settings)
 }
 
+# ---- optional toy/demo API staging -----------------------------------------
+#
+# A package can keep a toy API used only to showcase the site - e.g.
+# altdown's own greet()/add() - out of its real R/, man/, and vignettes/,
+# and bring it in only for the duration of build_site(). Put the toy
+# functions' source in altdoc/demo/demo.R and any vignette that calls them
+# alongside it in altdoc/demo/ (named to match the target vignette file, e.g.
+# getting-started.qmd); if altdoc/demo/demo.R doesn't exist, none of this
+# runs.
+#
+# The vignette render happens in a separate process (quarto shells out to
+# Rscript per document), so `library(pkg)` there needs an actually installed
+# package that exports the toy functions - staging roundtrips through a real
+# install: copy the toy R file into R/ and matching man/*.Rd and
+# vignettes/*.qmd, add temporary export()s to NAMESPACE, then reinstall.
+# Everything staged is removed again afterward and the package reinstalled
+# clean, so none of it ships or lingers in the working tree.
+
+reinstall_pkg <- function(path = pkg_path) {
+  install.packages(path, repos = NULL, type = "source", quiet = TRUE)
+  invisible()
+}
+
+stage_demo <- function(path = pkg_path) {
+  demo_r <- file.path(path, "altdoc", "demo", "demo.R")
+  if (!file.exists(demo_r)) {
+    return(NULL)
+  }
+
+  r_dest <- file.path(path, "R", "zzz-demo.R")
+  file.copy(demo_r, r_dest, overwrite = TRUE)
+
+  demo_src <- readLines(demo_r, warn = FALSE)
+  rd <- roxygen2::roc_proc_text(roxygen2::rd_roclet(), paste(demo_src, collapse = "\n"))
+  man_dir <- file.path(path, "man")
+  rd_paths <- file.path(man_dir, names(rd))
+  for (nm in names(rd)) {
+    writeLines(format(rd[[nm]]), file.path(man_dir, nm))
+  }
+
+  aliases <- unlist(lapply(rd_paths, function(rd_file) {
+    parsed <- tools::parse_Rd(rd_file)
+    tags <- vapply(parsed, function(x) attr(x, "Rd_tag"), character(1))
+    vapply(parsed[tags == "\\alias"], function(x) as.character(x[[1]]), character(1))
+  }))
+
+  namespace_path <- file.path(path, "NAMESPACE")
+  original_namespace <- readLines(namespace_path, warn = FALSE)
+  writeLines(c(original_namespace, sprintf("export(%s)", aliases)), namespace_path)
+
+  demo_qmds <- Sys.glob(file.path(path, "altdoc", "demo", "*.qmd"))
+  vig_dir <- file.path(path, "vignettes")
+  vig_existed <- dir.exists(vig_dir)
+  qmd_paths <- character()
+  if (length(demo_qmds) > 0) {
+    if (!vig_existed) dir.create(vig_dir)
+    qmd_paths <- file.path(vig_dir, basename(demo_qmds))
+    file.copy(demo_qmds, qmd_paths, overwrite = TRUE)
+  }
+
+  reinstall_pkg(path)
+
+  list(
+    path = path,
+    r_dest = r_dest,
+    rd_paths = rd_paths,
+    qmd_paths = qmd_paths,
+    vig_dir = vig_dir,
+    vig_existed = vig_existed,
+    namespace_path = namespace_path,
+    original_namespace = original_namespace
+  )
+}
+
+unstage_demo <- function(staged) {
+  if (is.null(staged)) {
+    return(invisible())
+  }
+  unlink(staged$r_dest)
+  unlink(staged$rd_paths)
+  unlink(staged$qmd_paths)
+  if (!staged$vig_existed && length(list.files(staged$vig_dir)) == 0) {
+    unlink(staged$vig_dir, recursive = TRUE)
+  }
+  writeLines(staged$original_namespace, staged$namespace_path)
+  reinstall_pkg(staged$path)
+  invisible()
+}
+
 # ---- entry point ------------------------------------------------------------
 
 render_readme_qmd <- function(path = pkg_path) {
@@ -354,6 +444,9 @@ render_readme_qmd <- function(path = pkg_path) {
 }
 
 build_site <- function(path = pkg_path, ...) {
+  staged <- stage_demo(path)
+  on.exit(unstage_demo(staged), add = TRUE)
+
   render_readme_qmd(path)
 
   readme_path <- file.path(path, "README.md")

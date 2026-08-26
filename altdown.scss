@@ -247,8 +247,27 @@ pre code {
   word-wrap: normal;
 }
 
+// Bootstrap's own compiled `code{}` rule pairs a literal `#f8f9fa`
+// background with `color: var(--bs-code-color)`. `--bs-code-color` (like
+// `--bs-tertiary-bg`, `--bs-link-color`, etc.) is one of Bootstrap 5.3's
+// runtime dark-mode custom properties: its dark value only lives behind a
+// `[data-bs-theme=dark]` selector, which - per the navbar comment above -
+// Quarto never actually sets anywhere outside `<nav>` here, since this site
+// does dark mode by swapping the whole compiled stylesheet rather than
+// toggling that attribute. So even in the "dark" compile, `--bs-code-color`
+// still resolves to Bootstrap's plain `:root` default (`inherit`, i.e. the
+// correctly-dark body text color by inheritance) while the background stays
+// hardcoded light (it isn't a var() at all): white text in a near-white
+// box. `var(--bs-tertiary-bg)` doesn't fix this either, for the same
+// reason - it's gated the same way and also stays stuck on its light
+// value. Bake a variant-appropriate background at Sass-compile time
+// instead, the same way `$altdown-navbar-bg` above works around the exact
+// same gap. Fenced code blocks (`pre.sourceCode`/`div.sourceCode`) already
+// get proper light/dark backgrounds from Quarto's own syntax-highlighting
+// CSS and aren't affected.
 code {
   overflow-wrap: break-word;
+  background-color: mix($body-bg, $body-color, 92%);
 }
 
 /* reference tables (man pages) ============================================== */

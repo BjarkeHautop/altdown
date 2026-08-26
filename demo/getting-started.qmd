@@ -1,0 +1,59 @@
+---
+title: "Getting started with altdown"
+vignette: >
+  %\VignetteIndexEntry{Getting started with altdown}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette shows off the two toy functions in the package, and a few
+Quarto callout blocks along the way. Callouts like these render natively
+because this site is built with `altdoc`'s `quarto_website` tool, which
+lets Quarto handle vignettes directly instead of converting them to plain
+Markdown first.
+
+```{r setup}
+library(altdown)
+```
+
+## Saying hello
+
+::: {.callout-note}
+`greet()` just pastes together a friendly string. Nothing fancy.
+:::
+
+```{r}
+greet("altdoc")
+```
+
+You can also shout the greeting:
+
+```{r}
+greet("altdoc", loud = TRUE)
+```
+
+::: {.callout-tip}
+## Tip
+Set `loud = TRUE` when you really mean it.
+:::
+
+## Adding numbers
+
+```{r}
+add(2, 40)
+```
+
+::: {.callout-warning}
+`add()` does no input validation, so passing non-numeric arguments will
+raise a base R error rather than a friendly one.
+:::
+
+```{r, error=TRUE}
+add("2", 40)
+```
+
+::: {.callout-important}
+This package is a toy, built only to demonstrate `altdoc` and Quarto
+callout blocks alongside pkgdown-style theming. Don't expect real
+functionality here.
+:::

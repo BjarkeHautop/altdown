@@ -5,6 +5,15 @@ title: "Function reference"
 ## All functions
 
 <dl class="ref-index">
+<dt><code><a href="man/use_altdown.qmd">use_altdown()</a></code></dt>
+<dd>Set up altdown's altdoc template in a package</dd>
+</dl>
+
+## Toy demo functions
+
+Not part of the real package API. Injected doing site build for showcase.
+
+<dl class="ref-index">
 <dt><code><a href="man/greet.qmd">greet()</a></code></dt>
 <dd>Greet someone</dd>
 
