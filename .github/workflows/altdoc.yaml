@@ -40,7 +40,8 @@ jobs:
           install.packages(".", repos = NULL, type = "source")
           install.packages("pkgload")
           pkgload::load_all()
-          altdoc::render_docs(parallel = FALSE, freeze = FALSE)
+          source("altdoc/build-site.R")
+          build_site(parallel = FALSE, freeze = FALSE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

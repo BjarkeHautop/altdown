@@ -13,8 +13,12 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Suggests:
     altdoc,
+    cli,
+    desc,
+    fs,
     quarto,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    yaml
 VignetteBuilder: quarto
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
