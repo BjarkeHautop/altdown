@@ -35,13 +35,40 @@ website:
     left: |
       $ALTDOC_DEVELOPED_BY
     right: |
-      Site built with [altdoc](https://altdoc.etiennebacher.com/) and [Quarto](https://quarto.org/), using [altdown](https://github.com/BjarkeHautop/altdown) theme.
+      Site built with [altdoc](https://altdoc.etiennebacher.com/) and [Quarto](https://quarto.org/), using the [altdown](https://github.com/BjarkeHautop/altdown) theme.
 
 format:
   html:
-    theme: [default, altdown.scss]
+    theme:
+      light: [default, altdown.scss]
+      dark: [darkly, altdown.scss]
     code-link: true
     toc: true
+    # Quarto's own dark-mode toggle always defaults new visitors to
+    # whichever theme is listed first above (light), ignoring the OS/
+    # browser `prefers-color-scheme` setting entirely - there's no config
+    # for this, so seed its localStorage sentinel ourselves before its own
+    # before-body script reads it. Runs in <head>, ahead of any painted
+    # content, so there's no light-then-dark flash. Only acts when the
+    # visitor has never toggled here before - an explicit past choice
+    # always wins on return visits.
+    include-in-header:
+      text: |
+        <script>
+        (function () {
+          try {
+            if (
+              window.localStorage.getItem("quarto-color-scheme") === null &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches
+            ) {
+              window.localStorage.setItem("quarto-color-scheme", "alternate");
+            }
+          } catch (e) {
+            // localStorage unavailable (e.g. file:// preview, blocked
+            // storage) - fall back to Quarto's own light default.
+          }
+        })();
+        </script>
     # A fixed CSS padding can't align the navbar title with the body text
     # on every page: Quarto lays pages out differently depending on
     # whether they have margin content (like the home page's Links/License

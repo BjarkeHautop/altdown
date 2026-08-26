@@ -31,7 +31,7 @@ call `altdoc::render_docs()` yourself (see altdoc's
 [customization vignette](https://altdoc.etiennebacher.com/articles/customize.html)).
 
 That is what is done in `altdoc/build-site.R`. It does three main things,
-explained in more details below:
+explained in details below:
 
 ### The home page
 
@@ -40,10 +40,8 @@ writes the modified version temporarily, and restores the original when it is do
 If you use a `README.qmd`, the script renders it to `README.md`, via
 `quarto::quarto_render(readme_qmd, output_format = "gfm")`.
 
-The changes it makes are mostly there to make the page look like a pkgdown home page:
-
-- A `.column-margin` sidebar is added, like pkgdown has, and badges are automatically moved
-into the sidebar.
+These changes also add a `.column-margin` sidebar, matching pkgdown's layout, and move badges
+into it automatically.
 
 ### The reference index
 
