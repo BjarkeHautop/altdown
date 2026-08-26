@@ -1,5 +1,14 @@
 
 
+<!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/disco-coders/causaldisco/branch/main/graph/badge.svg)](https://app.codecov.io/github/disco-coders/causaldisco/tree/main)
+[![R-CMD-check](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/causalDisco.png)](https://CRAN.R-project.org/package=causalDisco)
+<!-- badges: end -->
+
 # altdown
 
 altdown is a toy R package built to demonstrate

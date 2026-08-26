@@ -2,6 +2,11 @@
 format: gfm
 ---
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/disco-coders/causalDisco/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 # altdown
 
 altdown is a toy R package built to demonstrate [altdoc](https://altdoc.etiennebacher.com/)
