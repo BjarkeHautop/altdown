@@ -384,7 +384,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This vignette shows off the two toy functions in the package, and a few Quarto callout blocks along the way. Callouts like these render natively because this site is built with <code>altdoc</code>’s <code>quarto_website</code> tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.</p>
+<p>This vignette shows off a few Quarto callout blocks, and how they render on a site built with <code>altdoc</code>’s <code>quarto_website</code> tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.</p>
+<p><code>greet()</code> and <code>add()</code> below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the <a href="../reference.html">reference index</a>).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(altdown)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -400,7 +401,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>greet()</code> just pastes together a friendly string. Nothing fancy.</p>
+<p><code>greet()</code> is a toy demo function; it just pastes together a friendly string. Nothing fancy.</p>
 </div>
 </div>
 <div class="cell">
@@ -448,7 +449,7 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>add()</code> does no input validation, so passing non-numeric arguments will raise a base R error rather than a friendly one.</p>
+<p>Like <code>greet()</code>, <code>add()</code> is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.</p>
 </div>
 </div>
 <div class="cell">
@@ -456,19 +457,6 @@ Warning
 <div class="cell-output cell-output-error">
 <pre><code>Error in `x + y`:
 ! non-numeric argument to binary operator</code></pre>
-</div>
-</div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This package is a toy, built only to demonstrate <code>altdoc</code> and Quarto callout blocks alongside pkgdown-style theming. Don’t expect real functionality here.</p>
 </div>
 </div>
 

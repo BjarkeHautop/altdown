@@ -6,11 +6,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette shows off the two toy functions in the package, and a few
-Quarto callout blocks along the way. Callouts like these render natively
-because this site is built with `altdoc`'s `quarto_website` tool, which
-lets Quarto handle vignettes directly instead of converting them to plain
-Markdown first.
+This vignette shows off a few Quarto callout blocks, and how they render
+on a site built with `altdoc`'s `quarto_website` tool, which lets Quarto
+handle vignettes directly instead of converting them to plain Markdown
+first.
+
+`greet()` and `add()` below are not part of the real package API; they
+are toy functions injected during the site build for this showcase (see
+the [reference index](../reference.qmd)).
 
 ```{r setup}
 library(altdown)
@@ -19,7 +22,8 @@ library(altdown)
 ## Saying hello
 
 ::: {.callout-note}
-`greet()` just pastes together a friendly string. Nothing fancy.
+`greet()` is a toy demo function; it just pastes together a friendly
+string. Nothing fancy.
 :::
 
 ```{r}
@@ -44,16 +48,11 @@ add(2, 40)
 ```
 
 ::: {.callout-warning}
-`add()` does no input validation, so passing non-numeric arguments will
-raise a base R error rather than a friendly one.
+Like `greet()`, `add()` is a toy stand-in: it does no input validation,
+so passing non-numeric arguments raises a base R error rather than a
+friendly one.
 :::
 
 ```{r, error=TRUE}
 add("2", 40)
 ```
-
-::: {.callout-important}
-This package is a toy, built only to demonstrate `altdoc` and Quarto
-callout blocks alongside pkgdown-style theming. Don't expect real
-functionality here.
-:::

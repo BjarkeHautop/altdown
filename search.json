@@ -32,21 +32,21 @@
     "href": "demo/getting-started.html",
     "title": "Getting started with altdown",
     "section": "",
-    "text": "This vignette shows off the two toy functions in the package, and a few Quarto callout blocks along the way. Callouts like these render natively because this site is built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\nlibrary(altdown)"
+    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
   },
   {
     "objectID": "demo/getting-started.html#saying-hello",
     "href": "demo/getting-started.html#saying-hello",
     "title": "Getting started with altdown",
     "section": "Saying hello",
-    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
+    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
   },
   {
     "objectID": "demo/getting-started.html#adding-numbers",
     "href": "demo/getting-started.html#adding-numbers",
     "title": "Getting started with altdown",
     "section": "Adding numbers",
-    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nadd() does no input validation, so passing non-numeric arguments will raise a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator\n\n\n\n\n\n\n\n\nImportant\n\n\n\nThis package is a toy, built only to demonstrate altdoc and Quarto callout blocks alongside pkgdown-style theming. Don’t expect real functionality here."
+    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
   },
   {
     "objectID": "NEWS.html",
@@ -60,21 +60,21 @@
     "href": "vignettes/getting-started.html",
     "title": "Getting started with altdown",
     "section": "",
-    "text": "This vignette shows off the two toy functions in the package, and a few Quarto callout blocks along the way. Callouts like these render natively because this site is built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\nlibrary(altdown)"
+    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
   },
   {
     "objectID": "vignettes/getting-started.html#saying-hello",
     "href": "vignettes/getting-started.html#saying-hello",
     "title": "Getting started with altdown",
     "section": "Saying hello",
-    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
+    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
   },
   {
     "objectID": "vignettes/getting-started.html#adding-numbers",
     "href": "vignettes/getting-started.html#adding-numbers",
     "title": "Getting started with altdown",
     "section": "Adding numbers",
-    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nadd() does no input validation, so passing non-numeric arguments will raise a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator\n\n\n\n\n\n\n\n\nImportant\n\n\n\nThis package is a toy, built only to demonstrate altdoc and Quarto callout blocks alongside pkgdown-style theming. Don’t expect real functionality here."
+    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
   },
   {
     "objectID": "vignettes/articles/technical.html",
