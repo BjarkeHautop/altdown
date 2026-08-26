@@ -1,0 +1,20 @@
+altdoc/freeze.rds
+_quarto/*
+!_quarto/_freeze/
+docs/
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+inst/doc/
+
+# Quarto / knitr artifacts outside _quarto/
+.quarto/
+/.luarc.json
+
+# OS
+.DS_Store
+Thumbs.db

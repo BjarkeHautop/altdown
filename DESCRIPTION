@@ -1,0 +1,20 @@
+Package: altdown
+Title: Toy Package Demonstrating 'altdoc' Styled Like 'pkgdown'
+Version: 0.0.0.9000
+Authors@R:
+    person(given = "Bjarke", family = "Hautop Kristensen", email = "bjarke.hautop@gmail.com", role = c("aut", "cre"))
+Description: A toy R package used to demonstrate 'altdoc' with 'Quarto'
+    callout blocks in an article/vignette, and to explore styling the
+    generated website to resemble 'pkgdown'.
+License: MIT + file LICENSE
+URL: https://github.com/bjarkehautop/altdown
+BugReports: https://github.com/bjarkehautop/altdown/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Suggests:
+    altdoc,
+    quarto,
+    testthat (>= 3.0.0)
+VignetteBuilder: quarto
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0

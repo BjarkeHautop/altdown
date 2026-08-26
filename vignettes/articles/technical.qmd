@@ -1,0 +1,101 @@
+---
+title: "Technical details"
+
+vignette: >
+  %\VignetteIndexEntry{Technical details}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+This page explains how the site is put together. It is a Quarto website
+built with [altdoc](https://altdoc.etiennebacher.com/), with some extra
+styling and JavaScript to make it look like a [pkgdown](https://pkgdown.r-lib.org/)
+(Bootstrap 5) site.
+
+Here is an overview of the customization implemented:
+
+```text
+altdoc/
+├── build-site.R               # pre-processing script, see below
+├── quarto_website_static.yml  # source of quarto_website.yml
+├── quarto_website.yml         # generated - not edited directly
+├── pkgdown-look.scss          # pkgdown-style theme on top of Quarto's HTML
+├── reference.yml              # source of reference.qmd
+└── reference.qmd              # generated - not edited directly
+```
+
+## Why a pre-processing script?
+
+For a Quarto backend, the intended approach is to modify the source files with a script and then
+call `altdoc::render_docs()` yourself (see altdoc's
+[customization vignette](https://altdoc.etiennebacher.com/articles/customize.html)).
+
+That is what is done in `altdoc/build-site.R`. It does three main things,
+explained in more details below:
+
+### The home page
+
+altdoc always uses `README.md` as the home page. The script reads it, makes the necessary changes,
+writes the modified version temporarily, and restores the original when it is done.
+If you use a `README.qmd`, the script renders it to `README.md`, via
+`quarto::quarto_render(readme_qmd, output_format = "gfm")`.
+
+The changes it makes are mostly there to make the page look like a pkgdown home page:
+
+- A `.column-margin` sidebar is added, like pkgdown has, and badges are automatically moved
+into the sidebar.
+
+### The reference index
+
+altdoc does not currently have a `_pkgdown.yml`-style `reference:` field for
+controlling how the function index is grouped and ordered
+([etiennebacher/altdoc#326](https://github.com/etiennebacher/altdoc/issues/326)).
+
+So this package has its own `altdoc/reference.yml`, using the same basic
+structure as pkgdown's `reference:` field. The build script uses it together
+with the `\name{}` and `\alias{}` entries in `man/*.Rd` to generate
+`altdoc/reference.qmd`.
+
+### The footer
+
+`altdoc/quarto_website.yml` is generated from
+`altdoc/quarto_website_static.yml`. As part of this, the build script replaces
+`$ALTDOC_DEVELOPED_BY` with the "Developed by <authors>." text used by
+pkgdown, based on `Authors@R`.
+
+## Matching the pkgdown look
+
+`pkgdown-look.scss` is a Quarto theme layer:
+
+```yaml
+theme: [default, pkgdown-look.scss]
+```
+
+It is based on pkgdown's own `pkgdown.scss`, but the selectors have been
+adapted to Quarto's HTML.
+
+It does the following:
+
+- Limiting the navbar to a centered, fixed-width container.
+- Putting the navbar items (title, links, search, GitHub icon) in the same
+  order as pkgdown.
+- Styling the margin sidebar and reference index
+  (`<dl class="ref-index">`) to look like their pkgdown counterparts.
+
+There is one annoying thing that can't be fixed though: the navbar title does
+not line up with the body text automatically. Quarto uses a different layout
+for the home page, so the body's left edge is not in the same place on every page.
+Therefor, the generated `quarto_website.yml` includes a small
+`include-after-body` script that measures the actual offset after the page has
+loaded and adjusts the navbar padding accordingly.
+
+## Reusing this in your own package
+
+Copy `altdoc/` into your package, then adjust
+`quarto_website_static.yml` (title, navbar links, and the vignettes they
+point to) and `reference.yml` (your own functions). Finally run:
+
+```r
+source("altdoc/build-site.R")
+build_site()
+```
