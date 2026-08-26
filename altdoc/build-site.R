@@ -193,7 +193,7 @@ data_sidebar_authors <- function(path = pkg_path, roles = default_roles()) {
     authors,
     function(x) {
       sprintf(
-        "%s\\\n[%s]{.roles}",
+        "%s\\\n<small>%s</small>",
         author_name(x),
         author_roles_text(x)
       )

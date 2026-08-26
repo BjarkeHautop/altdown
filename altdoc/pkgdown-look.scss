@@ -205,16 +205,6 @@ dl.ref-index dd {
   font-size: 1rem;
 }
 
-// Author role text under "Developers" (e.g. "Author, maintainer"), applied
-// in README.md via the pandoc bracketed-span syntax `[text]{.roles}`. A
-// raw `<small>` tag here gets silently stripped somewhere in Quarto's
-// markdown pipeline for this file, so this uses a real markdown construct
-// instead. Named `.roles` to match pkgdown's own class for the same text.
-.roles {
-  font-size: 0.9em;
-  color: RGBA(var(--bs-body-color-rgb), 0.8);
-}
-
 /* footer ===================================================================== */
 
 .nav-footer {
