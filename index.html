@@ -431,8 +431,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="why" class="level2">
 <h2 class="anchored" data-anchor-id="why">Why?</h2>
-<p>pkgdown support Quarto (see <a href="https://pkgdown.r-lib.org/dev/articles/quarto.html"><code>vignette("quarto")</code></a>), but the way it’s implemented is hard to maintain and lags behind in features, as they say themselves. What I personally wanted was <a href="https://quarto.org/docs/authoring/callouts.html">callout blocks</a>, since I’ve grown fond of them.</p>
-<p>pkgdown hardcodes <code>theme: "none"</code> and <code>minimal: TRUE</code> so it can supply its own CSS instead of Quarto’s. This makes callout blocks be converted to plain Blockquotes.</p>
+<p>pkgdown supports Quarto (see <a href="https://pkgdown.r-lib.org/dev/articles/quarto.html"><code>vignette("quarto")</code></a>), but the way it’s implemented is hard to maintain and lags behind in features. For instance, callout blocks, code annotations, and tabsets don’t work correctly. Callout blocks are what I personally wanted most, since I’ve grown fond of them.</p>
+<p>This happens because pkgdown hardcodes <code>theme: "none"</code> and <code>minimal: TRUE</code> so it can supply its own CSS instead of Quarto’s, which strips the callout, annotation, and tabset styling. Callouts, for instance, get converted to plain blockquotes.</p>
 <p>The fix would be patching pkgdown itself, but it’s a bit more involved than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown.</p>
 
 
