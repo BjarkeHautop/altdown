@@ -67,8 +67,7 @@ grown fond of them.
 
 pkgdown hardcodes `theme: "none"` and `minimal: TRUE` so it can supply
 its own CSS instead of Quarto’s. This makes callout blocks be converted
-to plain Blockquotes. The same underlying issue means TOC for `.qmd`
-files disappear.
+to plain Blockquotes.
 
 The fix would be patching pkgdown itself, but it’s a bit more involved
 than one would first think. The tldr is you have to merge two competing
