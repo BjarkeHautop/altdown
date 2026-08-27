@@ -247,13 +247,18 @@ build_website_readme <- function(lines, path = pkg_path) {
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {
-    # `.column-margin` is explicitly grid-positioned into the margin
-    # column on desktop regardless of source order, but Quarto's page
-    # grid collapses to a single column below 768px, at which point
-    # everything just stacks in DOM order - put the body first so the
-    # sidebar (Links/License/Citation/Developers) renders below it on
-    # small screens instead of above.
-    c(title, "", body, "", sidebar)
+    # `.column-margin` must come *first* here: none of `.page-columns`'s
+    # direct children get an explicit `grid-row`, so the browser falls
+    # back to sparse row auto-placement, which assigns rows strictly by
+    # DOM order and never revisits an earlier row. Putting the sidebar
+    # first is what puts it in row 1, where its (taller) content simply
+    # overflows down the page next to the rest of the body - that
+    # overflow is the entire mechanism that makes it look like a
+    # full-height sidebar on desktop. Reordering the DOM to move it
+    # below the body on small screens is handled in CSS instead (see
+    # `.column-margin`'s `order` in altdown.scss), since that also
+    # reorders grid auto-placement without disturbing this.
+    c(title, "", sidebar, "", body)
   }
 }
 
