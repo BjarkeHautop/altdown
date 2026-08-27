@@ -38,7 +38,9 @@ pkg_authors <- function(path = pkg_path, roles = NULL) {
   Filter(function(a) any(a$role %in% roles), authors)
 }
 
-author_name <- function(x) paste(trimws(paste(x$given, collapse = " ")), x$family)
+author_name <- function(x) {
+  paste(trimws(paste(x$given, collapse = " ")), x$family)
+}
 
 author_roles_text <- function(x) {
   roles <- paste0(role_lookup(x$role), collapse = ", ")
@@ -61,6 +63,25 @@ sidebar_section <- function(heading, bullets) {
   )
 }
 
+cran_url_if_available <- function(pkg_name) {
+  if (is.na(pkg_name) || !requireNamespace("httr2", quietly = TRUE)) {
+    return(NA_character_)
+  }
+  cran_url <- paste0("https://cloud.r-project.org/package=", pkg_name)
+  resp <- tryCatch(
+    httr2::req_perform(httr2::req_error(
+      httr2::request(cran_url),
+      function(resp) FALSE
+    )),
+    error = function(e) NULL
+  )
+  if (!is.null(resp) && !httr2::resp_is_error(resp)) {
+    cran_url
+  } else {
+    NA_character_
+  }
+}
+
 data_sidebar_links <- function(path = pkg_path) {
   gh_url <- tryCatch(
     Filter(function(u) grepl("github\\.com", u), desc::desc_get_urls(path)),
@@ -70,8 +91,16 @@ data_sidebar_links <- function(path = pkg_path) {
     desc::desc_get_field("BugReports", default = NA, file = path),
     error = function(e) NA
   )
+  pkg_name <- tryCatch(
+    desc::desc_get_field("Package", default = NA, file = path),
+    error = function(e) NA
+  )
 
   links <- character()
+  cran_url <- cran_url_if_available(pkg_name)
+  if (!is.na(cran_url)) {
+    links <- c(links, sprintf("[View on CRAN](%s)", cran_url))
+  }
   if (length(gh_url) > 0) {
     links <- c(links, sprintf("[Browse source code](%s)", gh_url[[1]]))
   }
@@ -85,7 +114,11 @@ data_sidebar_links <- function(path = pkg_path) {
 # Badges live between `<!-- badges: start -->`/`<!-- badges: end -->` in
 # README.md (the usethis/pkgdown convention).
 data_sidebar_devstatus <- function(badges) {
-  bullets <- if (length(badges) == 0) character() else paste(badges, collapse = "\n")
+  bullets <- if (length(badges) == 0) {
+    character()
+  } else {
+    paste(badges, collapse = "\n")
+  }
   sidebar_section("Dev status", bullets)
 }
 
@@ -150,7 +183,9 @@ data_sidebar_community <- function(path = pkg_path) {
   if (has_file("CONTRIBUTING.md") || has_file(".github", "CONTRIBUTING.md")) {
     links <- c(links, "[Contributing guide](.github/CONTRIBUTING.md)")
   }
-  if (has_file("CODE_OF_CONDUCT.md") || has_file(".github", "CODE_OF_CONDUCT.md")) {
+  if (
+    has_file("CODE_OF_CONDUCT.md") || has_file(".github", "CODE_OF_CONDUCT.md")
+  ) {
     links <- c(links, "[Code of conduct](CODE_OF_CONDUCT.html)")
   }
   if (has_file("SUPPORT.md") || has_file(".github", "SUPPORT.md")) {
@@ -236,24 +271,37 @@ remove_marker_block <- function(lines, start_marker, end_marker) {
 
 build_website_readme <- function(lines, path = pkg_path) {
   badges <- extract_readme_badges(lines)
-  lines <- remove_marker_block(lines, "<!-- badges: start -->", "<!-- badges: end -->")
+  lines <- remove_marker_block(
+    lines,
+    "<!-- badges: start -->",
+    "<!-- badges: end -->"
+  )
 
   title <- lines[1]
   body <- lines[-1]
   first_nonblank <- which(nzchar(trimws(body)))[1]
-  body <- if (is.na(first_nonblank)) character() else body[seq(first_nonblank, length(body))]
+  body <- if (is.na(first_nonblank)) {
+    character()
+  } else {
+    body[seq(first_nonblank, length(body))]
+  }
 
   sidebar <- build_sidebar_markdown(path, badges = badges)
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {
-    # `.column-margin` is explicitly grid-positioned into the margin
-    # column on desktop regardless of source order, but Quarto's page
-    # grid collapses to a single column below 768px, at which point
-    # everything just stacks in DOM order - put the body first so the
-    # sidebar (Links/License/Citation/Developers) renders below it on
-    # small screens instead of above.
-    c(title, "", body, "", sidebar)
+    # `.column-margin` must come *first* here: none of `.page-columns`'s
+    # direct children get an explicit `grid-row`, so the browser falls
+    # back to sparse row auto-placement, which assigns rows strictly by
+    # DOM order and never revisits an earlier row. Putting the sidebar
+    # first is what puts it in row 1, where its (taller) content simply
+    # overflows down the page next to the rest of the body - that
+    # overflow is the entire mechanism that makes it look like a
+    # full-height sidebar on desktop. Reordering the DOM to move it
+    # below the body on small screens is handled in CSS instead (see
+    # `.column-margin`'s `order` in altdown.scss), since that also
+    # reorders grid auto-placement without disturbing this.
+    c(title, "", sidebar, "", body)
   }
 }
 
@@ -278,7 +326,11 @@ rd_topic_index <- function(path = pkg_path) {
   for (rd_file in rd_files) {
     rd <- tools::parse_Rd(rd_file)
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-    aliases <- vapply(rd[tags == "\\alias"], function(x) as.character(x[[1]]), character(1))
+    aliases <- vapply(
+      rd[tags == "\\alias"],
+      function(x) as.character(x[[1]]),
+      character(1)
+    )
     title <- trimws(paste(unlist(rd[tags == "\\title"]), collapse = ""))
     basename <- fs::path_ext_remove(basename(rd_file))
 
@@ -311,19 +363,27 @@ build_reference_qmd <- function(path = pkg_path) {
   }
 
   sections <- lapply(config$reference, function(block) {
-    entries <- vapply(block$contents, function(name) {
-      topic <- topics[[name]]
-      sprintf(
-        '<dt><code><a href="man/%s.qmd">%s()</a></code></dt>\n<dd>%s</dd>',
-        topic$basename, name, topic$title
-      )
-    }, character(1))
+    entries <- vapply(
+      block$contents,
+      function(name) {
+        topic <- topics[[name]]
+        sprintf(
+          '<dt><code><a href="man/%s.qmd">%s()</a></code></dt>\n<dd>%s</dd>',
+          topic$basename,
+          name,
+          topic$title
+        )
+      },
+      character(1)
+    )
     c(
-      paste0("## ", block$title), "",
+      paste0("## ", block$title),
+      "",
       if (!is.null(block$desc)) c(trimws(block$desc), ""),
       '<dl class="ref-index">',
       paste(entries, collapse = "\n\n"),
-      "</dl>", ""
+      "</dl>",
+      ""
     )
   })
 
@@ -382,7 +442,10 @@ stage_demo <- function(path = pkg_path) {
   file.copy(demo_r, r_dest, overwrite = TRUE)
 
   demo_src <- readLines(demo_r, warn = FALSE)
-  rd <- roxygen2::roc_proc_text(roxygen2::rd_roclet(), paste(demo_src, collapse = "\n"))
+  rd <- roxygen2::roc_proc_text(
+    roxygen2::rd_roclet(),
+    paste(demo_src, collapse = "\n")
+  )
   man_dir <- file.path(path, "man")
   rd_paths <- file.path(man_dir, names(rd))
   for (nm in names(rd)) {
@@ -392,19 +455,28 @@ stage_demo <- function(path = pkg_path) {
   aliases <- unlist(lapply(rd_paths, function(rd_file) {
     parsed <- tools::parse_Rd(rd_file)
     tags <- vapply(parsed, function(x) attr(x, "Rd_tag"), character(1))
-    vapply(parsed[tags == "\\alias"], function(x) as.character(x[[1]]), character(1))
+    vapply(
+      parsed[tags == "\\alias"],
+      function(x) as.character(x[[1]]),
+      character(1)
+    )
   }))
 
   namespace_path <- file.path(path, "NAMESPACE")
   original_namespace <- readLines(namespace_path, warn = FALSE)
-  writeLines(c(original_namespace, sprintf("export(%s)", aliases)), namespace_path)
+  writeLines(
+    c(original_namespace, sprintf("export(%s)", aliases)),
+    namespace_path
+  )
 
   demo_qmds <- Sys.glob(file.path(path, "altdoc", "demo", "*.qmd"))
   vig_dir <- file.path(path, "vignettes")
   vig_existed <- dir.exists(vig_dir)
   qmd_paths <- character()
   if (length(demo_qmds) > 0) {
-    if (!vig_existed) dir.create(vig_dir)
+    if (!vig_existed) {
+      dir.create(vig_dir)
+    }
     qmd_paths <- file.path(vig_dir, basename(demo_qmds))
     file.copy(demo_qmds, qmd_paths, overwrite = TRUE)
   }
