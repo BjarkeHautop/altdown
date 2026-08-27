@@ -82,11 +82,17 @@ cran_url_if_available <- function(pkg_name) {
   }
 }
 
-data_sidebar_links <- function(path = pkg_path) {
+pkg_github_url <- function(path = pkg_path) {
   gh_url <- tryCatch(
     Filter(function(u) grepl("github\\.com", u), desc::desc_get_urls(path)),
     error = function(e) character()
   )
+  if (length(gh_url) == 0) NA_character_ else sub("/+$", "", gh_url[[1]])
+}
+
+data_sidebar_links <- function(path = pkg_path) {
+  gh_url <- pkg_github_url(path)
+  gh_url <- if (is.na(gh_url)) character() else gh_url
   bug_reports <- tryCatch(
     desc::desc_get_field("BugReports", default = NA, file = path),
     error = function(e) NA
@@ -181,7 +187,21 @@ data_sidebar_community <- function(path = pkg_path) {
 
   links <- character()
   if (has_file("CONTRIBUTING.md") || has_file(".github", "CONTRIBUTING.md")) {
-    links <- c(links, "[Contributing guide](.github/CONTRIBUTING.md)")
+    contributing_rel <- if (file.exists(file.path(path, "CONTRIBUTING.md"))) {
+      "CONTRIBUTING.md"
+    } else {
+      ".github/CONTRIBUTING.md"
+    }
+    gh_url <- pkg_github_url(path)
+    contributing_url <- if (is.na(gh_url)) {
+      contributing_rel
+    } else {
+      sprintf("%s/blob/HEAD/%s", gh_url, contributing_rel)
+    }
+    links <- c(
+      links,
+      sprintf("[Contributing guide](%s)", contributing_url)
+    )
   }
   if (
     has_file("CODE_OF_CONDUCT.md") || has_file(".github", "CODE_OF_CONDUCT.md")
