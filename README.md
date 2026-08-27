@@ -58,16 +58,17 @@ site using altdown and reftip together.
 
 ## Why?
 
-pkgdown support Quarto (see
+pkgdown supports Quarto (see
 [`vignette("quarto")`](https://pkgdown.r-lib.org/dev/articles/quarto.html)),
 but the way it’s implemented is hard to maintain and lags behind in
-features, as they say themselves. What I personally wanted was [callout
-blocks](https://quarto.org/docs/authoring/callouts.html), since I’ve
-grown fond of them.
+features. For instance, callout blocks, code annotations, and tabsets
+don’t work correctly. Callout blocks are what I personally wanted most,
+since I’ve grown fond of them.
 
-pkgdown hardcodes `theme: "none"` and `minimal: TRUE` so it can supply
-its own CSS instead of Quarto’s. This makes callout blocks be converted
-to plain Blockquotes.
+This happens because pkgdown hardcodes `theme: "none"` and
+`minimal: TRUE` so it can supply its own CSS instead of Quarto’s, which
+strips the callout, annotation, and tabset styling. Callouts, for
+instance, get converted to plain blockquotes.
 
 The fix would be patching pkgdown itself, but it’s a bit more involved
 than one would first think. The tldr is you have to merge two competing
