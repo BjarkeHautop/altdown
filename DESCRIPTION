@@ -18,6 +18,7 @@ Suggests:
     cli,
     desc,
     fs,
+    httr2,
     quarto,
     roxygen2,
     testthat (>= 3.0.0),
