@@ -53,7 +53,7 @@
     "href": "NEWS.html",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "altdown 0.0.0.9000\n\nInitial release.\nAdded use_altdown(), which copies the altdoc/ template into a package and writes a starter reference.yml, instead of asking users to copy altdoc/ in by hand."
+    "text": "altdown 0.0.0.9000\n\nInitial release."
   },
   {
     "objectID": "vignettes/getting-started.html",
