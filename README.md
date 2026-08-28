@@ -3,6 +3,7 @@
 <!-- badges: start -->
 
 [![](https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml)
+[![](https://codecov.io/gh/bjarkehautop/altdown/graph/badge.svg)](https://codecov.io/gh/bjarkehautop/altdown)
 <!-- badges: end -->
 
 # altdown
