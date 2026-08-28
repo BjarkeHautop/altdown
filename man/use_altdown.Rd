@@ -10,8 +10,9 @@ use_altdown(path = ".", overwrite = FALSE)
 \item{path}{Path to the target package root. Defaults to the current
 directory.}
 
-\item{overwrite}{Logical. Overwrite files already present in
-\verb{<path>/altdoc/}? Default \code{FALSE}.}
+\item{overwrite}{Logical. Overwrite the three template files
+(\code{build-site.R}, \code{altdown.scss}, \code{quarto_website_static.yml}) if
+already present in \verb{<path>/altdoc/}? Default \code{FALSE}.}
 }
 \value{
 Invisibly, the path to the created \verb{altdoc/} directory.
@@ -20,13 +21,29 @@ Invisibly, the path to the created \verb{altdoc/} directory.
 Copies altdown's \verb{altdoc/} template (\code{build-site.R}, \code{altdown.scss},
 \code{quarto_website_static.yml}) into \verb{<path>/altdoc/}, and writes a starter
 \code{altdoc/reference.yml} listing every function currently documented in
-\verb{<path>/man/*.Rd}, in one "All functions" section.
+\verb{<path>/man/*.Rd}, in one "All functions" section. Also adds the
+\code{.gitignore}/\code{.Rbuildignore} entries the build needs (see Details) if
+they're not already there.
 }
 \details{
-The three template files are meant to be used as-is; re-run with
-\code{overwrite = TRUE} to pick up altdown updates (this will discard any local
-edits to them). \code{reference.yml} is only a starting point - edit it to
-group the reference index the way you'd like.
+\code{use_altdown()} adds the following lines to \code{.gitignore} and
+\code{.Rbuildignore} (only the ones not already present in each file):
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# .gitignore
+altdoc/freeze.rds
+altdoc/pkgdown.yml
+_quarto/*
+!_quarto/_freeze/
+
+# .Rbuildignore
+^docs$
+^altdoc$
+^_quarto$
+}\if{html}{\out{</div>}}
+
+These mirror what \code{altdoc::setup_docs(tool = "quarto_website")} itself
+adds, plus \code{altdoc/pkgdown.yml}: \code{altdoc::render_docs()} rewrites that
+file with a fresh \code{last_built} timestamp on every build.
 }
 \examples{
 pkg <- tempfile("examplepkg")

@@ -45,10 +45,56 @@ test_that("use_altdown() copies the template and writes a starter reference.yml"
   expect_identical(reference$reference[[1]]$contents, "foo")
 })
 
-test_that("use_altdown() doesn't overwrite existing files unless asked", {
+test_that("use_altdown() adds the .gitignore/.Rbuildignore entries the build needs", {
+  dir <- withr::local_tempdir()
+  writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
+
+  use_altdown(dir)
+
+  gitignore <- readLines(file.path(dir, ".gitignore"))
+  expect_true(all(
+    c(
+      "altdoc/freeze.rds",
+      "altdoc/pkgdown.yml",
+      "_quarto/*",
+      "!_quarto/_freeze/"
+    ) %in%
+      gitignore
+  ))
+
+  rbuildignore <- readLines(file.path(dir, ".Rbuildignore"))
+  expect_true(all(c("^docs$", "^altdoc$", "^_quarto$") %in% rbuildignore))
+})
+
+test_that("use_altdown() doesn't duplicate .gitignore/.Rbuildignore entries on repeat calls", {
+  dir <- withr::local_tempdir()
+  writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
+  writeLines("some/existing/entry", file.path(dir, ".gitignore"))
+
+  use_altdown(dir)
+  use_altdown(dir, overwrite = TRUE)
+
+  gitignore <- readLines(file.path(dir, ".gitignore"))
+  expect_identical(sum(gitignore == "altdoc/freeze.rds"), 1L)
+  expect_identical(sum(gitignore == "some/existing/entry"), 1L)
+})
+
+test_that("use_altdown() doesn't overwrite existing template files unless asked", {
   dir <- withr::local_tempdir()
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
   use_altdown(dir)
+
+  expect_message(use_altdown(dir), "Skipping")
+  expect_message(use_altdown(dir, overwrite = TRUE), "Wrote")
+})
+
+test_that("use_altdown() never overwrites an existing reference.yml, even with overwrite = TRUE", {
+  dir <- withr::local_tempdir()
+  writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
+  use_altdown(dir)
+
+  reference <- yaml::yaml.load_file(file.path(dir, "altdoc", "reference.yml"))
+  expect_identical(reference$reference[[1]]$contents, list())
 
   dir.create(file.path(dir, "man"))
   writeLines(
@@ -56,11 +102,7 @@ test_that("use_altdown() doesn't overwrite existing files unless asked", {
     file.path(dir, "man", "bar.Rd")
   )
 
-  expect_message(use_altdown(dir), "Skipping")
+  expect_message(use_altdown(dir, overwrite = TRUE), "Skipping.*reference\\.yml")
   reference <- yaml::yaml.load_file(file.path(dir, "altdoc", "reference.yml"))
   expect_identical(reference$reference[[1]]$contents, list())
-
-  expect_message(use_altdown(dir, overwrite = TRUE), "Wrote")
-  reference <- yaml::yaml.load_file(file.path(dir, "altdoc", "reference.yml"))
-  expect_identical(reference$reference[[1]]$contents, "bar")
 })

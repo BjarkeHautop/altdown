@@ -3,17 +3,36 @@
 #' Copies altdown's `altdoc/` template (`build-site.R`, `altdown.scss`,
 #' `quarto_website_static.yml`) into `<path>/altdoc/`, and writes a starter
 #' `altdoc/reference.yml` listing every function currently documented in
-#' `<path>/man/*.Rd`, in one "All functions" section.
+#' `<path>/man/*.Rd`, in one "All functions" section. Also adds the
+#' `.gitignore`/`.Rbuildignore` entries the build needs (see Details) if
+#' they're not already there.
 #'
-#' The three template files are meant to be used as-is; re-run with
-#' `overwrite = TRUE` to pick up altdown updates (this will discard any local
-#' edits to them). `reference.yml` is only a starting point - edit it to
-#' group the reference index the way you'd like.
+#' @details
+#' `use_altdown()` adds the following lines to `.gitignore` and
+#' `.Rbuildignore` (only the ones not already present in each file):
+#'
+#' ```
+#' # .gitignore
+#' altdoc/freeze.rds
+#' altdoc/pkgdown.yml
+#' _quarto/*
+#' !_quarto/_freeze/
+#'
+#' # .Rbuildignore
+#' ^docs$
+#' ^altdoc$
+#' ^_quarto$
+#' ```
+#'
+#' These mirror what `altdoc::setup_docs(tool = "quarto_website")` itself
+#' adds, plus `altdoc/pkgdown.yml`: `altdoc::render_docs()` rewrites that
+#' file with a fresh `last_built` timestamp on every build.
 #'
 #' @param path Path to the target package root. Defaults to the current
 #'   directory.
-#' @param overwrite Logical. Overwrite files already present in
-#'   `<path>/altdoc/`? Default `FALSE`.
+#' @param overwrite Logical. Overwrite the three template files
+#'   (`build-site.R`, `altdown.scss`, `quarto_website_static.yml`) if
+#'   already present in `<path>/altdoc/`? Default `FALSE`.
 #' @return Invisibly, the path to the created `altdoc/` directory.
 #' @export
 #'
@@ -51,19 +70,34 @@ use_altdown <- function(path = ".", overwrite = FALSE) {
   }
 
   reference_dest <- file.path(out_dir, "reference.yml")
-  if (file.exists(reference_dest) && !overwrite) {
-    message(sprintf("Skipping '%s': already exists (use overwrite = TRUE to replace).", reference_dest))
+  if (file.exists(reference_dest)) {
+    message(sprintf("Skipping '%s': already exists (delete it to regenerate).", reference_dest))
   } else {
     writeLines(.starter_reference_yml(path), reference_dest)
     message(sprintf("Wrote '%s' (edit this to group your functions).", reference_dest))
   }
 
+  .add_ignore_lines(
+    path,
+    ".gitignore",
+    c(
+      "altdoc/freeze.rds",
+      "altdoc/pkgdown.yml",
+      "_quarto/*",
+      "!_quarto/_freeze/"
+    )
+  )
+  .add_ignore_lines(
+    path,
+    ".Rbuildignore",
+    c("^docs$", "^altdoc$", "^_quarto$")
+  )
+
   message(
     "\nNext steps:\n",
-    "  1. Add vignettes/getting-started.qmd (see altdown's own for an example).\n",
-    "  2. Edit altdoc/reference.yml to group your functions the way you want.\n",
-    "  3. Adjust the navbar links/vignettes in altdoc/quarto_website_static.yml if needed.\n",
-    "  4. Run: source(\"altdoc/build-site.R\"); build_site()"
+    "  1. Edit altdoc/reference.yml to group your functions the way you want.\n",
+    "  2. Run: source(\"altdoc/build-site.R\"); build_site()\n",
+    "  3. Preview site: altdoc::preview_docs()"
   )
 
   invisible(out_dir)
@@ -76,6 +110,29 @@ use_altdown <- function(path = ".", overwrite = FALSE) {
   }
   file.copy(src, dest, overwrite = TRUE)
   message(sprintf("Wrote '%s'.", dest))
+  invisible()
+}
+
+# Appends any of `lines` not already present (as a whole line) in
+# `<path>/<file_name>`, creating the file first if needed. Mirrors what
+# altdoc's own `.add_gitignore()`/`.add_rbuildignore()` do, kept dependency
+# -free here (base R only) since altdown doesn't otherwise need fs/cli at
+# runtime.
+.add_ignore_lines <- function(path, file_name, lines) {
+  dest <- file.path(path, file_name)
+  existing <- if (file.exists(dest)) readLines(dest, warn = FALSE) else character()
+
+  missing <- lines[!lines %in% existing]
+  if (length(missing) == 0) {
+    return(invisible())
+  }
+
+  writeLines(c(existing, missing), dest)
+  message(sprintf(
+    "Added %s to '%s'.",
+    paste(sprintf("'%s'", missing), collapse = ", "),
+    dest
+  ))
   invisible()
 }
 

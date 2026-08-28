@@ -18,13 +18,10 @@ website:
     search: true
     left:
       - text: Get started
-        file: vignettes/getting-started.qmd
+        file: $ALTDOC_GETTING_STARTED
       - text: Reference
         file: reference.qmd
-      - text: Articles
-        menu:
-          - text: Technical details
-            file: vignettes/articles/technical.qmd
+$ALTDOC_ARTICLES_NAV
       - text: Changelog
         file: $ALTDOC_NEWS
     right:

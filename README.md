@@ -34,8 +34,6 @@ starter `altdoc/reference.yml` listing your package’s current functions
 in one section. From there:
 
 - Edit `reference.yml` to group the functions however you’d like.
-- Adjust the navbar links/vignettes in `quarto_website_static.yml` if
-  needed (e.g. add an `Articles` menu once you have one).
 
 Then build the site:
 

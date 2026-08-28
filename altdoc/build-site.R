@@ -413,6 +413,95 @@ build_reference_qmd <- function(path = pkg_path) {
 }
 
 # ---- altdoc/quarto_website.yml generation ----------------------------------
+vignette_title <- function(qmd_path) {
+  fallback <- fs::path_ext_remove(basename(qmd_path))
+
+  lines <- readLines(qmd_path, warn = FALSE, n = 40)
+  fence <- which(lines == "---")
+  if (length(fence) < 2) {
+    return(fallback)
+  }
+
+  header <- lines[(fence[1] + 1):(fence[2] - 1)]
+  title_line <- grep("^title:", header, value = TRUE)
+  if (length(title_line) == 0) {
+    return(fallback)
+  }
+
+  gsub('^title:\\s*"?|"?\\s*$', "", trimws(title_line[1]))
+}
+
+# The single top-level *.qmd in vignettes/ becomes the "Get started" page.
+# With more than one, the one named after the package wins;
+# otherwise you'll need to disambiguate by hand.
+find_getting_started_vignette <- function(path = pkg_path) {
+  vig_dir <- file.path(path, "vignettes")
+  if (!dir.exists(vig_dir)) {
+    cli::cli_abort(
+      "No {.path vignettes/} directory found - add a top-level *.qmd vignette to use as the \"Get started\" page."
+    )
+  }
+
+  candidates <- fs::dir_ls(vig_dir, regexp = "\\.qmd$", recurse = FALSE)
+  if (length(candidates) == 0) {
+    cli::cli_abort(
+      "No top-level *.qmd file found in {.path vignettes/} to use as the \"Get started\" page."
+    )
+  }
+  if (length(candidates) == 1) {
+    return(candidates[[1]])
+  }
+
+  pkg_name <- desc::desc_get_field("Package", file = path)
+  named <- candidates[fs::path_ext_remove(basename(candidates)) == pkg_name]
+  if (length(named) == 1) {
+    return(named[[1]])
+  }
+
+  cli::cli_abort(c(
+    "Found multiple top-level vignettes in {.path vignettes/}: {.val {basename(candidates)}}.",
+    "i" = "Name the one that should be the \"Get started\" page {.val {paste0(pkg_name, '.qmd')}}, or edit the navbar in altdoc/quarto_website_static.yml by hand."
+  ))
+}
+
+# Every *.qmd under vignettes/articles/ becomes an "Articles" entry.
+find_articles <- function(path = pkg_path) {
+  articles_dir <- file.path(path, "vignettes", "articles")
+  if (!dir.exists(articles_dir)) {
+    return(character())
+  }
+  sort(fs::dir_ls(articles_dir, regexp = "\\.qmd$"))
+}
+
+build_articles_nav <- function(path = pkg_path, indent = "      ") {
+  articles <- find_articles(path)
+  if (length(articles) == 0) {
+    return(character())
+  }
+
+  titles <- vapply(articles, vignette_title, character(1))
+  rel <- file.path("vignettes/articles", basename(articles))
+
+  item_lines <- unlist(lapply(seq_along(articles), function(i) {
+    c(
+      sprintf("%s    - text: %s", indent, titles[i]),
+      sprintf("%s      file: %s", indent, rel[i])
+    )
+  }))
+
+  c(sprintf("%s- text: Articles", indent), sprintf("%s  menu:", indent), item_lines)
+}
+
+replace_placeholder_line <- function(lines, placeholder, replacement) {
+  idx <- which(trimws(lines) == placeholder)
+  if (length(idx) == 0) {
+    return(lines)
+  }
+  idx <- idx[1]
+  before <- if (idx > 1) lines[seq_len(idx - 1)] else character()
+  after <- if (idx < length(lines)) lines[(idx + 1):length(lines)] else character()
+  c(before, replacement, after)
+}
 
 update_quarto_settings <- function(path = pkg_path) {
   static_path <- file.path(path, "altdoc", "quarto_website_static.yml")
@@ -425,6 +514,21 @@ update_quarto_settings <- function(path = pkg_path) {
     settings,
     fixed = TRUE
   )
+
+  getting_started <- find_getting_started_vignette(path)
+  settings <- gsub(
+    "$ALTDOC_GETTING_STARTED",
+    file.path("vignettes", basename(getting_started)),
+    settings,
+    fixed = TRUE
+  )
+
+  settings <- replace_placeholder_line(
+    settings,
+    "$ALTDOC_ARTICLES_NAV",
+    build_articles_nav(path)
+  )
+
   writeLines(settings, out_path)
   invisible(settings)
 }
