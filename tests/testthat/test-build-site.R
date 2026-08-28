@@ -144,6 +144,107 @@ test_that("replace_placeholder_line() substitutes, removes, or no-ops", {
   )
 })
 
+test_that("data_sidebar_authors() links to authors.html only when a non-default-role author exists", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- new_pkg()
+  bullets <- fns$data_sidebar_authors(dir)
+  expect_false(any(grepl("More about authors", bullets, fixed = TRUE)))
+
+  dir_ctb <- withr::local_tempdir()
+  writeLines(
+    c(
+      "Package: examplepkg",
+      "Authors@R: c(",
+      "    person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\")),",
+      "    person(\"John\", \"Smith\", role = \"ctb\"))"
+    ),
+    file.path(dir_ctb, "DESCRIPTION")
+  )
+  bullets_ctb <- fns$data_sidebar_authors(dir_ctb)
+  expect_true(any(grepl("More about authors...\\]\\(authors.html\\)", bullets_ctb)))
+  expect_false(any(grepl("John Smith", bullets_ctb)))
+})
+
+test_that("data_sidebar_citation() links to the authors.html #citation anchor", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+  dir <- new_pkg()
+
+  bullets <- fns$data_sidebar_citation(dir)
+  expect_true(any(grepl("authors.html#citation", bullets, fixed = TRUE)))
+})
+
+test_that("build_authors_qmd() writes an Authors and Citation page with all authors and a fenced BibTeX code block", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- withr::local_tempdir()
+  dir.create(file.path(dir, "altdoc"))
+  writeLines(
+    c(
+      "Package: examplepkg",
+      "Version: 1.0.0",
+      "Title: Example Package",
+      "Authors@R: c(",
+      "    person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\")),",
+      "    person(\"John\", \"Smith\", role = \"ctb\"))"
+    ),
+    file.path(dir, "DESCRIPTION")
+  )
+
+  fns$build_authors_qmd(dir)
+
+  out_path <- file.path(dir, "altdoc", "authors.qmd")
+  expect_true(file.exists(out_path))
+  lines <- readLines(out_path)
+
+  expect_identical(lines[1:3], c("---", 'title: "Authors and Citation"', "---"))
+  expect_true(any(grepl("Jane Doe", lines, fixed = TRUE)))
+  expect_true(any(grepl("John Smith", lines, fixed = TRUE)))
+  expect_true(any(grepl("^## Citation \\{#citation\\}$", lines)))
+  expect_true(any(grepl("Source: <a href=\"DESCRIPTION\"><code>DESCRIPTION</code></a>", lines, fixed = TRUE)))
+  expect_true(any(lines == "```bibtex"))
+  open_idx <- which(lines == "```bibtex")
+  close_idx <- which(lines == "```")
+  bibtex_block <- lines[seq(open_idx + 1, close_idx[close_idx > open_idx][1] - 1)]
+  expect_true(any(grepl("@Manual\\{", bibtex_block)))
+})
+
+test_that("build_authors_qmd() prefers an inst/CITATION file and links the Source note to it", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- withr::local_tempdir()
+  dir.create(file.path(dir, "altdoc"))
+  writeLines(
+    c(
+      "Package: examplepkg",
+      "Version: 1.0.0",
+      "Title: Example Package",
+      "URL: https://github.com/someuser/examplepkg",
+      "Authors@R: person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\"))"
+    ),
+    file.path(dir, "DESCRIPTION")
+  )
+  dir.create(file.path(dir, "inst"), recursive = TRUE)
+  writeLines(
+    'bibentry("Manual", title = "Custom Citation Title", author = "Someone Else")',
+    file.path(dir, "inst", "CITATION")
+  )
+
+  fns$build_authors_qmd(dir)
+
+  lines <- readLines(file.path(dir, "altdoc", "authors.qmd"))
+  expect_true(any(grepl("Custom Citation Title", lines, fixed = TRUE)))
+  expect_true(any(grepl(
+    "Source: <a href=\"https://github.com/someuser/examplepkg/blob/HEAD/inst/CITATION\"><code>inst/CITATION</code></a>",
+    lines,
+    fixed = TRUE
+  )))
+})
+
 test_that("update_quarto_settings() fills in the getting-started and articles placeholders", {
   skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
   fns <- build_site_env

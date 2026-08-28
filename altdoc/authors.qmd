@@ -1,0 +1,28 @@
+---
+title: "Authors and Citation"
+---
+
+## Authors
+
+<ul class="list-unstyled">
+<li><p><strong>Bjarke Hautop Kristensen</strong>. Author, maintainer.</p></li>
+</ul>
+
+## Citation {#citation}
+
+<p><small class="dont-index">Source: <a href="https://github.com/bjarkehautop/altdown/blob/HEAD/DESCRIPTION"><code>DESCRIPTION</code></a></small></p>
+
+<p>Hautop Kristensen B (2026).
+<em>altdown: A 'pkgdown'-Style Theme for 'altdoc' Websites</em>.
+R package version 0.0.0.9000, <a href="https://github.com/bjarkehautop/altdown">https://github.com/bjarkehautop/altdown</a>. 
+</p>
+
+```bibtex
+@Manual{,
+  title = {altdown: A 'pkgdown'-Style Theme for 'altdoc' Websites},
+  author = {Bjarke {Hautop Kristensen}},
+  year = {2026},
+  note = {R package version 0.0.0.9000},
+  url = {https://github.com/bjarkehautop/altdown},
+}
+```

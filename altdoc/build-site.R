@@ -217,7 +217,10 @@ data_sidebar_community <- function(path = pkg_path) {
 
 data_sidebar_citation <- function(path = pkg_path) {
   pkg_name <- desc::desc_get_field("Package", file = path)
-  sidebar_section("Citation", sprintf("[Citing %s](CITATION.html)", pkg_name))
+  sidebar_section(
+    "Citation",
+    sprintf("[Citing %s](authors.html#citation)", pkg_name)
+  )
 }
 
 data_sidebar_authors <- function(path = pkg_path, roles = default_roles()) {
@@ -237,6 +240,10 @@ data_sidebar_authors <- function(path = pkg_path, roles = default_roles()) {
     },
     character(1)
   )
+
+  if (length(pkg_authors(path)) != length(authors)) {
+    bullets <- c(bullets, "[More about authors...](authors.html)")
+  }
 
   sidebar_section("Developers", bullets)
 }
@@ -410,6 +417,86 @@ build_reference_qmd <- function(path = pkg_path) {
   lines <- c('---', 'title: "Function reference"', '---', "", unlist(sections))
   lines <- lines[-length(lines)] # drop trailing blank line
   writeLines(lines, out_path)
+}
+
+# Built straight from the source tree rather
+# than `utils::citation(pkg_name)`, which reads an installed copy of the
+# package that may be stale.
+pkg_citation_meta <- function(path = pkg_path) {
+  desc <- desc::description$new(path)
+  meta <- as.list(desc$get(desc$fields()))
+  if (is.null(meta[["Date/Publication"]])) {
+    meta[["Date/Publication"]] <- Sys.time()
+  }
+  if (!is.null(meta$Title)) {
+    meta$Title <- trimws(gsub("\\s+", " ", meta$Title))
+  }
+  meta
+}
+
+has_pkg_citation_file <- function(path = pkg_path) {
+  file.exists(file.path(path, "inst", "CITATION"))
+}
+
+pkg_citation <- function(path = pkg_path) {
+  meta <- pkg_citation_meta(path)
+  if (has_pkg_citation_file(path)) {
+    utils::readCitationFile(file.path(path, "inst", "CITATION"), meta = meta)
+  } else {
+    utils::citation(auto = meta)
+  }
+}
+
+citation_source_note <- function(path = pkg_path) {
+  rel <- if (has_pkg_citation_file(path)) "inst/CITATION" else "DESCRIPTION"
+  gh_url <- pkg_github_url(path)
+  href <- if (is.na(gh_url)) rel else sprintf("%s/blob/HEAD/%s", gh_url, rel)
+  sprintf(
+    '<p><small class="dont-index">Source: <a href="%s"><code>%s</code></a></small></p>',
+    href,
+    rel
+  )
+}
+
+build_authors_qmd <- function(path = pkg_path) {
+  author_items <- vapply(
+    pkg_authors(path),
+    function(x) {
+      sprintf(
+        "<li><p><strong>%s</strong>. %s.</p></li>",
+        author_name(x),
+        author_roles_text(x)
+      )
+    },
+    character(1)
+  )
+
+  cit <- pkg_citation(path)
+
+  lines <- c(
+    '---',
+    'title: "Authors and Citation"',
+    '---',
+    "",
+    "## Authors",
+    "",
+    '<ul class="list-unstyled">',
+    author_items,
+    "</ul>",
+    "",
+    "## Citation {#citation}",
+    "",
+    citation_source_note(path),
+    "",
+    format(cit, style = "html"),
+    "",
+    "```bibtex",
+    format(cit, style = "bibtex"),
+    "```"
+  )
+
+  writeLines(lines, file.path(path, "altdoc", "authors.qmd"))
+  invisible()
 }
 
 # ---- altdoc/quarto_website.yml generation ----------------------------------
@@ -658,6 +745,7 @@ build_site <- function(path = pkg_path, ...) {
   writeLines(build_website_readme(original_readme, path = path), readme_path)
   update_quarto_settings(path)
   build_reference_qmd(path)
+  build_authors_qmd(path)
   altdoc::render_docs(path = path, ...)
 }
 
