@@ -735,104 +735,71 @@ update_quarto_settings <- function(path = pkg_path) {
   invisible(settings)
 }
 
-# ---- optional toy/demo API staging -----------------------------------------
+# ---- man-page Usage syntax highlighting -------------------------------------
 #
-# A package can keep a toy API used only to showcase the site - e.g.
-# altdown's own greet()/add() - out of its real R/, man/, and vignettes/,
-# and bring it in only for the duration of build_site(). Put the toy
-# functions' source in altdoc/demo/demo.R and any vignette that calls them
-# alongside it in altdoc/demo/ (named to match the target vignette file, e.g.
-# getting-started.qmd); if altdoc/demo/demo.R doesn't exist, none of this
-# runs.
-#
-# The vignette render happens in a separate process (quarto shells out to
-# Rscript per document), so `library(pkg)` there needs an actually installed
-# package that exports the toy functions - staging roundtrips through a real
-# install: copy the toy R file into R/ and matching man/*.Rd and
-# vignettes/*.qmd, add temporary export()s to NAMESPACE, then reinstall.
-# Everything staged is removed again afterward and the package reinstalled
-# clean, so none of it ships or lingers in the working tree.
+# `altdoc:::.rd2qmd()` re-wraps each Rd's Examples section into an
+# executable ```` ```{r} ```` fenced chunk, so Quarto syntax-highlights it and
+# gives it a copy button - but it leaves the Usage section alone. We make it into
+# a ``` r ``` block so it gets syntax highlight+copy.
+usage_block_pattern <- "^<pre><code class=['\"]language-[Rr]['\"]>"
 
-reinstall_pkg <- function(path = pkg_path) {
-  install.packages(path, repos = NULL, type = "source", quiet = TRUE)
-  invisible()
+# Undoes the HTML-escaping `tools::Rd2HTML()` applies
+unescape_rd2html <- function(x) {
+  x <- gsub("&lt;", "<", x, fixed = TRUE)
+  x <- gsub("&gt;", ">", x, fixed = TRUE)
+  x <- gsub("&quot;", "\"", x, fixed = TRUE)
+  x <- gsub("&#39;", "'", x, fixed = TRUE)
+  x <- gsub("\\$", "$", x, fixed = TRUE)
+  x <- gsub("&amp;", "&", x, fixed = TRUE) # must come last
+  x
 }
 
-stage_demo <- function(path = pkg_path) {
-  demo_r <- file.path(path, "altdoc", "demo", "demo.R")
-  if (!file.exists(demo_r)) {
+# Replaces the first raw Usage `<pre><code>` block in `lines` (a man/*.qmd's
+# content) with a fenced one. Returns NULL if there's no such block, so
+# callers can tell "nothing to do" apart from "already fenced".
+fence_usage_block <- function(lines) {
+  start <- grep(usage_block_pattern, lines)[1]
+  if (is.na(start)) {
     return(NULL)
   }
 
-  r_dest <- file.path(path, "R", "zzz-demo.R")
-  file.copy(demo_r, r_dest, overwrite = TRUE)
-
-  demo_src <- readLines(demo_r, warn = FALSE)
-  rd <- roxygen2::roc_proc_text(
-    roxygen2::rd_roclet(),
-    paste(demo_src, collapse = "\n")
-  )
-  man_dir <- file.path(path, "man")
-  rd_paths <- file.path(man_dir, names(rd))
-  for (nm in names(rd)) {
-    writeLines(format(rd[[nm]]), file.path(man_dir, nm))
-  }
-
-  aliases <- unlist(lapply(rd_paths, function(rd_file) {
-    parsed <- tools::parse_Rd(rd_file)
-    tags <- vapply(parsed, function(x) attr(x, "Rd_tag"), character(1))
-    vapply(
-      parsed[tags == "\\alias"],
-      function(x) as.character(x[[1]]),
-      character(1)
-    )
-  }))
-
-  namespace_path <- file.path(path, "NAMESPACE")
-  original_namespace <- readLines(namespace_path, warn = FALSE)
-  writeLines(
-    c(original_namespace, sprintf("export(%s)", aliases)),
-    namespace_path
-  )
-
-  demo_qmds <- Sys.glob(file.path(path, "altdoc", "demo", "*.qmd"))
-  vig_dir <- file.path(path, "vignettes")
-  vig_existed <- dir.exists(vig_dir)
-  qmd_paths <- character()
-  if (length(demo_qmds) > 0) {
-    if (!vig_existed) {
-      dir.create(vig_dir)
+  first <- sub(usage_block_pattern, "", lines[start])
+  if (grepl("</code></pre>$", first)) {
+    end <- start
+    code <- sub("</code></pre>$", "", first)
+  } else {
+    rest <- lines[seq(start + 1, length(lines))]
+    close_at <- which(trimws(rest) == "</code></pre>")[1]
+    if (is.na(close_at)) {
+      return(NULL)
     }
-    qmd_paths <- file.path(vig_dir, basename(demo_qmds))
-    file.copy(demo_qmds, qmd_paths, overwrite = TRUE)
+    end <- start + close_at
+    middle <- if (close_at > 1) rest[seq_len(close_at - 1)] else character()
+    code <- c(first, middle)
   }
 
-  reinstall_pkg(path)
-
-  list(
-    path = path,
-    r_dest = r_dest,
-    rd_paths = rd_paths,
-    qmd_paths = qmd_paths,
-    vig_dir = vig_dir,
-    vig_existed = vig_existed,
-    namespace_path = namespace_path,
-    original_namespace = original_namespace
-  )
+  before <- if (start > 1) lines[seq_len(start - 1)] else character()
+  after <- if (end < length(lines)) lines[seq(end + 1, length(lines))] else character()
+  c(before, "```r", unescape_rd2html(code), "```", after)
 }
 
-unstage_demo <- function(staged) {
-  if (is.null(staged)) {
+# Fences the Usage block in every rendered man/*.qmd, then re-renders just
+# the files that changed so the swap actually reaches `docs/`.
+fix_man_usage_blocks <- function(path = pkg_path) {
+  man_dir <- file.path(path, "_quarto", "man")
+  if (!dir.exists(man_dir)) {
     return(invisible())
   }
-  unlink(staged$r_dest)
-  unlink(staged$rd_paths)
-  unlink(staged$qmd_paths)
-  if (!staged$vig_existed && length(list.files(staged$vig_dir)) == 0) {
-    unlink(staged$vig_dir, recursive = TRUE)
+
+  for (f in fs::dir_ls(man_dir, regexp = "\\.qmd$")) {
+    lines <- readLines(f, warn = FALSE)
+    fenced <- fence_usage_block(lines)
+    if (is.null(fenced)) {
+      next
+    }
+    writeLines(fenced, f)
+    quarto::quarto_render(input = f, quiet = TRUE)
   }
-  writeLines(staged$original_namespace, staged$namespace_path)
-  reinstall_pkg(staged$path)
   invisible()
 }
 
@@ -848,9 +815,6 @@ render_readme_qmd <- function(path = pkg_path) {
 }
 
 build_site <- function(path = pkg_path, ...) {
-  staged <- stage_demo(path)
-  on.exit(unstage_demo(staged), add = TRUE)
-
   render_readme_qmd(path)
 
   readme_path <- file.path(path, "README.md")
@@ -862,6 +826,7 @@ build_site <- function(path = pkg_path, ...) {
   build_reference_qmd(path)
   build_authors_qmd(path)
   altdoc::render_docs(path = path, ...)
+  fix_man_usage_blocks(path)
 }
 
 if (identical(environment(), globalenv()) && sys.nframe() == 0) {

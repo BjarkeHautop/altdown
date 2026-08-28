@@ -270,6 +270,16 @@ code {
   background-color: mix($body-bg, $body-color, 92%);
 }
 
+// `tools::Rd2HTML()` (used by altdoc to render man pages) emits the Usage
+// section - and any other verbatim code in a topic's Rd - as plain
+// `<pre><code class="language-R">`. Quarto's own theme CSS un-styles those
+// on purpose, via `pre code:not(.sourceCode) { background-color: initial }`
+// (meant for raw `<pre>` blocks used as console/output text), which also strips the
+// background from these legitimate code blocks.
+pre code:not(.sourceCode) {
+  background-color: mix($body-bg, $body-color, 92%);
+}
+
 /* reference tables (man pages) ============================================== */
 
 table {
