@@ -19,12 +19,12 @@ website:
     left:
       - text: Get started
         file: vignettes/getting-started.qmd
+      - text: Reference
+        file: reference.qmd
       - text: Articles
         menu:
           - text: Technical details
             file: vignettes/articles/technical.qmd
-      - text: Reference
-        file: reference.qmd
       - text: Changelog
         file: $ALTDOC_NEWS
     right:
