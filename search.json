@@ -7,130 +7,32 @@
     "text": "Citation\nTo cite package ‘altdown’ in publications use:\n\nHautop Kristensen B (2026). altdown: A ‘pkgdown’-Style Theme for ‘altdoc’ Websites. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown."
   },
   {
-    "objectID": "man/use_altdown.html",
-    "href": "man/use_altdown.html",
+    "objectID": "man/greet.html",
+    "href": "man/greet.html",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "Copies altdown’s altdoc/ template (build-site.R, altdown.scss, quarto_website_static.yml) into &lt;path&gt;/altdoc/, and writes a starter altdoc/reference.yml listing every function currently documented in &lt;path&gt;/man/*.Rd, in one \"All functions\" section.\n\n\n\nuse_altdown(path = \".\", overwrite = FALSE)\n\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\noverwrite\n\n\nLogical. Overwrite files already present in &lt;path&gt;/altdoc/? Default FALSE.\n\n\n\n\n\n\nThe three template files are meant to be used as-is; re-run with overwrite = TRUE to pick up altdown updates (this will discard any local edits to them). reference.yml is only a starting point - edit it to group the reference index the way you’d like.\n\n\n\nInvisibly, the path to the created altdoc/ directory.\n\n\n\n\nlibrary(\"altdown\")\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n\n[1] \"altdown.scss\"              \"build-site.R\"             \n[3] \"quarto_website_static.yml\" \"reference.yml\"            \n\nunlink(pkg, recursive = TRUE)"
+    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If ‘TRUE’, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\nlibrary(\"altdown\")\n\ngreet(\"world\")\n\n[1] \"Hello, world!\"\n\ngreet(\"world\", loud = TRUE)\n\n[1] \"HELLO, WORLD!\""
   },
   {
-    "objectID": "man/use_altdown.html#set-up-altdowns-altdoc-template-in-a-package",
-    "href": "man/use_altdown.html#set-up-altdowns-altdoc-template-in-a-package",
+    "objectID": "man/greet.html#greet-someone",
+    "href": "man/greet.html#greet-someone",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "Copies altdown’s altdoc/ template (build-site.R, altdown.scss, quarto_website_static.yml) into &lt;path&gt;/altdoc/, and writes a starter altdoc/reference.yml listing every function currently documented in &lt;path&gt;/man/*.Rd, in one \"All functions\" section.\n\n\n\nuse_altdown(path = \".\", overwrite = FALSE)\n\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\noverwrite\n\n\nLogical. Overwrite files already present in &lt;path&gt;/altdoc/? Default FALSE.\n\n\n\n\n\n\nThe three template files are meant to be used as-is; re-run with overwrite = TRUE to pick up altdown updates (this will discard any local edits to them). reference.yml is only a starting point - edit it to group the reference index the way you’d like.\n\n\n\nInvisibly, the path to the created altdoc/ directory.\n\n\n\n\nlibrary(\"altdown\")\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n\n[1] \"altdown.scss\"              \"build-site.R\"             \n[3] \"quarto_website_static.yml\" \"reference.yml\"            \n\nunlink(pkg, recursive = TRUE)"
+    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If ‘TRUE’, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\nlibrary(\"altdown\")\n\ngreet(\"world\")\n\n[1] \"Hello, world!\"\n\ngreet(\"world\", loud = TRUE)\n\n[1] \"HELLO, WORLD!\""
   },
   {
-    "objectID": "LICENSE.html",
-    "href": "LICENSE.html",
-    "title": "MIT License",
-    "section": "",
-    "text": "MIT License\nCopyright (c) 2026 altdown authors\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-  },
-  {
-    "objectID": "demo/getting-started.html",
-    "href": "demo/getting-started.html",
-    "title": "Getting started with altdown",
-    "section": "",
-    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
-  },
-  {
-    "objectID": "demo/getting-started.html#saying-hello",
-    "href": "demo/getting-started.html#saying-hello",
-    "title": "Getting started with altdown",
-    "section": "Saying hello",
-    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
-  },
-  {
-    "objectID": "demo/getting-started.html#adding-numbers",
-    "href": "demo/getting-started.html#adding-numbers",
-    "title": "Getting started with altdown",
-    "section": "Adding numbers",
-    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
-  },
-  {
-    "objectID": "NEWS.html",
-    "href": "NEWS.html",
+    "objectID": "man/add.html",
+    "href": "man/add.html",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "altdown 0.0.0.9000\n\nInitial release."
+    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of ‘x’ and ‘y’.\n\n\n\n\nlibrary(\"altdown\")\n\nadd(1, 2)\n\n[1] 3"
   },
   {
-    "objectID": "vignettes/getting-started.html",
-    "href": "vignettes/getting-started.html",
-    "title": "Getting started with altdown",
+    "objectID": "man/add.html#add-two-numbers",
+    "href": "man/add.html#add-two-numbers",
+    "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
-  },
-  {
-    "objectID": "vignettes/getting-started.html#saying-hello",
-    "href": "vignettes/getting-started.html#saying-hello",
-    "title": "Getting started with altdown",
-    "section": "Saying hello",
-    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
-  },
-  {
-    "objectID": "vignettes/getting-started.html#adding-numbers",
-    "href": "vignettes/getting-started.html#adding-numbers",
-    "title": "Getting started with altdown",
-    "section": "Adding numbers",
-    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
-  },
-  {
-    "objectID": "vignettes/articles/technical.html",
-    "href": "vignettes/articles/technical.html",
-    "title": "Technical details",
-    "section": "",
-    "text": "This page explains how the site is put together. It is a Quarto website built with altdoc, with some extra styling and JavaScript to make it look like a pkgdown (Bootstrap 5) site.\nHere is an overview of the customization implemented:"
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#why-a-pre-processing-script",
-    "href": "vignettes/articles/technical.html#why-a-pre-processing-script",
-    "title": "Technical details",
-    "section": "Why a pre-processing script?",
-    "text": "Why a pre-processing script?\nFor a Quarto backend, the intended approach is to modify the source files with a script and then call altdoc::render_docs() yourself (see altdoc’s customization vignette).\nThat is what is done in altdoc/build-site.R. It does three main things, explained in details below:\n\nThe home page\naltdoc always uses README.md as the home page. The script reads it, makes the necessary changes, writes the modified version temporarily, and restores the original when it is done. If you use a README.qmd, the script renders it to README.md, via quarto::quarto_render(readme_qmd, output_format = \"gfm\").\nThese changes also add a .column-margin sidebar, matching pkgdown’s layout, and move badges into it automatically.\n\n\nThe reference index\naltdoc does not currently have a _pkgdown.yml-style reference: field for controlling how the function index is grouped and ordered (etiennebacher/altdoc#326).\nSo this package has its own altdoc/reference.yml, using the same basic structure as pkgdown’s reference: field. The build script uses it together with the \\name{} and \\alias{} entries in man/*.Rd to generate altdoc/reference.qmd.\n\n\nThe footer\naltdoc/quarto_website.yml is generated from altdoc/quarto_website_static.yml. As part of this, the build script replaces $ALTDOC_DEVELOPED_BY with the “Developed by .” text used by pkgdown, based on Authors@R."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#matching-the-pkgdown-look",
-    "href": "vignettes/articles/technical.html#matching-the-pkgdown-look",
-    "title": "Technical details",
-    "section": "Matching the pkgdown look",
-    "text": "Matching the pkgdown look\naltdown.scss is a Quarto theme layer:\ntheme: [default, altdown.scss]\nIt is based on pkgdown’s own pkgdown.scss, but the selectors have been adapted to Quarto’s HTML.\nIt does the following:\n\nLimiting the navbar to a centered, fixed-width container.\nPutting the navbar items (title, links, search, GitHub icon) in the same order as pkgdown.\nStyling the margin sidebar and reference index (&lt;dl class=\"ref-index\"&gt;) to look like their pkgdown counterparts.\n\nThere is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefor, the generated quarto_website.yml includes a small include-after-body script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "altdown",
-    "section": "",
-    "text": "Browse source code\nReport a bug\n\n\n\nFull license\nMIT + file LICENSE\n\n\n\nContributing guide\n\n\n\nCiting altdown\n\n\n\nBjarke Hautop Kristensen\nAuthor, maintainer"
-  },
-  {
-    "objectID": "index.html#installation",
-    "href": "index.html#installation",
-    "title": "altdown",
-    "section": "Installation",
-    "text": "Installation\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/altdown\")"
-  },
-  {
-    "objectID": "index.html#usage",
-    "href": "index.html#usage",
-    "title": "altdown",
-    "section": "Usage",
-    "text": "Usage\nBrowse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis copies altdoc/build-site.R, altdoc/altdown.scss, and altdoc/quarto_website_static.yml into your package as-is, and writes a starter altdoc/reference.yml listing your package’s current functions in one section. From there:\n\nEdit reference.yml to group the functions however you’d like.\nAdjust the navbar links/vignettes in quarto_website_static.yml if needed (e.g. add an Articles menu once you have one).\n\nThen build the site:\nsource(\"altdoc/build-site.R\")\nbuild_site()\nA preview can then be viewed using altdoc::preview_docs().\nRe-run altdown::use_altdown(overwrite = TRUE) later to pick up altdown updates to the three template files."
-  },
-  {
-    "objectID": "index.html#see-also",
-    "href": "index.html#see-also",
-    "title": "altdown",
-    "section": "See also",
-    "text": "See also\nreftip adds hover tooltips to the function reference links that altdoc creates in a rendered R code block. alttip shows an example site using altdown and reftip together."
-  },
-  {
-    "objectID": "index.html#why",
-    "href": "index.html#why",
-    "title": "altdown",
-    "section": "Why?",
-    "text": "Why?\npkgdown supports Quarto (see vignette(\"quarto\")), but the way it’s implemented is hard to maintain and lags behind in features. For instance, callout blocks, code annotations, and tabsets don’t work correctly. Callout blocks are what I personally wanted most, since I’ve grown fond of them.\nThis happens because pkgdown hardcodes theme: \"none\" and minimal: TRUE so it can supply its own CSS instead of Quarto’s, which strips the callout, annotation, and tabset styling. Callouts, for instance, get converted to plain blockquotes.\nThe fix would be patching pkgdown itself, but it’s a bit more involved than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown."
+    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of ‘x’ and ‘y’.\n\n\n\n\nlibrary(\"altdown\")\n\nadd(1, 2)\n\n[1] 3"
   },
   {
     "objectID": "reference.html",
@@ -154,31 +56,150 @@
     "text": "Toy demo functions\nNot part of the real package API. Injected doing site build for showcase.\n\n\ngreet()\n\n\nGreet someone\n\n\nadd()\n\n\nAdd two numbers"
   },
   {
-    "objectID": "man/add.html",
-    "href": "man/add.html",
-    "title": "altdown 0.0.0.9000",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "altdown",
     "section": "",
-    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of ‘x’ and ‘y’.\n\n\n\n\nlibrary(\"altdown\")\n\nadd(1, 2)\n\n[1] 3"
+    "text": "Browse source code\nReport a bug\n\n\n\nFull license\nMIT + file LICENSE\n\n\n\nContributing guide\n\n\n\nCiting altdown\n\n\n\nBjarke Hautop Kristensen\nAuthor, maintainer"
   },
   {
-    "objectID": "man/add.html#add-two-numbers",
-    "href": "man/add.html#add-two-numbers",
-    "title": "altdown 0.0.0.9000",
-    "section": "",
-    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of ‘x’ and ‘y’.\n\n\n\n\nlibrary(\"altdown\")\n\nadd(1, 2)\n\n[1] 3"
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "altdown",
+    "section": "Installation",
+    "text": "Installation\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/altdown\")"
   },
   {
-    "objectID": "man/greet.html",
-    "href": "man/greet.html",
-    "title": "altdown 0.0.0.9000",
-    "section": "",
-    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If ‘TRUE’, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\nlibrary(\"altdown\")\n\ngreet(\"world\")\n\n[1] \"Hello, world!\"\n\ngreet(\"world\", loud = TRUE)\n\n[1] \"HELLO, WORLD!\""
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "altdown",
+    "section": "Usage",
+    "text": "Usage\nBrowse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis copies altdoc/build-site.R, altdoc/altdown.scss, and altdoc/quarto_website_static.yml into your package as-is, and writes a starter altdoc/reference.yml listing your package’s current functions in one section. From there:\n\nEdit reference.yml to group the functions however you’d like.\n\nThen build the site:\nsource(\"altdoc/build-site.R\")\nbuild_site()\nA preview can then be viewed using altdoc::preview_docs().\nRe-run altdown::use_altdown(overwrite = TRUE) later to pick up altdown updates to the three template files."
   },
   {
-    "objectID": "man/greet.html#greet-someone",
-    "href": "man/greet.html#greet-someone",
+    "objectID": "index.html#see-also",
+    "href": "index.html#see-also",
+    "title": "altdown",
+    "section": "See also",
+    "text": "See also\nreftip adds hover tooltips to the function reference links that altdoc creates in a rendered R code block. alttip shows an example site using altdown and reftip together."
+  },
+  {
+    "objectID": "index.html#why",
+    "href": "index.html#why",
+    "title": "altdown",
+    "section": "Why?",
+    "text": "Why?\npkgdown supports Quarto (see vignette(\"quarto\")), but the way it’s implemented is hard to maintain and lags behind in features. For instance, callout blocks, code annotations, and tabsets don’t work correctly. Callout blocks are what I personally wanted most, since I’ve grown fond of them.\nThis happens because pkgdown hardcodes theme: \"none\" and minimal: TRUE so it can supply its own CSS instead of Quarto’s, which strips the callout, annotation, and tabset styling. Callouts, for instance, get converted to plain blockquotes.\nThe fix would be patching pkgdown itself, but it’s a bit more involved than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html",
+    "href": "vignettes/articles/technical.html",
+    "title": "Technical details",
+    "section": "",
+    "text": "This page explains how the site is put together. It is a Quarto website built with altdoc, with some extra styling and JavaScript to make it look like a pkgdown (Bootstrap 5) site.\nHere is an overview of the customization implemented:"
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#why-a-pre-processing-script",
+    "href": "vignettes/articles/technical.html#why-a-pre-processing-script",
+    "title": "Technical details",
+    "section": "Why a pre-processing script?",
+    "text": "Why a pre-processing script?\nFor a Quarto backend, the intended approach is to modify the source files with a script and then call altdoc::render_docs() yourself (see altdoc’s customization vignette).\nThat is what is done in altdoc/build-site.R. It does three main things, explained in details below:\n\nThe home page\naltdoc always uses README.md as the home page. The script reads it, makes the necessary changes, writes the modified version temporarily, and restores the original when it is done. If you use a README.qmd, the script renders it to README.md, via quarto::quarto_render(readme_qmd, output_format = \"gfm\").\nThese changes also add a .column-margin sidebar, matching pkgdown’s layout, and move badges into it automatically.\n\n\nThe reference index\naltdoc does not currently have a _pkgdown.yml-style reference: field for controlling how the function index is grouped and ordered (etiennebacher/altdoc#326).\nSo this package has its own altdoc/reference.yml, using the same basic structure as pkgdown’s reference: field. The build script uses it together with the \\name{} and \\alias{} entries in man/*.Rd to generate altdoc/reference.qmd.\n\n\nThe footer\naltdoc/quarto_website.yml is generated from altdoc/quarto_website_static.yml. As part of this, the build script replaces $ALTDOC_DEVELOPED_BY with the “Developed by .” text used by pkgdown, based on Authors@R."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#matching-the-pkgdown-look",
+    "href": "vignettes/articles/technical.html#matching-the-pkgdown-look",
+    "title": "Technical details",
+    "section": "Matching the pkgdown look",
+    "text": "Matching the pkgdown look\naltdown.scss is a Quarto theme layer:\ntheme: [default, altdown.scss]\nIt is based on pkgdown’s own pkgdown.scss, but the selectors have been adapted to Quarto’s HTML.\nIt does the following:\n\nLimiting the navbar to a centered, fixed-width container.\nPutting the navbar items (title, links, search, GitHub icon) in the same order as pkgdown.\nStyling the margin sidebar and reference index (&lt;dl class=\"ref-index\"&gt;) to look like their pkgdown counterparts.\n\nThere is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefor, the generated quarto_website.yml includes a small include-after-body script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly."
+  },
+  {
+    "objectID": "vignettes/getting-started.html",
+    "href": "vignettes/getting-started.html",
+    "title": "Getting started with altdown",
+    "section": "",
+    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
+  },
+  {
+    "objectID": "vignettes/getting-started.html#saying-hello",
+    "href": "vignettes/getting-started.html#saying-hello",
+    "title": "Getting started with altdown",
+    "section": "Saying hello",
+    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
+  },
+  {
+    "objectID": "vignettes/getting-started.html#adding-numbers",
+    "href": "vignettes/getting-started.html#adding-numbers",
+    "title": "Getting started with altdown",
+    "section": "Adding numbers",
+    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
+  },
+  {
+    "objectID": "NEWS.html",
+    "href": "NEWS.html",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If ‘TRUE’, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\nlibrary(\"altdown\")\n\ngreet(\"world\")\n\n[1] \"Hello, world!\"\n\ngreet(\"world\", loud = TRUE)\n\n[1] \"HELLO, WORLD!\""
+    "text": "altdown 0.0.0.9000\n\nInitial release."
+  },
+  {
+    "objectID": "demo/getting-started.html",
+    "href": "demo/getting-started.html",
+    "title": "Getting started with altdown",
+    "section": "",
+    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
+  },
+  {
+    "objectID": "demo/getting-started.html#saying-hello",
+    "href": "demo/getting-started.html#saying-hello",
+    "title": "Getting started with altdown",
+    "section": "Saying hello",
+    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
+  },
+  {
+    "objectID": "demo/getting-started.html#adding-numbers",
+    "href": "demo/getting-started.html#adding-numbers",
+    "title": "Getting started with altdown",
+    "section": "Adding numbers",
+    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
+  },
+  {
+    "objectID": "LICENSE.html",
+    "href": "LICENSE.html",
+    "title": "MIT License",
+    "section": "",
+    "text": "MIT License\nCopyright (c) 2026 altdown authors\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  },
+  {
+    "objectID": "man/use_altdown.html",
+    "href": "man/use_altdown.html",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "Copies altdown’s altdoc/ template (build-site.R, altdown.scss, quarto_website_static.yml) into &lt;path&gt;/altdoc/, and writes a starter altdoc/reference.yml listing every function currently documented in &lt;path&gt;/man/*.Rd, in one \"All functions\" section. Also adds the .gitignore/.Rbuildignore entries the build needs (see Details) if they’re not already there.\n\n\n\nuse_altdown(path = \".\", overwrite = FALSE)\n\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\noverwrite\n\n\nLogical. Overwrite the three template files (build-site.R, altdown.scss, quarto_website_static.yml) if already present in &lt;path&gt;/altdoc/? Default FALSE.\n\n\n\n\n\n\nuse_altdown() adds the following lines to .gitignore and .Rbuildignore (only the ones not already present in each file):\n\n# .gitignore\naltdoc/freeze.rds\naltdoc/pkgdown.yml\n_quarto/*\n!_quarto/_freeze/\n\n# .Rbuildignore\n^docs\\$\n^altdoc\\$\n^_quarto\\$\n\n\nThese mirror what altdoc::setup_docs(tool = “quarto_website”) itself adds, plus altdoc/pkgdown.yml: altdoc::render_docs() rewrites that file with a fresh last_built timestamp on every build.\n\n\n\nInvisibly, the path to the created altdoc/ directory.\n\n\n\n\nlibrary(\"altdown\")\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n\n[1] \"altdown.scss\"              \"build-site.R\"             \n[3] \"quarto_website_static.yml\" \"reference.yml\"            \n\nunlink(pkg, recursive = TRUE)"
+  },
+  {
+    "objectID": "man/use_altdown.html#set-up-altdowns-altdoc-template-in-a-package",
+    "href": "man/use_altdown.html#set-up-altdowns-altdoc-template-in-a-package",
+    "title": "altdown 0.0.0.9000",
+    "section": "",
+    "text": "Copies altdown’s altdoc/ template (build-site.R, altdown.scss, quarto_website_static.yml) into &lt;path&gt;/altdoc/, and writes a starter altdoc/reference.yml listing every function currently documented in &lt;path&gt;/man/*.Rd, in one \"All functions\" section. Also adds the .gitignore/.Rbuildignore entries the build needs (see Details) if they’re not already there.\n\n\n\nuse_altdown(path = \".\", overwrite = FALSE)\n\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\noverwrite\n\n\nLogical. Overwrite the three template files (build-site.R, altdown.scss, quarto_website_static.yml) if already present in &lt;path&gt;/altdoc/? Default FALSE.\n\n\n\n\n\n\nuse_altdown() adds the following lines to .gitignore and .Rbuildignore (only the ones not already present in each file):\n\n# .gitignore\naltdoc/freeze.rds\naltdoc/pkgdown.yml\n_quarto/*\n!_quarto/_freeze/\n\n# .Rbuildignore\n^docs\\$\n^altdoc\\$\n^_quarto\\$\n\n\nThese mirror what altdoc::setup_docs(tool = “quarto_website”) itself adds, plus altdoc/pkgdown.yml: altdoc::render_docs() rewrites that file with a fresh last_built timestamp on every build.\n\n\n\nInvisibly, the path to the created altdoc/ directory.\n\n\n\n\nlibrary(\"altdown\")\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n\n[1] \"altdown.scss\"              \"build-site.R\"             \n[3] \"quarto_website_static.yml\" \"reference.yml\"            \n\nunlink(pkg, recursive = TRUE)"
+  },
+  {
+    "objectID": "authors.html",
+    "href": "authors.html",
+    "title": "Authors and Citation",
+    "section": "",
+    "text": "Bjarke Hautop Kristensen. Author, maintainer."
+  },
+  {
+    "objectID": "authors.html#authors",
+    "href": "authors.html#authors",
+    "title": "Authors and Citation",
+    "section": "",
+    "text": "Bjarke Hautop Kristensen. Author, maintainer."
+  },
+  {
+    "objectID": "authors.html#citation",
+    "href": "authors.html#citation",
+    "title": "Authors and Citation",
+    "section": "Citation",
+    "text": "Citation\n\nSource: DESCRIPTION\n\n\nHautop Kristensen B (2026). altdown: A ‘pkgdown’-Style Theme for ‘altdoc’ Websites. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown.\n\n@Manual{,\n  title = {altdown: A 'pkgdown'-Style Theme for 'altdoc' Websites},\n  author = {Bjarke {Hautop Kristensen}},\n  year = {2026},\n  note = {R package version 0.0.0.9000},\n  url = {https://github.com/bjarkehautop/altdown},\n}"
   }
 ]

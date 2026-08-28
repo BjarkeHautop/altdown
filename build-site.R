@@ -217,7 +217,10 @@ data_sidebar_community <- function(path = pkg_path) {
 
 data_sidebar_citation <- function(path = pkg_path) {
   pkg_name <- desc::desc_get_field("Package", file = path)
-  sidebar_section("Citation", sprintf("[Citing %s](CITATION.html)", pkg_name))
+  sidebar_section(
+    "Citation",
+    sprintf("[Citing %s](authors.html#citation)", pkg_name)
+  )
 }
 
 data_sidebar_authors <- function(path = pkg_path, roles = default_roles()) {
@@ -237,6 +240,10 @@ data_sidebar_authors <- function(path = pkg_path, roles = default_roles()) {
     },
     character(1)
   )
+
+  if (length(pkg_authors(path)) != length(authors)) {
+    bullets <- c(bullets, "[More about authors...](authors.html)")
+  }
 
   sidebar_section("Developers", bullets)
 }
@@ -412,7 +419,176 @@ build_reference_qmd <- function(path = pkg_path) {
   writeLines(lines, out_path)
 }
 
+# Built straight from the source tree rather
+# than `utils::citation(pkg_name)`, which reads an installed copy of the
+# package that may be stale.
+pkg_citation_meta <- function(path = pkg_path) {
+  desc <- desc::description$new(path)
+  meta <- as.list(desc$get(desc$fields()))
+  if (is.null(meta[["Date/Publication"]])) {
+    meta[["Date/Publication"]] <- Sys.time()
+  }
+  if (!is.null(meta$Title)) {
+    meta$Title <- trimws(gsub("\\s+", " ", meta$Title))
+  }
+  meta
+}
+
+has_pkg_citation_file <- function(path = pkg_path) {
+  file.exists(file.path(path, "inst", "CITATION"))
+}
+
+pkg_citation <- function(path = pkg_path) {
+  meta <- pkg_citation_meta(path)
+  if (has_pkg_citation_file(path)) {
+    utils::readCitationFile(file.path(path, "inst", "CITATION"), meta = meta)
+  } else {
+    utils::citation(auto = meta)
+  }
+}
+
+citation_source_note <- function(path = pkg_path) {
+  rel <- if (has_pkg_citation_file(path)) "inst/CITATION" else "DESCRIPTION"
+  gh_url <- pkg_github_url(path)
+  href <- if (is.na(gh_url)) rel else sprintf("%s/blob/HEAD/%s", gh_url, rel)
+  sprintf(
+    '<p><small class="dont-index">Source: <a href="%s"><code>%s</code></a></small></p>',
+    href,
+    rel
+  )
+}
+
+build_authors_qmd <- function(path = pkg_path) {
+  author_items <- vapply(
+    pkg_authors(path),
+    function(x) {
+      sprintf(
+        "<li><p><strong>%s</strong>. %s.</p></li>",
+        author_name(x),
+        author_roles_text(x)
+      )
+    },
+    character(1)
+  )
+
+  cit <- pkg_citation(path)
+
+  lines <- c(
+    '---',
+    'title: "Authors and Citation"',
+    '---',
+    "",
+    "## Authors",
+    "",
+    '<ul class="list-unstyled">',
+    author_items,
+    "</ul>",
+    "",
+    "## Citation {#citation}",
+    "",
+    citation_source_note(path),
+    "",
+    format(cit, style = "html"),
+    "",
+    "```bibtex",
+    format(cit, style = "bibtex"),
+    "```"
+  )
+
+  writeLines(lines, file.path(path, "altdoc", "authors.qmd"))
+  invisible()
+}
+
 # ---- altdoc/quarto_website.yml generation ----------------------------------
+vignette_title <- function(qmd_path) {
+  fallback <- fs::path_ext_remove(basename(qmd_path))
+
+  lines <- readLines(qmd_path, warn = FALSE, n = 40)
+  fence <- which(lines == "---")
+  if (length(fence) < 2) {
+    return(fallback)
+  }
+
+  header <- lines[(fence[1] + 1):(fence[2] - 1)]
+  title_line <- grep("^title:", header, value = TRUE)
+  if (length(title_line) == 0) {
+    return(fallback)
+  }
+
+  gsub('^title:\\s*"?|"?\\s*$', "", trimws(title_line[1]))
+}
+
+# The single top-level *.qmd in vignettes/ becomes the "Get started" page.
+# With more than one, the one named after the package wins;
+# otherwise you'll need to disambiguate by hand.
+find_getting_started_vignette <- function(path = pkg_path) {
+  vig_dir <- file.path(path, "vignettes")
+  if (!dir.exists(vig_dir)) {
+    cli::cli_abort(
+      "No {.path vignettes/} directory found - add a top-level *.qmd vignette to use as the \"Get started\" page."
+    )
+  }
+
+  candidates <- fs::dir_ls(vig_dir, regexp = "\\.qmd$", recurse = FALSE)
+  if (length(candidates) == 0) {
+    cli::cli_abort(
+      "No top-level *.qmd file found in {.path vignettes/} to use as the \"Get started\" page."
+    )
+  }
+  if (length(candidates) == 1) {
+    return(candidates[[1]])
+  }
+
+  pkg_name <- desc::desc_get_field("Package", file = path)
+  named <- candidates[fs::path_ext_remove(basename(candidates)) == pkg_name]
+  if (length(named) == 1) {
+    return(named[[1]])
+  }
+
+  cli::cli_abort(c(
+    "Found multiple top-level vignettes in {.path vignettes/}: {.val {basename(candidates)}}.",
+    "i" = "Name the one that should be the \"Get started\" page {.val {paste0(pkg_name, '.qmd')}}, or edit the navbar in altdoc/quarto_website_static.yml by hand."
+  ))
+}
+
+# Every *.qmd under vignettes/articles/ becomes an "Articles" entry.
+find_articles <- function(path = pkg_path) {
+  articles_dir <- file.path(path, "vignettes", "articles")
+  if (!dir.exists(articles_dir)) {
+    return(character())
+  }
+  sort(fs::dir_ls(articles_dir, regexp = "\\.qmd$"))
+}
+
+build_articles_nav <- function(path = pkg_path, indent = "      ") {
+  articles <- find_articles(path)
+  if (length(articles) == 0) {
+    return(character())
+  }
+
+  titles <- vapply(articles, vignette_title, character(1))
+  rel <- file.path("vignettes/articles", basename(articles))
+
+  item_lines <- unlist(lapply(seq_along(articles), function(i) {
+    c(
+      sprintf("%s    - text: %s", indent, titles[i]),
+      sprintf("%s      file: %s", indent, rel[i])
+    )
+  }))
+
+  c(sprintf("%s- text: Articles", indent), sprintf("%s  menu:", indent), item_lines)
+}
+
+replace_placeholder_line <- function(lines, placeholder, replacement) {
+  idx <- which(trimws(lines) == placeholder)
+  if (length(idx) == 0) {
+    return(lines)
+  }
+  idx <- idx[1]
+  before <- if (idx > 1) lines[seq_len(idx - 1)] else character()
+  after <- if (idx < length(lines)) lines[(idx + 1):length(lines)] else character()
+  c(before, replacement, after)
+}
 
 update_quarto_settings <- function(path = pkg_path) {
   static_path <- file.path(path, "altdoc", "quarto_website_static.yml")
@@ -425,6 +601,21 @@ update_quarto_settings <- function(path = pkg_path) {
     settings,
     fixed = TRUE
   )
+
+  getting_started <- find_getting_started_vignette(path)
+  settings <- gsub(
+    "$ALTDOC_GETTING_STARTED",
+    file.path("vignettes", basename(getting_started)),
+    settings,
+    fixed = TRUE
+  )
+
+  settings <- replace_placeholder_line(
+    settings,
+    "$ALTDOC_ARTICLES_NAV",
+    build_articles_nav(path)
+  )
+
   writeLines(settings, out_path)
   invisible(settings)
 }
@@ -554,6 +745,7 @@ build_site <- function(path = pkg_path, ...) {
   writeLines(build_website_readme(original_readme, path = path), readme_path)
   update_quarto_settings(path)
   build_reference_qmd(path)
+  build_authors_qmd(path)
   altdoc::render_docs(path = path, ...)
 }
 

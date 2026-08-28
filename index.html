@@ -391,7 +391,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="citation" class="level4">
 <h4 class="anchored" data-anchor-id="citation">Citation</h4>
-<p><a href="CITATION.html">Citing altdown</a></p>
+<p><a href="authors.html#citation">Citing altdown</a></p>
 </section>
 <section id="developers" class="level4">
 <h4 class="anchored" data-anchor-id="developers">Developers</h4>
@@ -400,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="dev-status" class="level4">
 <h4 class="anchored" data-anchor-id="dev-status">Dev status</h4>
-<p><a href="https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml/badge.svg" class="img-fluid"></a></p>
+<p><a href="https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml/badge.svg" class="img-fluid"></a> <a href="https://codecov.io/gh/bjarkehautop/altdown"><img src="https://codecov.io/gh/bjarkehautop/altdown/graph/badge.svg" class="img-fluid"></a></p>
 </section>
 </div></div><section id="altdown" class="level1">
 <h1>altdown</h1>
@@ -417,7 +417,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This copies <code>altdoc/build-site.R</code>, <code>altdoc/altdown.scss</code>, and <code>altdoc/quarto_website_static.yml</code> into your package as-is, and writes a starter <code>altdoc/reference.yml</code> listing your package’s current functions in one section. From there:</p>
 <ul>
 <li>Edit <code>reference.yml</code> to group the functions however you’d like.</li>
-<li>Adjust the navbar links/vignettes in <code>quarto_website_static.yml</code> if needed (e.g.&nbsp;add an <code>Articles</code> menu once you have one).</li>
 </ul>
 <p>Then build the site:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"altdoc/build-site.R"</span>)</span>
