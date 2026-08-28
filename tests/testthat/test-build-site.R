@@ -245,6 +245,134 @@ test_that("build_authors_qmd() prefers an inst/CITATION file and links the Sourc
   )))
 })
 
+write_rd <- function(dir, name, alias = name, title = name, concept = NULL, keyword = NULL) {
+  lines <- c(
+    sprintf("\\name{%s}", name),
+    sprintf("\\alias{%s}", alias),
+    sprintf("\\title{%s}", title),
+    if (!is.null(concept)) sprintf("\\concept{%s}", concept),
+    if (!is.null(keyword)) sprintf("\\keyword{%s}", keyword),
+    "\\description{d}"
+  )
+  writeLines(lines, file.path(dir, "man", paste0(name, ".Rd")))
+}
+
+new_pkg_with_man <- function(.local_envir = parent.frame()) {
+  dir <- withr::local_tempdir(.local_envir = .local_envir)
+  writeLines(
+    c(
+      "Package: examplepkg",
+      "Authors@R: person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\"))"
+    ),
+    file.path(dir, "DESCRIPTION")
+  )
+  dir.create(file.path(dir, "man"))
+  dir
+}
+
+test_that("rd_topics() reads alias/title/concept/keyword tags from every man/*.Rd", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo_bar", title = "Foo bar", concept = "strings", keyword = "internal")
+
+  topics <- fns$rd_topics(dir)
+  expect_length(topics, 1)
+  expect_identical(topics[[1]]$alias, "foo_bar")
+  expect_identical(topics[[1]]$title, "Foo bar")
+  expect_identical(topics[[1]]$concepts, "strings")
+  expect_identical(topics[[1]]$keywords, "internal")
+})
+
+test_that("build_reference_qmd() supports starts_with()/-exclude/has_concept()/has_keyword() selectors", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- new_pkg_with_man()
+  write_rd(dir, "str_foo", concept = "strings")
+  write_rd(dir, "str_bar", concept = "strings")
+  write_rd(dir, "num_add", keyword = "internal")
+
+  dir.create(file.path(dir, "altdoc"))
+  writeLines(
+    c(
+      "reference:",
+      "  - title: Strings",
+      "    contents:",
+      '      - starts_with("str_")',
+      '      - -has_keyword("internal")',
+      "  - title: Internal",
+      "    contents:",
+      '      - has_keyword("internal")'
+    ),
+    file.path(dir, "altdoc", "reference.yml")
+  )
+
+  fns$build_reference_qmd(dir)
+  lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
+
+  expect_true(any(grepl("str_foo()", lines, fixed = TRUE)))
+  expect_true(any(grepl("str_bar()", lines, fixed = TRUE)))
+  expect_true(any(grepl("num_add()", lines, fixed = TRUE)))
+
+  strings_start <- which(grepl("^## Strings$", lines))
+  internal_start <- which(grepl("^## Internal$", lines))
+  strings_block <- lines[strings_start:(internal_start - 1)]
+  expect_false(any(grepl("num_add()", strings_block, fixed = TRUE)))
+})
+
+test_that("build_reference_qmd() warns about topics missing from reference.yml", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- new_pkg_with_man()
+  write_rd(dir, "listed_fun")
+  write_rd(dir, "orphan_fun")
+
+  dir.create(file.path(dir, "altdoc"))
+  writeLines(
+    c("reference:", "  - title: All", "    contents:", "      - listed_fun"),
+    file.path(dir, "altdoc", "reference.yml")
+  )
+
+  expect_warning(fns$build_reference_qmd(dir), "orphan_fun")
+})
+
+test_that("build_reference_qmd() accepts a non-syntactic alias like a *-package alias verbatim", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- new_pkg_with_man()
+  write_rd(dir, "examplepkg-package", alias = "examplepkg-package", title = "examplepkg")
+
+  dir.create(file.path(dir, "altdoc"))
+  writeLines(
+    c("reference:", "  - title: All", "    contents:", "      - examplepkg-package"),
+    file.path(dir, "altdoc", "reference.yml")
+  )
+
+  fns$build_reference_qmd(dir)
+  lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
+  expect_true(any(grepl("examplepkg-package()", lines, fixed = TRUE)))
+})
+
+test_that("build_reference_qmd() errors on a selector matching no topic", {
+  skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
+  fns <- build_site_env
+
+  dir <- new_pkg_with_man()
+  write_rd(dir, "listed_fun")
+
+  dir.create(file.path(dir, "altdoc"))
+  writeLines(
+    c("reference:", "  - title: All", "    contents:", "      - not_a_real_function"),
+    file.path(dir, "altdoc", "reference.yml")
+  )
+
+  expect_error(fns$build_reference_qmd(dir), "known")
+})
+
 test_that("update_quarto_settings() fills in the getting-started and articles placeholders", {
   skip_if(is.null(build_site_env), "altdoc/build-site.R not present (not a dev checkout)")
   fns <- build_site_env

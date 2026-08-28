@@ -338,34 +338,146 @@ build_website_readme <- function(lines, path = pkg_path) {
 # function index (see https://github.com/etiennebacher/altdoc/issues/326),
 # so we build one ourselves: `altdoc/reference.yml` uses the same shape as
 # pkgdown's `_pkgdown.yml` `reference:` field, and this reads it plus each
-# man/*.Rd's \title{} to regenerate `altdoc/reference.qmd` (same pattern as
-# `update_quarto_settings()` below, which regenerates
-# `altdoc/quarto_website.yml` from a source file before every build).
+# man/*.Rd's \title{}/\alias{}/\concept{}/\keyword{} to regenerate
+# `altdoc/reference.qmd` (same pattern as `update_quarto_settings()` below,
+# which regenerates `altdoc/quarto_website.yml` from a source file before
+# every build).
+#
+# `contents:` entries support the same selectors pkgdown does: a plain alias
+# name, `starts_with()`/`ends_with()`/`contains()`/`matches()` matched
+# against every \alias{}, `has_concept()`/`has_keyword()` matched against
+# \concept{}/\keyword{} tags, `-` to exclude, and `c()` to combine several
+# selectors on one line.
 
-# Maps every \name{}/\alias{} in man/*.Rd to that Rd file's basename (the
-# name .render_one_man() uses for the rendered man/<basename>.qmd target)
-# and its \title{}, so reference.yml entries can refer to a function by any
-# of its aliases, not just its Rd filename.
-rd_topic_index <- function(path = pkg_path) {
+# Reads every man/*.Rd into a topic record - basename (the name
+# .render_one_man() uses for the rendered man/<basename>.qmd target),
+# \title{}, and every \alias{}/\concept{}/\keyword{} tag - so reference.yml
+# entries can select a function by any of its aliases, and selector
+# functions have something to match against.
+rd_topics <- function(path = pkg_path) {
   rd_files <- fs::dir_ls(file.path(path, "man"), regexp = "\\.Rd$")
 
-  index <- list()
-  for (rd_file in rd_files) {
+  lapply(rd_files, function(rd_file) {
     rd <- tools::parse_Rd(rd_file)
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-    aliases <- vapply(
-      rd[tags == "\\alias"],
-      function(x) as.character(x[[1]]),
-      character(1)
-    )
-    title <- trimws(paste(unlist(rd[tags == "\\title"]), collapse = ""))
-    basename <- fs::path_ext_remove(basename(rd_file))
+    tag_text <- function(tag) {
+      trimws(vapply(rd[tags == tag], function(x) as.character(x[[1]]), character(1)))
+    }
 
-    for (alias in aliases) {
-      index[[alias]] <- list(basename = basename, title = title)
+    list(
+      basename = fs::path_ext_remove(basename(rd_file)),
+      title = trimws(paste(unlist(rd[tags == "\\title"]), collapse = "")),
+      alias = tag_text("\\alias"),
+      concepts = tag_text("\\concept"),
+      keywords = tag_text("\\keyword")
+    )
+  })
+}
+
+# Builds the environment `contents:` entries are evaluated in: every
+# \alias{} bound to its topic's integer position, plus the selector
+# functions, mirroring pkgdown's `match_env()`.
+match_env <- function(topics) {
+  env <- new.env(parent = emptyenv())
+  assign("-", function(x) -x, envir = env)
+  assign("c", function(...) c(...), envir = env)
+
+  alias_vecs <- lapply(topics, `[[`, "alias")
+  for (i in seq_along(topics)) {
+    for (alias in alias_vecs[[i]]) {
+      assign(alias, i, envir = env)
     }
   }
-  index
+
+  any_alias <- function(f) {
+    which(vapply(alias_vecs, function(x) any(f(x)), logical(1)))
+  }
+
+  assign("starts_with", function(x) any_alias(function(a) grepl(paste0("^", x), a)), envir = env)
+  assign("ends_with", function(x) any_alias(function(a) grepl(paste0(x, "$"), a)), envir = env)
+  assign("contains", function(x) any_alias(function(a) grepl(x, a, fixed = TRUE)), envir = env)
+  assign("matches", function(x) any_alias(function(a) grepl(x, a)), envir = env)
+  assign(
+    "has_concept",
+    function(x) which(vapply(topics, function(t) any(t$concepts == x), logical(1))),
+    envir = env
+  )
+  assign(
+    "has_keyword",
+    function(x) which(vapply(topics, function(t) any(t$keywords %in% x), logical(1))),
+    envir = env
+  )
+
+  env
+}
+
+match_eval <- function(string, env) {
+  # Early return in case `string` is already a known alias verbatim.
+  literal <- mget(string, envir = env, ifnotfound = list(NULL))[[1]]
+  if (is.numeric(literal)) {
+    return(as.integer(literal))
+  }
+
+  expr <- tryCatch(str2lang(string), error = function(e) NULL)
+  if (is.null(expr)) {
+    cli::cli_abort(
+      "altdoc/reference.yml entry {.val {string}} must be valid R code."
+    )
+  }
+
+  if (is.symbol(expr)) {
+    val <- mget(as.character(expr), envir = env, ifnotfound = list(NULL))[[1]]
+    if (!is.numeric(val)) {
+      cli::cli_abort(
+        "altdoc/reference.yml entry {.val {string}} must be a known \\alias{{}} or selector."
+      )
+    }
+    as.integer(val)
+  } else {
+    tryCatch(
+      as.integer(eval(expr, envir = env)),
+      error = function(e) {
+        cli::cli_abort(
+          "altdoc/reference.yml entry {.val {string}} failed to evaluate.",
+          parent = e
+        )
+      }
+    )
+  }
+}
+
+select_topics <- function(match_strings, topics) {
+  if (length(match_strings) == 0) {
+    return(integer())
+  }
+
+  env <- match_env(topics)
+  indexes <- lapply(match_strings, match_eval, env = env)
+
+  all_sign <- function(x, text) {
+    if (all(x > 0)) {
+      return("+")
+    }
+    if (all(x < 0)) {
+      return("-")
+    }
+    cli::cli_abort(
+      "altdoc/reference.yml entry {.val {text}} must be all positive or all negative."
+    )
+  }
+
+  sign1 <- all_sign(indexes[[1]], match_strings[[1]])
+  sel <- switch(sign1, "+" = integer(), "-" = seq_along(topics))
+
+  for (i in seq_along(indexes)) {
+    sign <- all_sign(indexes[[i]], match_strings[[i]])
+    sel <- switch(
+      sign,
+      "+" = union(sel, indexes[[i]]),
+      "-" = setdiff(sel, -indexes[[i]])
+    )
+  }
+  sel
 }
 
 build_reference_qmd <- function(path = pkg_path) {
@@ -373,46 +485,49 @@ build_reference_qmd <- function(path = pkg_path) {
   out_path <- file.path(path, "altdoc", "reference.qmd")
 
   config <- yaml::yaml.load_file(yml_path)
-  topics <- rd_topic_index(path)
+  topics <- rd_topics(path)
 
-  listed <- unlist(lapply(config$reference, function(block) block$contents))
-  missing_rd <- setdiff(listed, names(topics))
-  if (length(missing_rd) > 0) {
-    cli::cli_abort(
-      "altdoc/reference.yml lists {.val {missing_rd}}, which {?has/have} no matching \\name{{}}/\\alias{{}} in man/*.Rd."
-    )
-  }
-  unlisted <- setdiff(names(topics), listed)
+  block_indexes <- lapply(
+    config$reference,
+    function(block) select_topics(as.character(block$contents), topics)
+  )
+
+  unlisted <- setdiff(seq_along(topics), unique(unlist(block_indexes)))
   if (length(unlisted) > 0) {
+    unlisted_names <- vapply(topics[unlisted], function(t) t$alias[[1]], character(1))
     cli::cli_warn(
-      "man/*.Rd defines {.val {unlisted}}, which {?is/are} not listed in altdoc/reference.yml and won't appear on the reference page."
+      "man/*.Rd defines {.val {unlisted_names}}, which {?is/are} not listed in altdoc/reference.yml and won't appear on the reference page."
     )
   }
 
-  sections <- lapply(config$reference, function(block) {
-    entries <- vapply(
-      block$contents,
-      function(name) {
-        topic <- topics[[name]]
-        sprintf(
-          '<dt><code><a href="man/%s.qmd">%s()</a></code></dt>\n<dd>%s</dd>',
-          topic$basename,
-          name,
-          topic$title
-        )
-      },
-      character(1)
-    )
-    c(
-      paste0("## ", block$title),
-      "",
-      if (!is.null(block$desc)) c(trimws(block$desc), ""),
-      '<dl class="ref-index">',
-      paste(entries, collapse = "\n\n"),
-      "</dl>",
-      ""
-    )
-  })
+  sections <- Map(
+    function(block, idx) {
+      entries <- vapply(
+        idx,
+        function(i) {
+          topic <- topics[[i]]
+          sprintf(
+            '<dt><code><a href="man/%s.qmd">%s()</a></code></dt>\n<dd>%s</dd>',
+            topic$basename,
+            topic$alias[[1]],
+            topic$title
+          )
+        },
+        character(1)
+      )
+      c(
+        paste0("## ", block$title),
+        "",
+        if (!is.null(block$desc)) c(trimws(block$desc), ""),
+        '<dl class="ref-index">',
+        paste(entries, collapse = "\n\n"),
+        "</dl>",
+        ""
+      )
+    },
+    config$reference,
+    block_indexes
+  )
 
   lines <- c('---', 'title: "Function reference"', '---', "", unlist(sections))
   lines <- lines[-length(lines)] # drop trailing blank line
