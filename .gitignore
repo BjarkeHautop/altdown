@@ -1,4 +1,12 @@
 altdoc/freeze.rds
+altdoc/pkgdown.yml
+altdoc/quarto_website.yml
+altdoc/index.md
+altdoc/reference.qmd
+altdoc/authors.qmd
+altdoc/altdown.scss
+altdoc/altdown-header.html
+altdoc/altdown-after-body.html
 _quarto/*
 !_quarto/_freeze/
 docs/
@@ -22,7 +30,7 @@ Thumbs.db
 /.quarto/
 **/*.quarto_ipynb
 
-# Staged by altdoc/build-site.R's stage_demo() for the duration of the
+# Staged by demo/build-site.R's stage_demo() for the duration of the
 # build; removed afterward, but ignored as a safety net in case a build is
 # interrupted.
 R/zzz-demo.R

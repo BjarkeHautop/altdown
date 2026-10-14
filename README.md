@@ -29,31 +29,34 @@ use it for your own package, run:
 altdown::use_altdown()
 ```
 
-This copies `altdoc/build-site.R`, `altdoc/altdown.scss`, and
-`altdoc/quarto_website_static.yml` into your package as-is, and writes a
-starter `altdoc/reference.yml` listing your package’s current functions
-in one section. From there:
-
-- Edit `reference.yml` to group the functions however you’d like.
+This writes `altdoc/altdown.yml`, with a `reference:` field that lists
+your package’s current functions in one section; edit it to group them
+however you’d like, in the same shape as pkgdown’s `reference:` field.
+It also gitignores the files the build generates.
 
 Then build the site:
 
 ``` r
-source("altdoc/build-site.R")
-build_site()
+altdown::build_site()
 ```
 
 A preview can then be viewed using `altdoc::preview_docs()`.
 
-Re-run `altdown::use_altdown(overwrite = TRUE)` later to pick up altdown
-updates to the three template files.
+The navbar is built from your vignettes: the one named after the package
+(or the only top-level one) becomes “Get started”, and the rest,
+including those in `vignettes/articles/`, go under “Articles”. If
+[reftip](https://github.com/BjarkeHautop/reftip) is installed,
+`build_site()` also adds hover tooltips to references to your package’s
+functions. See `?altdown::build_site` for everything `altdown.yml` can
+configure.
 
 ## See also
 
 [reftip](https://github.com/BjarkeHautop/reftip) adds hover tooltips to
 the function reference links that altdoc creates in a rendered R code
-block. [alttip](https://github.com/bjarkehautop/alttip) shows an example
-site using altdown and reftip together.
+block; `build_site()` runs it automatically when it’s installed.
+[alttip](https://github.com/bjarkehautop/alttip) shows an example site
+using altdown and reftip together.
 
 ## Why?
 

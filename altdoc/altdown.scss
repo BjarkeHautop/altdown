@@ -199,7 +199,7 @@ $altdown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 // (that only exists as a <meta> tag for the JS side), so target the landing
 // page structurally instead: it's the only page whose margin content (the
 // pkgdown-style Links/License/Citation/Developers sidebar, added by
-// build-site.R) turns `#quarto-document-content` into a full-bleed
+// build_site()) turns `#quarto-document-content` into a full-bleed
 // `page-full` grid. (Used to key off a `fullcontent` class Quarto put on
 // every *other* page's <body> - but enabling `toc: true` below adds a
 // margin sidebar, and thus drops that class, from every page, home
@@ -327,7 +327,7 @@ dl.ref-index dd {
 // Below Quarto's own single-column breakpoint (see the `page-columns`
 // comment above), the sidebar stacks as plain content with no visual
 // separation, in whatever position its source order landed it (see
-// `build_website_readme()` in build-site.R: it has to come *first* in
+// `build_website_readme()` in R/build_site.R: it has to come *first* in
 // the markdown for desktop's grid layout to work, which without this
 // would leave it stacked above the README body on mobile too). pkgdown
 // draws a grey box around its sidebar on mobile (BS5/assets/pkgdown.scss's

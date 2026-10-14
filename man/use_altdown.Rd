@@ -2,38 +2,46 @@
 % Please edit documentation in R/use_altdown.R
 \name{use_altdown}
 \alias{use_altdown}
-\title{Set up altdown's altdoc template in a package}
+\title{Set up a package to use altdown}
 \usage{
-use_altdown(path = ".", overwrite = FALSE)
+use_altdown(path = ".")
 }
 \arguments{
 \item{path}{Path to the target package root. Defaults to the current
 directory.}
-
-\item{overwrite}{Logical. Overwrite the three template files
-(\code{build-site.R}, \code{altdown.scss}, \code{quarto_website_static.yml}) if
-already present in \verb{<path>/altdoc/}? Default \code{FALSE}.}
 }
 \value{
-Invisibly, the path to the created \verb{altdoc/} directory.
+Invisibly, the path to the \verb{altdoc/} directory.
 }
 \description{
-Copies altdown's \verb{altdoc/} template (\code{build-site.R}, \code{altdown.scss},
-\code{quarto_website_static.yml}) into \verb{<path>/altdoc/}, and writes a starter
-\code{altdoc/reference.yml} listing every function currently documented in
-\verb{<path>/man/*.Rd}, in one "All functions" section. Also adds the
-\code{.gitignore}/\code{.Rbuildignore} entries the build needs (see Details) if
-they're not already there.
+Writes \code{altdoc/altdown.yml}, the one configuration file \code{\link[=build_site]{build_site()}}
+reads, with a starter \verb{reference:} field listing every function
+currently documented in \verb{<path>/man/*.Rd} in one "All functions"
+section. Also adds the \code{.gitignore}/\code{.Rbuildignore} entries the build
+needs (see Details) if they're not already there.
 }
 \details{
+An existing \code{altdoc/altdown.yml} is never overwritten. If the package was
+set up with an earlier version of altdown, the \verb{reference:} field is
+taken over from its \code{altdoc/reference.yml}; that file, and the
+\code{altdoc/build-site.R} and \code{altdoc/quarto_website_static.yml} copies, are
+no longer used and can be deleted.
+
 \code{use_altdown()} adds the following lines to \code{.gitignore} and
 \code{.Rbuildignore} (only the ones not already present in each file):
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{# .gitignore
-altdoc/freeze.rds
-altdoc/pkgdown.yml
 _quarto/*
 !_quarto/_freeze/
+altdoc/freeze.rds
+altdoc/pkgdown.yml
+altdoc/quarto_website.yml
+altdoc/index.md
+altdoc/reference.qmd
+altdoc/authors.qmd
+altdoc/altdown.scss
+altdoc/altdown-header.html
+altdoc/altdown-after-body.html
 
 # .Rbuildignore
 ^docs$
@@ -41,9 +49,9 @@ _quarto/*
 ^_quarto$
 }\if{html}{\out{</div>}}
 
-These mirror what \code{altdoc::setup_docs(tool = "quarto_website")} itself
-adds, plus \code{altdoc/pkgdown.yml}: \code{altdoc::render_docs()} rewrites that
-file with a fresh \code{last_built} timestamp on every build.
+The first four mirror what \code{altdoc::setup_docs(tool = "quarto_website")}
+adds, plus \code{altdoc/pkgdown.yml}, which \code{altdoc::render_docs()} rewrites
+on every build. The rest are the files \code{\link[=build_site]{build_site()}} generates.
 }
 \examples{
 pkg <- tempfile("examplepkg")

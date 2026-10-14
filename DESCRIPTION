@@ -13,16 +13,22 @@ URL: https://github.com/bjarkehautop/altdown
 BugReports: https://github.com/bjarkehautop/altdown/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Suggests:
+Imports:
     altdoc,
     cli,
     desc,
     fs,
-    httr2,
     quarto,
-    roxygen2,
-    testthat (>= 3.0.0),
-    withr,
+    tools,
+    utils,
     yaml
+Suggests:
+    httr2,
+    reftip,
+    testthat (>= 3.0.0),
+    withr
+Remotes:
+    BjarkeHautop/reftip
+Config/Needs/website: pkgload, roxygen2
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

@@ -7,36 +7,38 @@ built with [altdoc](https://altdoc.etiennebacher.com/), with some extra
 styling and JavaScript to make it look like a [pkgdown](https://pkgdown.r-lib.org/)
 (Bootstrap 5) site.
 
-Here is an overview of the customization implemented:
+The only file a package keeps in `altdoc/` is `altdown.yml`. Everything else
+there is written by `altdown::build_site()` on every build, and gitignored:
 
 ```text
 altdoc/
-├── build-site.R               # pre-processing script, see below
-├── quarto_website_static.yml  # source of quarto_website.yml
-├── quarto_website.yml         # generated - not edited directly
+├── altdown.yml                # configuration, edited by hand
+├── quarto_website.yml         # Quarto configuration (navbar, footer, theme)
+├── index.md                   # home page
+├── reference.qmd              # function reference index
+├── authors.qmd                # authors and citation page
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
-├── reference.yml              # source of reference.qmd
-└── reference.qmd              # generated - not edited directly
+├── altdown-header.html        # dark-mode default
+└── altdown-after-body.html    # navbar alignment, see below
 ```
 
-## Why a pre-processing script?
+## Why generate files?
 
 For a Quarto backend, the intended approach is to modify the source files with a script and then
 call `altdoc::render_docs()` yourself (see altdoc's
 [customization vignette](https://altdoc.etiennebacher.com/articles/customize.html)).
 
-That is what is done in `altdoc/build-site.R`. It does three main things,
-explained in details below:
+That is what `build_site()` does. altdoc copies `altdoc/` into its Quarto
+project, so files written there before `altdoc::render_docs()` end up in the
+site. The main ones are explained below.
 
 ### The home page
 
-altdoc always uses `README.md` as the home page. The script reads it, makes the necessary changes,
-writes the modified version temporarily, and restores the original when it is done.
-If you use a `README.qmd`, the script renders it to `README.md`, via
-`quarto::quarto_render(readme_qmd, output_format = "gfm")`.
-
-These changes also add a `.column-margin` sidebar, matching pkgdown's layout, and move badges
-into it automatically.
+altdoc's home page is an `index.md` that includes `README.md`. Since altdoc
+copies `altdoc/` into its Quarto project after importing the README,
+`build_site()` writes its own `altdoc/index.md` to replace it: the README with
+a `.column-margin` sidebar, matching pkgdown's layout, with the README's badges
+moved into it. `README.md` itself is never modified.
 
 ### The reference index
 
@@ -44,17 +46,17 @@ altdoc does not currently have a `_pkgdown.yml`-style `reference:` field for
 controlling how the function index is grouped and ordered
 ([etiennebacher/altdoc#326](https://github.com/etiennebacher/altdoc/issues/326)).
 
-So this package has its own `altdoc/reference.yml`, using the same basic
-structure as pkgdown's `reference:` field. The build script uses it together
-with the `\name{}` and `\alias{}` entries in `man/*.Rd` to generate
-`altdoc/reference.qmd`.
+So `altdoc/altdown.yml` has a `reference:` field, using the same basic
+structure as pkgdown's. `build_site()` uses it together with the `\name{}` and
+`\alias{}` entries in `man/*.Rd` to generate `altdoc/reference.qmd`.
 
-### The footer
+### The navbar and footer
 
-`altdoc/quarto_website.yml` is generated from
-`altdoc/quarto_website_static.yml`. As part of this, the build script replaces
-`$ALTDOC_DEVELOPED_BY` with the "Developed by <authors>." text used by
-pkgdown, based on `Authors@R`.
+`altdoc/quarto_website.yml` is generated in full: the navbar links the "Get
+started" vignette, the reference index, the other vignettes under "Articles"
+and the changelog, and the footer has the "Developed by <authors>." text used
+by pkgdown, based on `Authors@R`. A `quarto:` field in `altdown.yml` is merged
+over it.
 
 ## Matching the pkgdown look
 
@@ -78,6 +80,6 @@ It does the following:
 There is one annoying thing that can't be fixed though: the navbar title does
 not line up with the body text automatically. Quarto uses a different layout
 for the home page, so the body's left edge is not in the same place on every page.
-Therefor, the generated `quarto_website.yml` includes a small
+Therefore, the generated `quarto_website.yml` includes a small
 `include-after-body` script that measures the actual offset after the page has
 loaded and adjusts the navbar padding accordingly.

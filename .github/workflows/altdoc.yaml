@@ -38,10 +38,10 @@ jobs:
       - name: Build site
         run: |
           install.packages(".", repos = NULL, type = "source")
-          install.packages("pkgload")
-          pkgload::load_all()
-          source("altdoc/build-site.R")
-          build_site(parallel = FALSE, freeze = FALSE)
+          install.packages(c("pkgload", "roxygen2", "pak"))
+          pak::pak("https://github.com/BjarkeHautop/reftip")
+          source("demo/build-site.R")
+          build_demo_site(parallel = FALSE, freeze = FALSE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

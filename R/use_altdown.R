@@ -1,11 +1,16 @@
-#' Set up altdown's altdoc template in a package
+#' Set up a package to use altdown
 #'
-#' Copies altdown's `altdoc/` template (`build-site.R`, `altdown.scss`,
-#' `quarto_website_static.yml`) into `<path>/altdoc/`, and writes a starter
-#' `altdoc/reference.yml` listing every function currently documented in
-#' `<path>/man/*.Rd`, in one "All functions" section. Also adds the
-#' `.gitignore`/`.Rbuildignore` entries the build needs (see Details) if
-#' they're not already there.
+#' Writes `altdoc/altdown.yml`, the one configuration file [build_site()]
+#' reads, with a starter `reference:` field listing every function
+#' currently documented in `<path>/man/*.Rd` in one "All functions"
+#' section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
+#' needs (see Details) if they're not already there.
+#'
+#' An existing `altdoc/altdown.yml` is never overwritten. If the package was
+#' set up with an earlier version of altdown, the `reference:` field is
+#' taken over from its `altdoc/reference.yml`; that file, and the
+#' `altdoc/build-site.R` and `altdoc/quarto_website_static.yml` copies, are
+#' no longer used and can be deleted.
 #'
 #' @details
 #' `use_altdown()` adds the following lines to `.gitignore` and
@@ -13,10 +18,17 @@
 #'
 #' ```
 #' # .gitignore
-#' altdoc/freeze.rds
-#' altdoc/pkgdown.yml
 #' _quarto/*
 #' !_quarto/_freeze/
+#' altdoc/freeze.rds
+#' altdoc/pkgdown.yml
+#' altdoc/quarto_website.yml
+#' altdoc/index.md
+#' altdoc/reference.qmd
+#' altdoc/authors.qmd
+#' altdoc/altdown.scss
+#' altdoc/altdown-header.html
+#' altdoc/altdown-after-body.html
 #'
 #' # .Rbuildignore
 #' ^docs$
@@ -24,16 +36,13 @@
 #' ^_quarto$
 #' ```
 #'
-#' These mirror what `altdoc::setup_docs(tool = "quarto_website")` itself
-#' adds, plus `altdoc/pkgdown.yml`: `altdoc::render_docs()` rewrites that
-#' file with a fresh `last_built` timestamp on every build.
+#' The first four mirror what `altdoc::setup_docs(tool = "quarto_website")`
+#' adds, plus `altdoc/pkgdown.yml`, which `altdoc::render_docs()` rewrites
+#' on every build. The rest are the files [build_site()] generates.
 #'
 #' @param path Path to the target package root. Defaults to the current
 #'   directory.
-#' @param overwrite Logical. Overwrite the three template files
-#'   (`build-site.R`, `altdown.scss`, `quarto_website_static.yml`) if
-#'   already present in `<path>/altdoc/`? Default `FALSE`.
-#' @return Invisibly, the path to the created `altdoc/` directory.
+#' @return Invisibly, the path to the `altdoc/` directory.
 #' @export
 #'
 #' @examples
@@ -46,7 +55,7 @@
 #' use_altdown(pkg)
 #' list.files(file.path(pkg, "altdoc"))
 #' unlink(pkg, recursive = TRUE)
-use_altdown <- function(path = ".", overwrite = FALSE) {
+use_altdown <- function(path = ".") {
   if (!file.exists(file.path(path, "DESCRIPTION"))) {
     stop(
       sprintf("No DESCRIPTION file found at '%s' - is this a package root?", path),
@@ -54,37 +63,28 @@ use_altdown <- function(path = ".", overwrite = FALSE) {
     )
   }
 
-  template_dir <- system.file("altdoc-template", package = "altdown")
-  if (!nzchar(template_dir)) {
-    stop("Could not find altdown's altdoc template - is altdown installed correctly?", call. = FALSE)
-  }
-
   out_dir <- file.path(path, "altdoc")
   if (!dir.exists(out_dir)) {
     dir.create(out_dir, recursive = TRUE)
   }
 
-  template_files <- c("build-site.R", "altdown.scss", "quarto_website_static.yml")
-  for (f in template_files) {
-    .copy_template_file(file.path(template_dir, f), file.path(out_dir, f), overwrite)
-  }
-
-  reference_dest <- file.path(out_dir, "reference.yml")
-  if (file.exists(reference_dest)) {
-    message(sprintf("Skipping '%s': already exists (delete it to regenerate).", reference_dest))
+  config_dest <- file.path(out_dir, "altdown.yml")
+  if (file.exists(config_dest)) {
+    message(sprintf("Skipping '%s': already exists.", config_dest))
   } else {
-    writeLines(.starter_reference_yml(path), reference_dest)
-    message(sprintf("Wrote '%s' (edit this to group your functions).", reference_dest))
+    writeLines(.starter_config_yml(path), config_dest)
+    message(sprintf("Wrote '%s' (edit this to group your functions).", config_dest))
   }
 
   .add_ignore_lines(
     path,
     ".gitignore",
     c(
+      "_quarto/*",
+      "!_quarto/_freeze/",
       "altdoc/freeze.rds",
       "altdoc/pkgdown.yml",
-      "_quarto/*",
-      "!_quarto/_freeze/"
+      file.path("altdoc", generated_files)
     )
   )
   .add_ignore_lines(
@@ -93,31 +93,28 @@ use_altdown <- function(path = ".", overwrite = FALSE) {
     c("^docs$", "^altdoc$", "^_quarto$")
   )
 
+  legacy <- c("build-site.R", "quarto_website_static.yml", "reference.yml")
+  legacy <- legacy[file.exists(file.path(out_dir, legacy))]
+  if (length(legacy) > 0) {
+    message(
+      "\nThese files from an earlier altdown setup are no longer used and can be deleted:\n",
+      paste0("  altdoc/", legacy, collapse = "\n")
+    )
+  }
+
   message(
     "\nNext steps:\n",
-    "  1. Edit altdoc/reference.yml to group your functions the way you want.\n",
-    "  2. Run: source(\"altdoc/build-site.R\"); build_site()\n",
+    "  1. Edit altdoc/altdown.yml to group your functions the way you want.\n",
+    "  2. Run: altdown::build_site()\n",
     "  3. Preview site: altdoc::preview_docs()"
   )
 
   invisible(out_dir)
 }
 
-.copy_template_file <- function(src, dest, overwrite) {
-  if (file.exists(dest) && !overwrite) {
-    message(sprintf("Skipping '%s': already exists (use overwrite = TRUE to replace).", dest))
-    return(invisible())
-  }
-  file.copy(src, dest, overwrite = TRUE)
-  message(sprintf("Wrote '%s'.", dest))
-  invisible()
-}
-
 # Appends any of `lines` not already present (as a whole line) in
 # `<path>/<file_name>`, creating the file first if needed. Mirrors what
-# altdoc's own `.add_gitignore()`/`.add_rbuildignore()` do, kept dependency
-# -free here (base R only) since altdown doesn't otherwise need fs/cli at
-# runtime.
+# altdoc's own `.add_gitignore()`/`.add_rbuildignore()` do.
 .add_ignore_lines <- function(path, file_name, lines) {
   dest <- file.path(path, file_name)
   existing <- if (file.exists(dest)) readLines(dest, warn = FALSE) else character()
@@ -136,10 +133,31 @@ use_altdown <- function(path = ".", overwrite = FALSE) {
   invisible()
 }
 
-# One \name{} per man/*.Rd, sorted, as a single starter "All functions"
-# section - same shape as build-site.R's altdoc/reference.yml, minus any
-# grouping, which is left for the user to add by hand.
+.starter_config_yml <- function(path) {
+  c(
+    "# Configuration for altdown::build_site(). See ?altdown::build_site for",
+    "# all fields, including `articles:` (navbar order) and `quarto:` (extra",
+    "# Quarto settings).",
+    "",
+    "# Groups the function reference index, in the same shape as pkgdown's",
+    "# `reference:` field.",
+    .starter_reference_yml(path)
+  )
+}
+
+# The `reference:` field of an earlier altdown setup's altdoc/reference.yml
+# if there is one, otherwise one \name{} per man/*.Rd, sorted, as a single
+# "All functions" section, leaving any grouping to the user.
 .starter_reference_yml <- function(path) {
+  legacy <- file.path(path, "altdoc", "reference.yml")
+  if (file.exists(legacy)) {
+    lines <- readLines(legacy, warn = FALSE)
+    start <- grep("^reference:", lines)[1]
+    if (!is.na(start)) {
+      return(lines[seq(start, length(lines))])
+    }
+  }
+
   man_dir <- file.path(path, "man")
   rd_files <- if (dir.exists(man_dir)) {
     sort(list.files(man_dir, pattern = "\\.Rd$", full.names = TRUE))
