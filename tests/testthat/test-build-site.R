@@ -537,3 +537,22 @@ test_that("collapse_example_output() makes run examples show output pkgdown-styl
     )
   )
 })
+
+test_that("hide_library_calls() drops the package's own library() from plain blocks and hides it before run chunks", {
+  lines <- c(
+    "```r", "library(\"my.pkg\")", "", "f()", "```",
+    "```{r, eval=TRUE}", "library(my.pkg)", "", "g()", "```",
+    "```{r}", "library(\"other\")", "h()", "```",
+    "```r", "library(\"myXpkg\")", "```"
+  )
+  expect_identical(
+    hide_library_calls(lines, "my.pkg"),
+    c(
+      "```r", "", "f()", "```",
+      "```{r, include=FALSE}", "library(my.pkg)", "```",
+      "```{r, eval=TRUE}", "", "g()", "```",
+      "```{r}", "library(\"other\")", "h()", "```",
+      "```r", "library(\"myXpkg\")", "```"
+    )
+  )
+})

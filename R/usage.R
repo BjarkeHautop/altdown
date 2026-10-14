@@ -125,6 +125,33 @@ collapse_example_output <- function(lines) {
   lines
 }
 
+# ---- library() call in examples -------------------------------------------------
+#
+# altdoc starts every example with `library("<pkg>")`, which pkgdown doesn't
+# show. A call attaching the package itself is dropped from examples that
+# aren't run; ones that are run still need the package attached, so the call
+# moves into a hidden chunk before them. Calls attaching other packages are
+# part of the example and stay.
+
+library_call_pattern <- function(pkg) {
+  sprintf("^library\\(([\"']?)%s\\1\\)\\s*$", gsub(".", "\\.", pkg, fixed = TRUE))
+}
+
+hide_library_calls <- function(lines, pkg) {
+  starts <- which(
+    grepl("^```(r|\\{r\\b.*\\})\\s*$", lines, perl = TRUE) &
+      c(grepl(library_call_pattern(pkg), lines[-1], perl = TRUE), FALSE)
+  )
+  for (i in rev(starts)) {
+    library_call <- lines[i + 1]
+    lines <- lines[-(i + 1)]
+    if (grepl("^```\\{", lines[i])) {
+      lines <- append(lines, c("```{r, include=FALSE}", library_call, "```"), i - 1)
+    }
+  }
+  lines
+}
+
 # Drops blank lines at the start and end of every fenced code block. altdoc
 # leaves some where it removed the `\dontrun{` and `}` around the examples;
 # knitr would strip them from a chunk, but a plain code block shows them.
@@ -151,19 +178,20 @@ trim_code_blocks <- function(lines) {
 # The script carries its own copy of the functions below, so it always
 # matches the altdown version that wrote it.
 
-fix_man_qmd <- function(lines) {
+fix_man_qmd <- function(lines, pkg) {
   fixed <- fence_usage_block(lines)
   if (is.null(fixed)) {
     fixed <- lines
   }
   fixed <- unevaluated_chunks_to_code(convert_inline_code(fixed))
+  fixed <- hide_library_calls(fixed, pkg)
   trim_code_blocks(collapse_example_output(fixed))
 }
 
-pre_render_main <- function() {
+pre_render_main <- function(pkg) {
   for (f in list.files("man", pattern = "\\.qmd$", full.names = TRUE)) {
     lines <- readLines(f, warn = FALSE, encoding = "UTF-8")
-    fixed <- fix_man_qmd(lines)
+    fixed <- fix_man_qmd(lines, pkg)
     if (!identical(fixed, lines)) {
       writeLines(enc2utf8(fixed), f, useBytes = TRUE)
     }
@@ -182,6 +210,8 @@ pre_render_objects <- c(
   "unevaluated_chunks_to_code",
   "eval_chunk_pattern",
   "collapse_example_output",
+  "library_call_pattern",
+  "hide_library_calls",
   "trim_code_blocks",
   "fix_man_qmd",
   "pre_render_main"
@@ -199,7 +229,7 @@ write_pre_render_script <- function(path) {
       "",
       definitions,
       "",
-      "pre_render_main()"
+      sprintf("pre_render_main(%s)", deparse(desc::desc_get_field("Package", file = path)))
     ),
     file.path(path, "altdoc", "altdown-pre-render.R"),
     useBytes = TRUE
