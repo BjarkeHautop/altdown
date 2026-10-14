@@ -55,11 +55,11 @@ build_site <- function(
   build_reference_qmd(path, config)
   build_authors_qmd(path)
   write_quarto_config(path, config)
+  write_pre_render_script(path)
 
   altdoc::render_docs(path = path, ...)
   # altdoc copies altdoc/ into docs/ after rendering; drop altdown's sources.
   unlink(file.path(path, "docs", c("altdown.yml", generated_files)))
-  fix_man_qmds(path)
 
   if (isTRUE(tooltips)) {
     if (!requireNamespace("reftip", quietly = TRUE)) {
@@ -82,7 +82,8 @@ generated_files <- c(
   "authors.qmd",
   "altdown.scss",
   "altdown-header.html",
-  "altdown-after-body.html"
+  "altdown-after-body.html",
+  "altdown-pre-render.R"
 )
 
 theme_files <- c("altdown.scss", "altdown-header.html", "altdown-after-body.html")
@@ -136,7 +137,12 @@ quarto_config <- function(path, config = list()) {
   }
 
   settings <- list(
-    project = list(type = "website", `output-dir` = "../docs/"),
+    project = list(
+      type = "website",
+      `output-dir` = "../docs/",
+      # Fixes up the man pages altdoc generates, see write_pre_render_script().
+      `pre-render` = "altdown-pre-render.R"
+    ),
     language = list(`search-text-placeholder` = " Search for"),
     website = list(
       # after-body script splits the version into its own <small>.

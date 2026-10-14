@@ -19,7 +19,8 @@ altdoc/
 ├── authors.qmd                # authors and citation page
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
 ├── altdown-header.html        # dark-mode default
-└── altdown-after-body.html    # navbar alignment, see below
+├── altdown-after-body.html    # navbar alignment, see below
+└── altdown-pre-render.R       # fixes up altdoc's man pages, see below
 ```
 
 ## Why generate files?
@@ -57,6 +58,17 @@ started" vignette, the reference index, the other vignettes under "Articles"
 and the changelog, and the footer has the "Developed by <authors>." text used
 by pkgdown, based on `Authors@R`. A `quarto:` field in `altdown.yml` is merged
 over it.
+
+### The man pages
+
+altdoc converts each `man/*.Rd` file to a `.qmd` page during
+`altdoc::render_docs()`, and renders the Quarto project straight after, so
+`build_site()` can't edit those pages beforehand. Instead
+`altdown-pre-render.R` runs as a Quarto pre-render script, inside that render.
+It turns the Usage section into a highlighted R code block, rewrites inline
+`<code>` as Markdown code spans (so Pandoc doesn't turn their `"` into curly
+quotes), and turns examples that aren't run (`\dontrun{}`) into plain code
+blocks, so those pages don't need knitr and a separate R session each.
 
 ## Matching the pkgdown look
 

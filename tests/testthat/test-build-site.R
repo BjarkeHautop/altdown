@@ -461,3 +461,47 @@ test_that("convert_inline_code() leaves fenced code blocks alone", {
     c("`a`", "```r", "x <- \"<code>b</code>\"", "```", "`c`")
   )
 })
+
+test_that("unevaluated_chunks_to_code() turns only eval=FALSE chunks into plain code blocks", {
+  lines <- c(
+    "```{r, warning=FALSE, message=FALSE, eval=FALSE}",
+    "f()",
+    "```",
+    "```{r, warning=FALSE, message=FALSE}",
+    "g()",
+    "```"
+  )
+  expect_identical(
+    unevaluated_chunks_to_code(lines),
+    c("```r", "f()", "```", "```{r, warning=FALSE, message=FALSE}", "g()", "```")
+  )
+})
+
+test_that("write_pre_render_script() writes a standalone script that fixes up man/*.qmd", {
+  dir <- new_pkg()
+  write_pre_render_script(dir)
+  script <- normalizePath(file.path(dir, "altdoc", "altdown-pre-render.R"))
+
+  project <- withr::local_tempdir()
+  dir.create(file.path(project, "man"))
+  qmd <- file.path(project, "man", "foo.qmd")
+  writeLines(
+    c(
+      "Uses <code>f(&quot;a&quot;)</code>.",
+      "<pre><code class='language-R'>foo(x = &quot;a&quot;)</code></pre>",
+      "```{r, eval=FALSE}",
+      "foo()",
+      "```"
+    ),
+    qmd
+  )
+
+  withr::with_dir(project, {
+    status <- system2(file.path(R.home("bin"), "Rscript"), shQuote(script))
+  })
+  expect_identical(status, 0L)
+  expect_identical(
+    readLines(qmd),
+    c("Uses `f(\"a\")`.", "```r", "foo(x = \"a\")", "```", "```r", "foo()", "```")
+  )
+})

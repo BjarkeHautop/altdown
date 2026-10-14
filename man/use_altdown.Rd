@@ -42,6 +42,7 @@ altdoc/authors.qmd
 altdoc/altdown.scss
 altdoc/altdown-header.html
 altdoc/altdown-after-body.html
+altdoc/altdown-pre-render.R
 
 # .Rbuildignore
 ^docs$
