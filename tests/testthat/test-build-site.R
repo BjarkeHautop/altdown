@@ -505,3 +505,12 @@ test_that("write_pre_render_script() writes a standalone script that fixes up ma
     c("Uses `f(\"a\")`.", "```r", "foo(x = \"a\")", "```", "```r", "foo()", "```")
   )
 })
+
+test_that("convert_inline_code() handles <code> with attributes but leaves <pre><code> alone", {
+  expect_identical(
+    convert_inline_code("a `/` (or <code style=\"white-space: pre;\">\\</code> on Windows), or"),
+    "a `/` (or `\\` on Windows), or"
+  )
+  block <- "<pre><code class='language-R'>x</code></pre>"
+  expect_identical(convert_inline_code(block), block)
+})

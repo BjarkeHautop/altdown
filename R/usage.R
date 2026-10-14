@@ -51,10 +51,15 @@ fence_usage_block <- function(lines) {
 # altdoc embeds `tools::Rd2HTML()` output in each man/*.qmd, so `\code{}`
 # arrives as raw `<code>...</code>`. Pandoc still parses the text inside it
 # as Markdown, so its smart-quotes extension turns `"` into curly quotes
-# there: `\code{f("a")}` renders as f(“a”). A Markdown code span is left
-# alone, and still renders as `<code>...</code>`.
+# there: `\code{f("a")}` renders as f(“a”). Worse, a backslash right before
+# `</code>`, as `\verb{\\}` gives, escapes the closing tag, so the code runs
+# on to the end of the paragraph. A Markdown code span is left alone, and
+# still renders as `<code>...</code>`.
+#
+# `<code>` can carry attributes (`\verb{}` adds a `style`); one directly
+# inside `<pre>` is a code block and is left as it is.
 
-inline_code_pattern <- "<code>([^<]*)</code>"
+inline_code_pattern <- "(?<!<pre>)<code(?:\\s[^>]*)?>([^<]*)</code>"
 
 # Rewrites every `<code>...</code>` in `x` (with no tags inside) as a
 # Markdown code span.
