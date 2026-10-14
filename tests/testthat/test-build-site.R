@@ -439,3 +439,25 @@ test_that("build_reference_qmd() errors on a selector matching no topic", {
   config <- reference_config(c("reference:", "  - title: All", "    contents:", "      - not_a_real_function"))
   expect_error(build_reference_qmd(dir, config), "known")
 })
+
+test_that("convert_inline_code() turns raw <code> into Markdown code spans", {
+  expect_identical(
+    convert_inline_code("stored in <code>tools::R_user_dir(&quot;pkg&quot;, &quot;data&quot;)</code>."),
+    "stored in `tools::R_user_dir(\"pkg\", \"data\")`."
+  )
+  expect_identical(
+    convert_inline_code("<code>a</code> and <code>x &lt;- `y`</code>"),
+    "`a` and `` x <- `y` ``"
+  )
+  # A <code> with a link inside stays HTML.
+  linked <- "<code><a href=\"foo.html\">foo()</a></code>"
+  expect_identical(convert_inline_code(linked), linked)
+})
+
+test_that("convert_inline_code() leaves fenced code blocks alone", {
+  lines <- c("<code>a</code>", "```r", "x <- \"<code>b</code>\"", "```", "<code>c</code>")
+  expect_identical(
+    convert_inline_code(lines),
+    c("`a`", "```r", "x <- \"<code>b</code>\"", "```", "`c`")
+  )
+})

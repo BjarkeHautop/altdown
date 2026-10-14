@@ -59,7 +59,7 @@ build_site <- function(
   altdoc::render_docs(path = path, ...)
   # altdoc copies altdoc/ into docs/ after rendering; drop altdown's sources.
   unlink(file.path(path, "docs", c("altdown.yml", generated_files)))
-  fix_man_usage_blocks(path)
+  fix_man_qmds(path)
 
   if (isTRUE(tooltips)) {
     if (!requireNamespace("reftip", quietly = TRUE)) {
