@@ -105,6 +105,26 @@ unevaluated_chunks_to_code <- function(lines) {
   lines
 }
 
+# ---- examples that are run ------------------------------------------------------
+#
+# By default knitr shows a chunk's output in a separate block below the code.
+# pkgdown shows it in the same block, each line prefixed with `#>`; knitr's
+# `collapse` and `comment` options do the same.
+
+eval_chunk_pattern <- "^(```\\{r\\b.*?)\\}\\s*$"
+
+collapse_example_output <- function(lines) {
+  chunk <- grepl(eval_chunk_pattern, lines, perl = TRUE) &
+    !grepl("\\bcollapse\\s*=", lines, perl = TRUE)
+  lines[chunk] <- sub(
+    eval_chunk_pattern,
+    "\\1, collapse=TRUE, comment=\"#>\"}",
+    lines[chunk],
+    perl = TRUE
+  )
+  lines
+}
+
 # Drops blank lines at the start and end of every fenced code block. altdoc
 # leaves some where it removed the `\dontrun{` and `}` around the examples;
 # knitr would strip them from a chunk, but a plain code block shows them.
@@ -136,7 +156,8 @@ fix_man_qmd <- function(lines) {
   if (is.null(fixed)) {
     fixed <- lines
   }
-  trim_code_blocks(unevaluated_chunks_to_code(convert_inline_code(fixed)))
+  fixed <- unevaluated_chunks_to_code(convert_inline_code(fixed))
+  trim_code_blocks(collapse_example_output(fixed))
 }
 
 pre_render_main <- function() {
@@ -159,6 +180,8 @@ pre_render_objects <- c(
   "convert_inline_code",
   "noeval_chunk_pattern",
   "unevaluated_chunks_to_code",
+  "eval_chunk_pattern",
+  "collapse_example_output",
   "trim_code_blocks",
   "fix_man_qmd",
   "pre_render_main"

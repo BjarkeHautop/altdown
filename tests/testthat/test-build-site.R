@@ -522,3 +522,18 @@ test_that("trim_code_blocks() drops leading and trailing blank lines inside code
     c("", "```r", "f()", "", "g()", "```", "", "```{r}", "h()", "```")
   )
 })
+
+test_that("collapse_example_output() makes run examples show output pkgdown-style", {
+  lines <- c("```{r, warning=FALSE, message=FALSE, eval=TRUE}", "f()", "```", "```{r}", "```r", "```{r, collapse=FALSE}")
+  expect_identical(
+    collapse_example_output(lines),
+    c(
+      "```{r, warning=FALSE, message=FALSE, eval=TRUE, collapse=TRUE, comment=\"#>\"}",
+      "f()",
+      "```",
+      "```{r, collapse=TRUE, comment=\"#>\"}",
+      "```r",
+      "```{r, collapse=FALSE}"
+    )
+  )
+})
