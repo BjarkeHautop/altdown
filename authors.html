@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,14 +77,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ca00be948230f3b5b40e8277427b87d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-99ca4605843440afa01c309c8d07fa9d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-ca00be948230f3b5b40e8277427b87d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6f1807773e46e89979bbe455adae23f4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-fe45675247739dffee76f114a0f81a45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-6f1807773e46e89979bbe455adae23f4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -111,6 +111,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<!--
+Quarto's own dark-mode toggle always defaults new visitors to whichever theme
+is listed first (light), ignoring the OS/browser `prefers-color-scheme`
+setting - there's no config for this, so seed its localStorage sentinel
+ourselves before its own before-body script reads it. Runs in <head>, ahead of
+any painted content, so there's no light-then-dark flash. Only acts when the
+visitor has never toggled here before - an explicit past choice always wins.
+-->
 <script>
 (function () {
   try {
@@ -414,6 +422,70 @@ Hautop Kristensen B (2026). <em>altdown: A ‘pkgdown’-Style Theme for ‘altd
 </section>
 
 </main> <!-- /main -->
+<!--
+A fixed CSS padding can't align the navbar title with the body text on every
+page: Quarto lays pages out differently depending on whether they have margin
+content (like the home page's Links/License column) or not, so the body's left
+edge lands at a different pixel offset per page type. Measure it for real
+instead, on every page, after layout settles.
+-->
+<script>
+(function () {
+  function contentLeft(main) {
+    // On pages with margin content (e.g. the home page's
+    // Links/License column), <main> itself becomes a "page-full"
+    // grid spanning the whole viewport, so its own box tells us
+    // nothing about where the visible text starts — look at the
+    // title/first heading instead. On every other page, main's own
+    // edge already sits flush with the text and is the more
+    // reliable target (man pages have no <h1>, only unnumbered
+    // <h2> titles, so this avoids depending on heading level).
+    if (main.classList.contains("page-full")) {
+      var heading = main.querySelector("h1, h2.unnumbered");
+      if (heading) return heading.getBoundingClientRect().left;
+    }
+    return main.getBoundingClientRect().left;
+  }
+  function alignNavbarToContent() {
+    var main = document.querySelector("#quarto-document-content");
+    var navContainer = document.querySelector(".navbar-container");
+    if (!main || !navContainer) return;
+    navContainer.style.paddingLeft = "";
+    var diff = contentLeft(main) -
+      navContainer.getBoundingClientRect().left;
+    navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
+  }
+  // The navbar title is emitted as one plain-text node, "<pkg name>
+  // <version>" (see `website.title` in quarto_config()) -
+  // Quarto gives us no way to style just the version at the YAML
+  // level. Split it out into its own `<small>` here so
+  // altdown.scss can shrink it, pkgdown style.
+  function shrinkNavbarVersion() {
+    var title = document.querySelector(".navbar-title");
+    if (!title || title.querySelector(".navbar-version")) return;
+    var text = title.textContent;
+    var spaceIndex = text.indexOf(" ");
+    if (spaceIndex === -1) return;
+    title.textContent = text.slice(0, spaceIndex);
+    var version = document.createElement("small");
+    version.className = "navbar-version";
+    version.textContent = text.slice(spaceIndex + 1);
+    title.appendChild(document.createTextNode(" "));
+    title.appendChild(version);
+  }
+  // This script is injected right before </body>, so everything it
+  // reads is already in the DOM — no need to wait for "load" (which
+  // fires only once every image/font/subresource finishes, causing
+  // a visible flash where the navbar sits unaligned for a moment).
+  // Run once immediately, then keep "load"/"resize" as safety nets
+  // in case something later shifts the layout (e.g. a web font
+  // swap, though this theme doesn't use one).
+  shrinkNavbarVersion();
+  alignNavbarToContent();
+  window.addEventListener("load", alignNavbarToContent);
+  window.addEventListener("resize", alignNavbarToContent);
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -841,63 +913,6 @@ Hautop Kristensen B (2026). <em>altdown: A ‘pkgdown’-Style Theme for ‘altd
 </div>
   </div>
 </footer>
-<script>
-(function () {
-  function contentLeft(main) {
-    // On pages with margin content (e.g. the home page's
-    // Links/License column), <main> itself becomes a "page-full"
-    // grid spanning the whole viewport, so its own box tells us
-    // nothing about where the visible text starts — look at the
-    // title/first heading instead. On every other page, main's own
-    // edge already sits flush with the text and is the more
-    // reliable target (man pages have no <h1>, only unnumbered
-    // <h2> titles, so this avoids depending on heading level).
-    if (main.classList.contains("page-full")) {
-      var heading = main.querySelector("h1, h2.unnumbered");
-      if (heading) return heading.getBoundingClientRect().left;
-    }
-    return main.getBoundingClientRect().left;
-  }
-  function alignNavbarToContent() {
-    var main = document.querySelector("#quarto-document-content");
-    var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
-    navContainer.style.paddingLeft = "";
-    var diff = contentLeft(main) -
-      navContainer.getBoundingClientRect().left;
-    navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
-  }
-  // The navbar title is emitted as one plain-text node, "<pkg name>
-  // <version>" (see `website.title` in quarto_website_static.yml) -
-  // Quarto gives us no way to style just the version at the YAML
-  // level. Split it out into its own `<small>` here so
-  // altdown.scss can shrink it, pkgdown style.
-  function shrinkNavbarVersion() {
-    var title = document.querySelector(".navbar-title");
-    if (!title || title.querySelector(".navbar-version")) return;
-    var text = title.textContent;
-    var spaceIndex = text.indexOf(" ");
-    if (spaceIndex === -1) return;
-    title.textContent = text.slice(0, spaceIndex);
-    var version = document.createElement("small");
-    version.className = "navbar-version";
-    version.textContent = text.slice(spaceIndex + 1);
-    title.appendChild(document.createTextNode(" "));
-    title.appendChild(version);
-  }
-  // This script is injected right before </body>, so everything it
-  // reads is already in the DOM — no need to wait for "load" (which
-  // fires only once every image/font/subresource finishes, causing
-  // a visible flash where the navbar sits unaligned for a moment).
-  // Run once immediately, then keep "load"/"resize" as safety nets
-  // in case something later shifts the layout (e.g. a web font
-  // swap, though this theme doesn't use one).
-  shrinkNavbarVersion();
-  alignNavbarToContent();
-  window.addEventListener("load", alignNavbarToContent);
-  window.addEventListener("resize", alignNavbarToContent);
-})();
-</script>
 
 
 

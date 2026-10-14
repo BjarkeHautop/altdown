@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -77,14 +77,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-ca00be948230f3b5b40e8277427b87d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-99ca4605843440afa01c309c8d07fa9d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-ca00be948230f3b5b40e8277427b87d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-6f1807773e46e89979bbe455adae23f4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-fe45675247739dffee76f114a0f81a45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-6f1807773e46e89979bbe455adae23f4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -111,6 +111,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<!--
+Quarto's own dark-mode toggle always defaults new visitors to whichever theme
+is listed first (light), ignoring the OS/browser `prefers-color-scheme`
+setting - there's no config for this, so seed its localStorage sentinel
+ourselves before its own before-body script reads it. Runs in <head>, ahead of
+any painted content, so there's no light-then-dark flash. Only acts when the
+visitor has never toggled here before - an explicit past choice always wins.
+-->
 <script>
 (function () {
   try {
@@ -128,6 +136,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </script>
 
 
+<!-- reftip -->
+<style>
+.reftip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
+.reftip-float .reftip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
+.reftip-float .reftip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
+a.reftip-ref{cursor:help;}
+</style>
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -356,11 +371,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#why-a-pre-processing-script" id="toc-why-a-pre-processing-script" class="nav-link active" data-scroll-target="#why-a-pre-processing-script">Why a pre-processing script?</a>
+  <li><a href="#why-generate-files" id="toc-why-generate-files" class="nav-link active" data-scroll-target="#why-generate-files">Why generate files?</a>
   <ul class="collapse">
   <li><a href="#the-home-page" id="toc-the-home-page" class="nav-link" data-scroll-target="#the-home-page">The home page</a></li>
   <li><a href="#the-reference-index" id="toc-the-reference-index" class="nav-link" data-scroll-target="#the-reference-index">The reference index</a></li>
-  <li><a href="#the-footer" id="toc-the-footer" class="nav-link" data-scroll-target="#the-footer">The footer</a></li>
+  <li><a href="#the-navbar-and-footer" id="toc-the-navbar-and-footer" class="nav-link" data-scroll-target="#the-navbar-and-footer">The navbar and footer</a></li>
+  <li><a href="#the-man-pages" id="toc-the-man-pages" class="nav-link" data-scroll-target="#the-man-pages">The man pages</a></li>
   </ul></li>
   <li><a href="#matching-the-pkgdown-look" id="toc-matching-the-pkgdown-look" class="nav-link" data-scroll-target="#matching-the-pkgdown-look">Matching the pkgdown look</a></li>
   </ul>
@@ -390,31 +406,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>This page explains how the site is put together. It is a Quarto website built with <a href="https://altdoc.etiennebacher.com/">altdoc</a>, with some extra styling and JavaScript to make it look like a <a href="https://pkgdown.r-lib.org/">pkgdown</a> (Bootstrap 5) site.</p>
-<p>Here is an overview of the customization implemented:</p>
+<p>The only file a package keeps in <code>altdoc/</code> is <code>altdown.yml</code>. Everything else there is written by <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">altdown::build_site()</a></code> on every build, and gitignored:</p>
 <pre class="text"><code>altdoc/
-├── build-site.R               # pre-processing script, see below
-├── quarto_website_static.yml  # source of quarto_website.yml
-├── quarto_website.yml         # generated - not edited directly
+├── altdown.yml                # configuration, edited by hand
+├── quarto_website.yml         # Quarto configuration (navbar, footer, theme)
+├── index.md                   # home page
+├── reference.qmd              # function reference index
+├── authors.qmd                # authors and citation page
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
-├── reference.yml              # source of reference.qmd
-└── reference.qmd              # generated - not edited directly</code></pre>
-<section id="why-a-pre-processing-script" class="level2">
-<h2 class="anchored" data-anchor-id="why-a-pre-processing-script">Why a pre-processing script?</h2>
+├── altdown-header.html        # dark-mode default
+├── altdown-after-body.html    # navbar alignment, see below
+└── altdown-pre-render.R       # fixes up altdoc's man pages, see below</code></pre>
+<section id="why-generate-files" class="level2">
+<h2 class="anchored" data-anchor-id="why-generate-files">Why generate files?</h2>
 <p>For a Quarto backend, the intended approach is to modify the source files with a script and then call <code>altdoc::render_docs()</code> yourself (see altdoc’s <a href="https://altdoc.etiennebacher.com/articles/customize.html">customization vignette</a>).</p>
-<p>That is what is done in <code>altdoc/build-site.R</code>. It does three main things, explained in details below:</p>
+<p>That is what <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> does. altdoc copies <code>altdoc/</code> into its Quarto project, so files written there before <code>altdoc::render_docs()</code> end up in the site. The main ones are explained below.</p>
 <section id="the-home-page" class="level3">
 <h3 class="anchored" data-anchor-id="the-home-page">The home page</h3>
-<p>altdoc always uses <code>README.md</code> as the home page. The script reads it, makes the necessary changes, writes the modified version temporarily, and restores the original when it is done. If you use a <code>README.qmd</code>, the script renders it to <code>README.md</code>, via <code>quarto::quarto_render(readme_qmd, output_format = "gfm")</code>.</p>
-<p>These changes also add a <code>.column-margin</code> sidebar, matching pkgdown’s layout, and move badges into it automatically.</p>
+<p>altdoc’s home page is an <code>index.md</code> that includes <code>README.md</code>. Since altdoc copies <code>altdoc/</code> into its Quarto project after importing the README, <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> writes its own <code>altdoc/index.md</code> to replace it: the README with a <code>.column-margin</code> sidebar, matching pkgdown’s layout, with the README’s badges moved into it. <code>README.md</code> itself is never modified.</p>
 </section>
 <section id="the-reference-index" class="level3">
 <h3 class="anchored" data-anchor-id="the-reference-index">The reference index</h3>
 <p>altdoc does not currently have a <code>_pkgdown.yml</code>-style <code>reference:</code> field for controlling how the function index is grouped and ordered (<a href="https://github.com/etiennebacher/altdoc/issues/326">etiennebacher/altdoc#326</a>).</p>
-<p>So this package has its own <code>altdoc/reference.yml</code>, using the same basic structure as pkgdown’s <code>reference:</code> field. The build script uses it together with the <code>\name{}</code> and <code>\alias{}</code> entries in <code>man/*.Rd</code> to generate <code>altdoc/reference.qmd</code>.</p>
+<p>So <code>altdoc/altdown.yml</code> has a <code>reference:</code> field, using the same basic structure as pkgdown’s. <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> uses it together with the <code>\name{}</code> and <code>\alias{}</code> entries in <code>man/*.Rd</code> to generate <code>altdoc/reference.qmd</code>.</p>
 </section>
-<section id="the-footer" class="level3">
-<h3 class="anchored" data-anchor-id="the-footer">The footer</h3>
-<p><code>altdoc/quarto_website.yml</code> is generated from <code>altdoc/quarto_website_static.yml</code>. As part of this, the build script replaces <code>$ALTDOC_DEVELOPED_BY</code> with the “Developed by <authors>.” text used by pkgdown, based on <code>Authors@R</code>.</authors></p>
+<section id="the-navbar-and-footer" class="level3">
+<h3 class="anchored" data-anchor-id="the-navbar-and-footer">The navbar and footer</h3>
+<p><code>altdoc/quarto_website.yml</code> is generated in full: the navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog, and the footer has the “Developed by <authors>.” text used by pkgdown, based on <code>Authors@R</code>. A <code>quarto:</code> field in <code>altdown.yml</code> is merged over it.</authors></p>
+</section>
+<section id="the-man-pages" class="level3">
+<h3 class="anchored" data-anchor-id="the-man-pages">The man pages</h3>
+<p>altdoc converts each <code>man/*.Rd</code> file to a <code>.qmd</code> page during <code>altdoc::render_docs()</code>, and renders the Quarto project straight after, so <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> can’t edit those pages beforehand. Instead <code>altdown-pre-render.R</code> runs as a Quarto pre-render script, inside that render. It turns the Usage section into a highlighted R code block, rewrites inline <code>&lt;code&gt;</code> as Markdown code spans (so Pandoc doesn’t turn their <code>"</code> into curly quotes), and turns examples that aren’t run (<code>\dontrun{}</code>) into plain code blocks, so those pages don’t need knitr and a separate R session each.</p>
 </section>
 </section>
 <section id="matching-the-pkgdown-look" class="level2">
@@ -428,12 +450,76 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Putting the navbar items (title, links, search, GitHub icon) in the same order as pkgdown.</li>
 <li>Styling the margin sidebar and reference index (<code>&lt;dl class="ref-index"&gt;</code>) to look like their pkgdown counterparts.</li>
 </ul>
-<p>There is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefor, the generated <code>quarto_website.yml</code> includes a small <code>include-after-body</code> script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly.</p>
+<p>There is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefore, the generated <code>quarto_website.yml</code> includes a small <code>include-after-body</code> script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly.</p>
 
 
 </section>
 
 </main> <!-- /main -->
+<!--
+A fixed CSS padding can't align the navbar title with the body text on every
+page: Quarto lays pages out differently depending on whether they have margin
+content (like the home page's Links/License column) or not, so the body's left
+edge lands at a different pixel offset per page type. Measure it for real
+instead, on every page, after layout settles.
+-->
+<script>
+(function () {
+  function contentLeft(main) {
+    // On pages with margin content (e.g. the home page's
+    // Links/License column), <main> itself becomes a "page-full"
+    // grid spanning the whole viewport, so its own box tells us
+    // nothing about where the visible text starts — look at the
+    // title/first heading instead. On every other page, main's own
+    // edge already sits flush with the text and is the more
+    // reliable target (man pages have no <h1>, only unnumbered
+    // <h2> titles, so this avoids depending on heading level).
+    if (main.classList.contains("page-full")) {
+      var heading = main.querySelector("h1, h2.unnumbered");
+      if (heading) return heading.getBoundingClientRect().left;
+    }
+    return main.getBoundingClientRect().left;
+  }
+  function alignNavbarToContent() {
+    var main = document.querySelector("#quarto-document-content");
+    var navContainer = document.querySelector(".navbar-container");
+    if (!main || !navContainer) return;
+    navContainer.style.paddingLeft = "";
+    var diff = contentLeft(main) -
+      navContainer.getBoundingClientRect().left;
+    navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
+  }
+  // The navbar title is emitted as one plain-text node, "<pkg name>
+  // <version>" (see `website.title` in quarto_config()) -
+  // Quarto gives us no way to style just the version at the YAML
+  // level. Split it out into its own `<small>` here so
+  // altdown.scss can shrink it, pkgdown style.
+  function shrinkNavbarVersion() {
+    var title = document.querySelector(".navbar-title");
+    if (!title || title.querySelector(".navbar-version")) return;
+    var text = title.textContent;
+    var spaceIndex = text.indexOf(" ");
+    if (spaceIndex === -1) return;
+    title.textContent = text.slice(0, spaceIndex);
+    var version = document.createElement("small");
+    version.className = "navbar-version";
+    version.textContent = text.slice(spaceIndex + 1);
+    title.appendChild(document.createTextNode(" "));
+    title.appendChild(version);
+  }
+  // This script is injected right before </body>, so everything it
+  // reads is already in the DOM — no need to wait for "load" (which
+  // fires only once every image/font/subresource finishes, causing
+  // a visible flash where the navbar sits unaligned for a moment).
+  // Run once immediately, then keep "load"/"resize" as safety nets
+  // in case something later shifts the layout (e.g. a web font
+  // swap, though this theme doesn't use one).
+  shrinkNavbarVersion();
+  alignNavbarToContent();
+  window.addEventListener("load", alignNavbarToContent);
+  window.addEventListener("resize", alignNavbarToContent);
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -861,65 +947,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
   </div>
 </footer>
+
+
+
+
+<div class="reftip-payload" hidden><div class="reftip-tip" data-for="t1"><code class="reftip-sig">build_site(
+  path = &quot;.&quot;,
+  tooltips = requireNamespace(&quot;reftip&quot;, quietly = TRUE),
+  ...
+)</code><span class="reftip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div></div>
 <script>
-(function () {
-  function contentLeft(main) {
-    // On pages with margin content (e.g. the home page's
-    // Links/License column), <main> itself becomes a "page-full"
-    // grid spanning the whole viewport, so its own box tells us
-    // nothing about where the visible text starts — look at the
-    // title/first heading instead. On every other page, main's own
-    // edge already sits flush with the text and is the more
-    // reliable target (man pages have no <h1>, only unnumbered
-    // <h2> titles, so this avoids depending on heading level).
-    if (main.classList.contains("page-full")) {
-      var heading = main.querySelector("h1, h2.unnumbered");
-      if (heading) return heading.getBoundingClientRect().left;
-    }
-    return main.getBoundingClientRect().left;
+(function(){
+  var payload = document.currentScript.previousElementSibling;
+  var float = document.createElement('div');
+  float.className = 'reftip-float';
+  float.setAttribute('role', 'tooltip');
+  document.body.appendChild(float);
+  var hideTimer;
+  function place(el){
+    var r = el.getBoundingClientRect();
+    var top = r.bottom + 6;
+    var left = r.left;
+    var maxLeft = window.innerWidth - float.offsetWidth - 8;
+    if (left > maxLeft) left = Math.max(8, maxLeft);
+    var maxTop = window.innerHeight - float.offsetHeight - 8;
+    if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
+    float.style.top = top + 'px';
+    float.style.left = left + 'px';
   }
-  function alignNavbarToContent() {
-    var main = document.querySelector("#quarto-document-content");
-    var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
-    navContainer.style.paddingLeft = "";
-    var diff = contentLeft(main) -
-      navContainer.getBoundingClientRect().left;
-    navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
+  function show(el){
+    var key = el.getAttribute('data-reftip');
+    var tip = payload.querySelector('[data-for="' + key + '"]');
+    if (!tip) return;
+    float.innerHTML = tip.innerHTML;
+    float.style.display = 'block';
+    place(el);
   }
-  // The navbar title is emitted as one plain-text node, "<pkg name>
-  // <version>" (see `website.title` in quarto_website_static.yml) -
-  // Quarto gives us no way to style just the version at the YAML
-  // level. Split it out into its own `<small>` here so
-  // altdown.scss can shrink it, pkgdown style.
-  function shrinkNavbarVersion() {
-    var title = document.querySelector(".navbar-title");
-    if (!title || title.querySelector(".navbar-version")) return;
-    var text = title.textContent;
-    var spaceIndex = text.indexOf(" ");
-    if (spaceIndex === -1) return;
-    title.textContent = text.slice(0, spaceIndex);
-    var version = document.createElement("small");
-    version.className = "navbar-version";
-    version.textContent = text.slice(spaceIndex + 1);
-    title.appendChild(document.createTextNode(" "));
-    title.appendChild(version);
+  function hide(){ float.style.display = 'none'; }
+  function cancelHide(){ clearTimeout(hideTimer); }
+  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
+  var links = document.querySelectorAll('a.reftip-ref');
+  for (var i = 0; i < links.length; i++) {
+    (function(el){
+      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
+      el.addEventListener('mouseleave', scheduleHide);
+      el.addEventListener('focus', function(){ show(el); });
+      el.addEventListener('blur', hide);
+    })(links[i]);
   }
-  // This script is injected right before </body>, so everything it
-  // reads is already in the DOM — no need to wait for "load" (which
-  // fires only once every image/font/subresource finishes, causing
-  // a visible flash where the navbar sits unaligned for a moment).
-  // Run once immediately, then keep "load"/"resize" as safety nets
-  // in case something later shifts the layout (e.g. a web font
-  // swap, though this theme doesn't use one).
-  shrinkNavbarVersion();
-  alignNavbarToContent();
-  window.addEventListener("load", alignNavbarToContent);
-  window.addEventListener("resize", alignNavbarToContent);
+  float.addEventListener('mouseenter', cancelHide);
+  float.addEventListener('mouseleave', scheduleHide);
 })();
 </script>
-
-
-
-
 </body></html>
