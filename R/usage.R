@@ -105,6 +105,24 @@ unevaluated_chunks_to_code <- function(lines) {
   lines
 }
 
+# Drops blank lines at the start and end of every fenced code block. altdoc
+# leaves some where it removed the `\dontrun{` and `}` around the examples;
+# knitr would strip them from a chunk, but a plain code block shows them.
+trim_code_blocks <- function(lines) {
+  is_fence <- grepl("^\\s*```", lines)
+  block_id <- cumsum(is_fence)
+  in_block <- block_id %% 2 == 1 & !is_fence
+  blank <- !nzchar(trimws(lines))
+
+  drop <- logical(length(lines))
+  for (idx in split(which(in_block), block_id[in_block])) {
+    content <- idx[!blank[idx]]
+    keep <- length(content) > 0 & idx >= min(content, Inf) & idx <= max(content, -Inf)
+    drop[idx[!keep]] <- TRUE
+  }
+  lines[!drop]
+}
+
 # ---- pre-render script ----------------------------------------------------------
 #
 # The man/*.qmd files only exist once altdoc::render_docs() has converted the
@@ -118,7 +136,7 @@ fix_man_qmd <- function(lines) {
   if (is.null(fixed)) {
     fixed <- lines
   }
-  unevaluated_chunks_to_code(convert_inline_code(fixed))
+  trim_code_blocks(unevaluated_chunks_to_code(convert_inline_code(fixed)))
 }
 
 pre_render_main <- function() {
@@ -141,6 +159,7 @@ pre_render_objects <- c(
   "convert_inline_code",
   "noeval_chunk_pattern",
   "unevaluated_chunks_to_code",
+  "trim_code_blocks",
   "fix_man_qmd",
   "pre_render_main"
 )

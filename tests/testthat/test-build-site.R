@@ -514,3 +514,11 @@ test_that("convert_inline_code() handles <code> with attributes but leaves <pre>
   block <- "<pre><code class='language-R'>x</code></pre>"
   expect_identical(convert_inline_code(block), block)
 })
+
+test_that("trim_code_blocks() drops leading and trailing blank lines inside code blocks only", {
+  lines <- c("", "```r", "", "f()", "", "g()", "", "", "```", "", "```{r}", "", "h()", "```")
+  expect_identical(
+    trim_code_blocks(lines),
+    c("", "```r", "f()", "", "g()", "```", "", "```{r}", "h()", "```")
+  )
+})
