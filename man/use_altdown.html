@@ -394,7 +394,7 @@ a.reftip-ref{cursor:help;}
 <h2 class="unnumbered anchored" data-anchor-id="set-up-a-package-to-use-altdown">Set up a package to use altdown</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Writes <code>altdoc/altdown.yml</code>, the one configuration file <code><a class="reftip-ref" data-reftip="t1" href="./build_site.html">build_site()</a></code> reads, with a starter <code style="white-space: pre;">reference:</code> field listing every function currently documented in <code style="white-space: pre;">&lt;path&gt;/man/*.Rd</code> in one "All functions" section. Also adds the <code>.gitignore</code>/<code>.Rbuildignore</code> entries the build needs (see Details) if they’re not already there.</p>
+<p>Writes <code>altdoc/altdown.yml</code>, the one configuration file <code><a class="reftip-ref" data-reftip="t1" href="./build_site.html">build_site()</a></code> reads, with a starter <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one "All functions" section. Also adds the <code>.gitignore</code>/<code>.Rbuildignore</code> entries the build needs (see Details) if they’re not already there.</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -405,7 +405,7 @@ a.reftip-ref{cursor:help;}
 <table role="presentation">
 <tbody><tr>
 <td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="path">path</code>
+<code>path</code>
 </td>
 <td>
 Path to the target package root. Defaults to the current directory.
@@ -415,7 +415,7 @@ Path to the target package root. Defaults to the current directory.
 </section>
 <section id="details" class="level3">
 <h3 class="anchored" data-anchor-id="details">Details</h3>
-<p>An existing <code>altdoc/altdown.yml</code> is never overwritten. If the package was set up with an earlier version of altdown, the <code style="white-space: pre;">reference:</code> field is taken over from its <code>altdoc/reference.yml</code>; that file, and the <code>altdoc/build-site.R</code> and <code>altdoc/quarto_website_static.yml</code> copies, are no longer used and can be deleted.</p>
+<p>An existing <code>altdoc/altdown.yml</code> is never overwritten. If the package was set up with an earlier version of altdown, the <code>reference:</code> field is taken over from its <code>altdoc/reference.yml</code>; that file, and the <code>altdoc/build-site.R</code> and <code>altdoc/quarto_website_static.yml</code> copies, are no longer used and can be deleted.</p>
 <p><code><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown()</a></code> adds the following lines to <code>.gitignore</code> and <code>.Rbuildignore</code> (only the ones not already present in each file):</p>
 <div class="sourceCode">
 <pre># .gitignore
@@ -442,25 +442,21 @@ altdoc/altdown-pre-render.R
 </section>
 <section id="value" class="level3">
 <h3 class="anchored" data-anchor-id="value">Value</h3>
-<p>Invisibly, the path to the <code style="white-space: pre;">altdoc/</code> directory.</p>
+<p>Invisibly, the path to the <code>altdoc/</code> directory.</p>
 </section>
 <section id="examples" class="level3">
 <h3 class="anchored" data-anchor-id="examples">Examples</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"altdown"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="st">"examplepkg"</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(pkg)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span>(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Package: examplepkg</span><span class="sc">\n</span><span class="st">Version: 0.0.0.9000"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(pkg, <span class="st">"DESCRIPTION"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown</a></span>(pkg)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">file.path</span>(pkg, <span class="st">"altdoc"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "altdown.yml"</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(pkg, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="st">"examplepkg"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(pkg)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Package: examplepkg</span><span class="sc">\n</span><span class="st">Version: 0.0.0.9000"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(pkg, <span class="st">"DESCRIPTION"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown</a></span>(pkg)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">file.path</span>(pkg, <span class="st">"altdoc"</span>))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "altdown.yml"</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span>(pkg, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 

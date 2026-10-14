@@ -394,7 +394,7 @@ a.reftip-ref{cursor:help;}
 <h2 class="unnumbered anchored" data-anchor-id="build-an-altdown-themed-altdoc-website">Build an altdown-themed altdoc website</h2>
 <section id="description" class="level3">
 <h3 class="anchored" data-anchor-id="description">Description</h3>
-<p>Builds the package website into <code style="white-space: pre;">docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown. Before rendering it generates, from the package sources and <code>altdoc/altdown.yml</code>:</p>
+<p>Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown. Before rendering it generates, from the package sources and <code>altdoc/altdown.yml</code>:</p>
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
@@ -409,7 +409,7 @@ a.reftip-ref{cursor:help;}
 <table role="presentation">
 <tbody><tr>
 <td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="path">path</code>
+<code>path</code>
 </td>
 <td>
 Path to the package root.
@@ -417,7 +417,7 @@ Path to the package root.
 </tr>
 <tr>
 <td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="tooltips">tooltips</code>
+<code>tooltips</code>
 </td>
 <td>
 Logical. Add hover tooltips to references to the package’s own functions with <code>reftip::add_tooltips()</code>? Defaults to <code>TRUE</code> when reftip is installed.
@@ -425,7 +425,7 @@ Logical. Add hover tooltips to references to the package’s own functions with 
 </tr>
 <tr>
 <td style="white-space: collapse; font-family: monospace; vertical-align: top">
-<code id="...">…</code>
+<code>...</code>
 </td>
 <td>
 Passed on to <code>altdoc::render_docs()</code>, e.g.&nbsp;<code>freeze</code> or <code>parallel</code>.
@@ -449,7 +449,7 @@ Passed on to <code>altdoc::render_docs()</code>, e.g.&nbsp;<code>freeze</code> o
 <p>the "Authors and Citation" page.</p>
 </li>
 </ul>
-<p>These generated files are written to <code style="white-space: pre;">altdoc/</code> (which altdoc copies into its Quarto project), so they’re gitignored by <code><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown()</a></code>. <code>README.md</code> itself is never modified.</p>
+<p>These generated files are written to <code>altdoc/</code> (which altdoc copies into its Quarto project), so they’re gitignored by <code><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown()</a></code>. <code>README.md</code> itself is never modified.</p>
 </section>
 <section id="value" class="level3">
 <h3 class="anchored" data-anchor-id="value">Value</h3>
@@ -460,10 +460,10 @@ Passed on to <code>altdoc::render_docs()</code>, e.g.&nbsp;<code>freeze</code> o
 <p><code>altdoc/altdown.yml</code> (created by <code><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown()</a></code>) can contain:</p>
 <ul>
 <li>
-<p><code>reference</code>: groups the function reference index, in the same shape as pkgdown’s <code style="white-space: pre;">reference:</code> field. <code>contents</code> entries can be a topic alias or a selector: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>has_concept()</code>, <code>has_keyword()</code>, <code>-</code> to exclude, and <code>c()</code> to combine. Without it, every topic is listed in one section.</p>
+<p><code>reference</code>: groups the function reference index, in the same shape as pkgdown’s <code>reference:</code> field. <code>contents</code> entries can be a topic alias or a selector: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>has_concept()</code>, <code>has_keyword()</code>, <code>-</code> to exclude, and <code>c()</code> to combine. Without it, every topic is listed in one section.</p>
 </li>
 <li>
-<p><code>articles</code>: the order of the "Articles" navbar menu, as vignette paths relative to <code style="white-space: pre;">vignettes/</code> without extension (e.g.&nbsp;<code>articles/details</code>). Without it, every vignette other than the "Get started" one is listed, top-level vignettes first, then those in <code style="white-space: pre;">vignettes/articles/</code>.</p>
+<p><code>articles</code>: the order of the "Articles" navbar menu, as vignette paths relative to <code>vignettes/</code> without extension (e.g.&nbsp;<code>articles/details</code>). Without it, every vignette other than the "Get started" one is listed, top-level vignettes first, then those in <code>vignettes/articles/</code>.</p>
 </li>
 <li>
 <p><code>quarto</code>: settings merged (with <code>utils::modifyList()</code>) over the generated Quarto configuration, e.g.&nbsp;to add navbar entries or extra SCSS files.</p>
