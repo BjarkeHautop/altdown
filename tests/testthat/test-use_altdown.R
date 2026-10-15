@@ -19,22 +19,6 @@ test_that("use_altdown() writes a starter altdown.yml listing every topic", {
   expect_identical(config$reference[[1]]$contents, "foo")
 })
 
-test_that("use_altdown() takes `reference:` over from an earlier altdoc/reference.yml", {
-  dir <- withr::local_tempdir()
-  writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
-  dir.create(file.path(dir, "altdoc"))
-  writeLines(
-    c("## old comment", "", "reference:", "  - title: Grouped", "    contents:", "      - foo"),
-    file.path(dir, "altdoc", "reference.yml")
-  )
-
-  expect_message(use_altdown(dir), "no longer used")
-
-  config <- yaml::yaml.load_file(file.path(dir, "altdoc", "altdown.yml"))
-  expect_identical(config$reference[[1]]$title, "Grouped")
-  expect_identical(config$reference[[1]]$contents, "foo")
-})
-
 test_that("use_altdown() adds the .gitignore/.Rbuildignore entries the build needs", {
   dir <- withr::local_tempdir()
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))

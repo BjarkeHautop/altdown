@@ -63,7 +63,6 @@ build_site <- function(
   ...
 ) {
   config <- read_config(path)
-  warn_legacy_files(path)
 
   copy_theme_files(path)
   write_home(path)
@@ -108,19 +107,6 @@ read_config <- function(path) {
   }
   config <- yaml::read_yaml(config_path)
   if (is.null(config)) list() else config
-}
-
-# Files from altdown's earlier copy-the-template setup. altdoc would still
-# copy them into the Quarto project, but nothing reads them any more.
-warn_legacy_files <- function(path) {
-  legacy <- c("build-site.R", "quarto_website_static.yml", "reference.yml")
-  found <- legacy[file.exists(file.path(path, "altdoc", legacy))]
-  if (length(found) > 0) {
-    cli::cli_warn(c(
-      "{.path altdoc/{found}} {?is/are} no longer used by altdown and can be deleted.",
-      "i" = "The reference index is now configured in {.path altdoc/altdown.yml}."
-    ))
-  }
 }
 
 copy_theme_files <- function(path) {

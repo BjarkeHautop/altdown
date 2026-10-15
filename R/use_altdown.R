@@ -5,11 +5,7 @@
 #' documented in `<path>/man/*.Rd` in one "All functions" section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
 #' needs (see Details) if they're not already there.
 #'
-#' An existing `altdoc/altdown.yml` is never overwritten. If the package was
-#' set up with an earlier version of altdown, the `reference:` field is
-#' taken over from its `altdoc/reference.yml`; that file, and the
-#' `altdoc/build-site.R` and `altdoc/quarto_website_static.yml` copies, are
-#' no longer used and can be deleted.
+#' An existing `altdoc/altdown.yml` is never overwritten.
 #'
 #' @details
 #' `use_altdown()` adds the following lines to `.gitignore` and
@@ -93,15 +89,6 @@ use_altdown <- function(path = ".") {
     c("^docs$", "^altdoc$", "^_quarto$")
   )
 
-  legacy <- c("build-site.R", "quarto_website_static.yml", "reference.yml")
-  legacy <- legacy[file.exists(file.path(out_dir, legacy))]
-  if (length(legacy) > 0) {
-    message(
-      "\nThese files from an earlier altdown setup are no longer used and can be deleted:\n",
-      paste0("  altdoc/", legacy, collapse = "\n")
-    )
-  }
-
   message(
     "\nNext steps:\n",
     "  1. Edit altdoc/altdown.yml to group your functions the way you want.\n",
@@ -145,19 +132,9 @@ use_altdown <- function(path = ".") {
   )
 }
 
-# The `reference:` field of an earlier altdown setup's altdoc/reference.yml
-# if there is one, otherwise one \name{} per man/*.Rd, sorted, as a single
-# "All functions" section, leaving any grouping to the user.
+# One \name{} per man/*.Rd, sorted, as a single "All functions" section,
+# leaving any grouping to the user.
 .starter_reference_yml <- function(path) {
-  legacy <- file.path(path, "altdoc", "reference.yml")
-  if (file.exists(legacy)) {
-    lines <- readLines(legacy, warn = FALSE)
-    start <- grep("^reference:", lines)[1]
-    if (!is.na(start)) {
-      return(lines[seq(start, length(lines))])
-    }
-  }
-
   man_dir <- file.path(path, "man")
   rd_files <- if (dir.exists(man_dir)) {
     sort(list.files(man_dir, pattern = "\\.Rd$", full.names = TRUE))

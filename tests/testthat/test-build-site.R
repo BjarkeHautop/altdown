@@ -294,14 +294,6 @@ test_that("read_config() errors without altdown.yml and accepts an empty one", {
   expect_identical(read_config(dir), list())
 })
 
-test_that("warn_legacy_files() names files left from the copied-template setup", {
-  dir <- new_pkg()
-  expect_no_warning(warn_legacy_files(dir))
-
-  writeLines("x", file.path(dir, "altdoc", "build-site.R"))
-  expect_warning(warn_legacy_files(dir), "build-site.R")
-})
-
 test_that("copy_theme_files() copies the SCSS and scripts into altdoc/", {
   dir <- new_pkg()
   copy_theme_files(dir)

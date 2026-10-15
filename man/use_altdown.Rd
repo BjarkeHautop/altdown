@@ -20,11 +20,7 @@ documented in \verb{<path>/man/*.Rd} in one "All functions" section. Also adds t
 needs (see Details) if they're not already there.
 }
 \details{
-An existing \code{altdoc/altdown.yml} is never overwritten. If the package was
-set up with an earlier version of altdown, the \verb{reference:} field is
-taken over from its \code{altdoc/reference.yml}; that file, and the
-\code{altdoc/build-site.R} and \code{altdoc/quarto_website_static.yml} copies, are
-no longer used and can be deleted.
+An existing \code{altdoc/altdown.yml} is never overwritten.
 
 \code{use_altdown()} adds the following lines to \code{.gitignore} and
 \code{.Rbuildignore} (only the ones not already present in each file):
