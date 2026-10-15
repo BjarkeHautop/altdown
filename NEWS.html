@@ -101,13 +101,6 @@ visitor has never toggled here before - an explicit past choice always wins.
 </script>
 
 
-<!-- reftip -->
-<style>
-.reftip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.reftip-float .reftip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.reftip-float .reftip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.reftip-ref{cursor:help;}
-</style>
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -350,10 +343,6 @@ a.reftip-ref{cursor:help;}
 <section id="altdown-0.0.0.9000" class="level1">
 <h1>altdown 0.0.0.9000</h1>
 <ul>
-<li>New <code><a class="reftip-ref" data-reftip="t1" href="man/build_site.html">build_site()</a></code> builds the site; the build logic, theme and scripts now live in the package instead of being copied into <code>altdoc/</code>.</li>
-<li><code><a class="reftip-ref" data-reftip="t2" href="man/use_altdown.html">use_altdown()</a></code> now only writes <code>altdoc/altdown.yml</code>, which holds the <code>reference:</code> grouping (taken over from an existing <code>altdoc/reference.yml</code>) and optional <code>articles:</code> and <code>quarto:</code> fields. Its <code>overwrite</code> argument is gone.</li>
-<li><code><a class="reftip-ref" data-reftip="t1" href="man/build_site.html">build_site()</a></code> no longer modifies <code>README.md</code>, and lists every vignette other than the “Get started” one under “Articles”.</li>
-<li><code><a class="reftip-ref" data-reftip="t1" href="man/build_site.html">build_site()</a></code> adds reftip tooltips when reftip is installed.</li>
 <li>Initial release.</li>
 </ul>
 
@@ -856,52 +845,4 @@ instead, on every page, after layout settles.
 
 
 
-<div class="reftip-payload" hidden><div class="reftip-tip" data-for="t1"><code class="reftip-sig">build_site(
-  path = &quot;.&quot;,
-  tooltips = requireNamespace(&quot;reftip&quot;, quietly = TRUE),
-  ...
-)</code><span class="reftip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div><div class="reftip-tip" data-for="t2"><code class="reftip-sig">use_altdown(path = &quot;.&quot;)</code><span class="reftip-brief">Writes <code>altdoc/altdown.yml</code>, the one configuration file <code>build_site()</code> reads, with a starter <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one &quot;All functions&quot;...</span></div></div>
-<script>
-(function(){
-  var payload = document.currentScript.previousElementSibling;
-  var float = document.createElement('div');
-  float.className = 'reftip-float';
-  float.setAttribute('role', 'tooltip');
-  document.body.appendChild(float);
-  var hideTimer;
-  function place(el){
-    var r = el.getBoundingClientRect();
-    var top = r.bottom + 6;
-    var left = r.left;
-    var maxLeft = window.innerWidth - float.offsetWidth - 8;
-    if (left > maxLeft) left = Math.max(8, maxLeft);
-    var maxTop = window.innerHeight - float.offsetHeight - 8;
-    if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
-    float.style.top = top + 'px';
-    float.style.left = left + 'px';
-  }
-  function show(el){
-    var key = el.getAttribute('data-reftip');
-    var tip = payload.querySelector('[data-for="' + key + '"]');
-    if (!tip) return;
-    float.innerHTML = tip.innerHTML;
-    float.style.display = 'block';
-    place(el);
-  }
-  function hide(){ float.style.display = 'none'; }
-  function cancelHide(){ clearTimeout(hideTimer); }
-  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.reftip-ref');
-  for (var i = 0; i < links.length; i++) {
-    (function(el){
-      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
-      el.addEventListener('mouseleave', scheduleHide);
-      el.addEventListener('focus', function(){ show(el); });
-      el.addEventListener('blur', hide);
-    })(links[i]);
-  }
-  float.addEventListener('mouseenter', cancelHide);
-  float.addEventListener('mouseleave', scheduleHide);
-})();
-</script>
 </body></html>
