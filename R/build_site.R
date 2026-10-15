@@ -1,8 +1,10 @@
 #' Build an altdown-themed altdoc website
 #'
 #' Builds the package website into `docs/` with
-#' [altdoc::render_docs()], styled to mirror pkgdown. Before rendering it
-#' generates, from the package sources and `altdoc/altdown.yml`:
+#' [altdoc::render_docs()], styled to mirror pkgdown.
+#'
+#' Before rendering it generates, from the package sources and
+#' `altdoc/altdown.yml`:
 #'
 #' * the navbar, with a "Get started" link, the function reference, an
 #'   "Articles" menu and the changelog;
@@ -15,8 +17,7 @@
 #' * the "Authors and Citation" page.
 #'
 #' These generated files are written to `altdoc/` (which altdoc copies into
-#' its Quarto project), so they're gitignored by [use_altdown()]. `README.md`
-#' itself is never modified.
+#' its Quarto project), so they're gitignored by [use_altdown()].
 #'
 #' @section Configuration:
 #' `altdoc/altdown.yml` (created by [use_altdown()]) can contain:

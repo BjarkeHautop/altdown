@@ -22,10 +22,11 @@ Invisibly, the path to the built site.
 }
 \description{
 Builds the package website into \verb{docs/} with
-\code{\link[altdoc:render_docs]{altdoc::render_docs()}}, styled to mirror pkgdown. Before rendering it
-generates, from the package sources and \code{altdoc/altdown.yml}:
+\code{\link[altdoc:render_docs]{altdoc::render_docs()}}, styled to mirror pkgdown.
 }
 \details{
+Before rendering it generates, from the package sources and
+\code{altdoc/altdown.yml}:
 \itemize{
 \item the navbar, with a "Get started" link, the function reference, an
 "Articles" menu and the changelog;
@@ -39,8 +40,7 @@ site's light/dark toggle;
 }
 
 These generated files are written to \verb{altdoc/} (which altdoc copies into
-its Quarto project), so they're gitignored by \code{\link[=use_altdown]{use_altdown()}}. \code{README.md}
-itself is never modified.
+its Quarto project), so they're gitignored by \code{\link[=use_altdown]{use_altdown()}}.
 }
 \section{Configuration}{
 
