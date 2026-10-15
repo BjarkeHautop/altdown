@@ -136,12 +136,12 @@ visitor has never toggled here before - an explicit past choice always wins.
 </script>
 
 
-<!-- reftip -->
+<!-- altdown-tooltips -->
 <style>
-.reftip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.reftip-float .reftip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.reftip-float .reftip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.reftip-ref{cursor:help;}
+.altdown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
+.altdown-tip-float .altdown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
+.altdown-tip-float .altdown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
+a.altdown-tip-ref{cursor:help;}
 </style>
 </head>
 
@@ -325,7 +325,7 @@ a.reftip-ref{cursor:help;}
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../vignettes/getting-started.html"> 
+    <a class="nav-link" href="../vignettes/altdown.html"> 
 <span class="menu-text">Get started</span></a>
   </li>  
   <li class="nav-item">
@@ -338,7 +338,7 @@ a.reftip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
-    <a class="dropdown-item" href="../vignettes/articles/technical.html">
+    <a class="dropdown-item" href="../vignettes/technical.html">
  <span class="dropdown-text">Technical details</span></a>
   </li>  
     </ul>
@@ -398,11 +398,7 @@ a.reftip-ref{cursor:help;}
 </section>
 <section id="usage" class="level3">
 <h3 class="anchored" data-anchor-id="usage">Usage</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="reftip-ref" data-reftip="t1" href="./build_site.html">build_site</a></span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"."</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tooltips =</span> <span class="fu">requireNamespace</span>(<span class="st">"reftip"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu"><a class="altdown-tip-ref" data-altdown-tip="t1" href="./build_site.html">build_site</a></span>(<span class="at">path =</span> <span class="st">"."</span>, <span class="at">tooltips =</span> <span class="cn">TRUE</span>, ...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="arguments" class="level3">
 <h3 class="anchored" data-anchor-id="arguments">Arguments</h3>
@@ -420,7 +416,7 @@ Path to the package root.
 <code>tooltips</code>
 </td>
 <td>
-Logical. Add hover tooltips to references to the package’s own functions with <code>reftip::add_tooltips()</code>? Defaults to <code>TRUE</code> when reftip is installed.
+Logical. Link references to the package’s own functions (in code blocks and inline code) to their reference page, with a hover tooltip showing the function’s usage and the first sentence of its description?
 </td>
 </tr>
 <tr>
@@ -449,7 +445,7 @@ Passed on to <code>altdoc::render_docs()</code>, e.g.&nbsp;<code>freeze</code> o
 <p>the "Authors and Citation" page.</p>
 </li>
 </ul>
-<p>These generated files are written to <code>altdoc/</code> (which altdoc copies into its Quarto project), so they’re gitignored by <code><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown()</a></code>. <code>README.md</code> itself is never modified.</p>
+<p>These generated files are written to <code>altdoc/</code> (which altdoc copies into its Quarto project), so they’re gitignored by <code><a class="altdown-tip-ref" data-altdown-tip="t2" href="./use_altdown.html">use_altdown()</a></code>. <code>README.md</code> itself is never modified.</p>
 </section>
 <section id="value" class="level3">
 <h3 class="anchored" data-anchor-id="value">Value</h3>
@@ -457,7 +453,7 @@ Passed on to <code>altdoc::render_docs()</code>, e.g.&nbsp;<code>freeze</code> o
 </section>
 <section id="configuration" class="level3">
 <h3 class="anchored" data-anchor-id="configuration">Configuration</h3>
-<p><code>altdoc/altdown.yml</code> (created by <code><a class="reftip-ref" data-reftip="t2" href="./use_altdown.html">use_altdown()</a></code>) can contain:</p>
+<p><code>altdoc/altdown.yml</code> (created by <code><a class="altdown-tip-ref" data-altdown-tip="t2" href="./use_altdown.html">use_altdown()</a></code>) can contain:</p>
 <ul>
 <li>
 <p><code>reference</code>: groups the function reference index, in the same shape as pkgdown’s <code>reference:</code> field. <code>contents</code> entries can be a topic alias or a selector: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>has_concept()</code>, <code>has_keyword()</code>, <code>-</code> to exclude, and <code>c()</code> to combine. Without it, every topic is listed in one section.</p>
@@ -466,7 +462,16 @@ Passed on to <code>altdoc::render_docs()</code>, e.g.&nbsp;<code>freeze</code> o
 <p><code>articles</code>: the order of the "Articles" navbar menu, as vignette paths relative to <code>vignettes/</code> without extension (e.g.&nbsp;<code>articles/details</code>). Without it, every vignette other than the "Get started" one is listed, top-level vignettes first, then those in <code>vignettes/articles/</code>.</p>
 </li>
 <li>
-<p><code>quarto</code>: settings merged (with <code>utils::modifyList()</code>) over the generated Quarto configuration, e.g.&nbsp;to add navbar entries or extra SCSS files.</p>
+<p><code>quarto</code>: settings merged over the generated Quarto configuration. Settings are merged key by key: a list of entries (e.g.&nbsp;the navbar’s <code>left:</code> or <code>right:</code> items) is added to, any other value is replaced, and <code>~</code> removes a setting. For example, to add a navbar link:</p>
+<div class="sourceCode yaml">
+<pre>quarto:
+  website:
+    navbar:
+      right:
+        - text: Blog
+          href: https://example.com
+</pre>
+</div>
 </li>
 </ul>
 <p>The "Get started" link points to the vignette named after the package, or to the only top-level vignette if there is just one.</p>
@@ -971,16 +976,12 @@ instead, on every page, after layout settles.
 
 
 
-<div class="reftip-payload" hidden><div class="reftip-tip" data-for="t1"><code class="reftip-sig">build_site(
-  path = &quot;.&quot;,
-  tooltips = requireNamespace(&quot;reftip&quot;, quietly = TRUE),
-  ...
-)</code><span class="reftip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div><div class="reftip-tip" data-for="t2"><code class="reftip-sig">use_altdown(path = &quot;.&quot;)</code><span class="reftip-brief">Writes <code>altdoc/altdown.yml</code>, the one configuration file <code>build_site()</code> reads, with a starter <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one &quot;All functions&quot;...</span></div></div>
+<div class="altdown-tip-payload" hidden><div data-for="t1"><code class="altdown-tip-sig">build_site(path = &quot;.&quot;, tooltips = TRUE, ...)</code><span class="altdown-tip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div><div data-for="t2"><code class="altdown-tip-sig">use_altdown(path = &quot;.&quot;)</code><span class="altdown-tip-brief">Writes <code>altdoc/altdown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;
   var float = document.createElement('div');
-  float.className = 'reftip-float';
+  float.className = 'altdown-tip-float';
   float.setAttribute('role', 'tooltip');
   document.body.appendChild(float);
   var hideTimer;
@@ -996,7 +997,7 @@ instead, on every page, after layout settles.
     float.style.left = left + 'px';
   }
   function show(el){
-    var key = el.getAttribute('data-reftip');
+    var key = el.getAttribute('data-altdown-tip');
     var tip = payload.querySelector('[data-for="' + key + '"]');
     if (!tip) return;
     float.innerHTML = tip.innerHTML;
@@ -1006,7 +1007,7 @@ instead, on every page, after layout settles.
   function hide(){ float.style.display = 'none'; }
   function cancelHide(){ clearTimeout(hideTimer); }
   function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.reftip-ref');
+  var links = document.querySelectorAll('a.altdown-tip-ref');
   for (var i = 0; i < links.length; i++) {
     (function(el){
       el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });

@@ -1,31 +1,17 @@
 [
   {
-    "objectID": "man/greet.html",
-    "href": "man/greet.html",
-    "title": "altdown 0.0.0.9000",
-    "section": "",
-    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If ‘TRUE’, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\ngreet(\"world\")\n#&gt; [1] \"Hello, world!\"\ngreet(\"world\", loud = TRUE)\n#&gt; [1] \"HELLO, WORLD!\""
-  },
-  {
-    "objectID": "man/greet.html#greet-someone",
-    "href": "man/greet.html#greet-someone",
-    "title": "altdown 0.0.0.9000",
-    "section": "",
-    "text": "A toy function that returns a greeting message. Used only to give this example package something to document.\n\n\n\ngreet(name = \"world\", loud = FALSE)\n\n\n\n\n\n\nname\n\n\nA character string with the name to greet.\n\n\n\n\nloud\n\n\nLogical. If ‘TRUE’, the greeting is shouted (all caps).\n\n\n\n\n\n\nA character string with the greeting.\n\n\n\n\ngreet(\"world\")\n#&gt; [1] \"Hello, world!\"\ngreet(\"world\", loud = TRUE)\n#&gt; [1] \"HELLO, WORLD!\""
-  },
-  {
     "objectID": "man/use_altdown.html",
     "href": "man/use_altdown.html",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "Writes altdoc/altdown.yml, the one configuration file build_site() reads, with a starter reference: field listing every function currently documented in &lt;path&gt;/man/*.Rd in one \"All functions\" section. Also adds the .gitignore/.Rbuildignore entries the build needs (see Details) if they’re not already there.\n\n\n\nuse_altdown(path = \".\")\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\n\n\nAn existing altdoc/altdown.yml is never overwritten. If the package was set up with an earlier version of altdown, the reference: field is taken over from its altdoc/reference.yml; that file, and the altdoc/build-site.R and altdoc/quarto_website_static.yml copies, are no longer used and can be deleted.\nuse_altdown() adds the following lines to .gitignore and .Rbuildignore (only the ones not already present in each file):\n\n# .gitignore\n_quarto/*\n!_quarto/_freeze/\naltdoc/freeze.rds\naltdoc/pkgdown.yml\naltdoc/quarto_website.yml\naltdoc/index.md\naltdoc/reference.qmd\naltdoc/authors.qmd\naltdoc/altdown.scss\naltdoc/altdown-header.html\naltdoc/altdown-after-body.html\naltdoc/altdown-pre-render.R\n\n# .Rbuildignore\n^docs\\$\n^altdoc\\$\n^_quarto\\$\n\n\nThe first four mirror what altdoc::setup_docs(tool = \"quarto_website\") adds, plus altdoc/pkgdown.yml, which altdoc::render_docs() rewrites on every build. The rest are the files build_site() generates.\n\n\n\nInvisibly, the path to the altdoc/ directory.\n\n\n\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n#&gt; [1] \"altdown.yml\"\nunlink(pkg, recursive = TRUE)"
+    "text": "Writes altdoc/altdown.yml, the configuration file build_site() reads. It starts with a reference: field listing every function currently documented in &lt;path&gt;/man/*.Rd in one \"All functions\" section. Also adds the .gitignore/.Rbuildignore entries the build needs (see Details) if they’re not already there.\n\n\n\nuse_altdown(path = \".\")\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\n\n\nAn existing altdoc/altdown.yml is never overwritten. If the package was set up with an earlier version of altdown, the reference: field is taken over from its altdoc/reference.yml; that file, and the altdoc/build-site.R and altdoc/quarto_website_static.yml copies, are no longer used and can be deleted.\nuse_altdown() adds the following lines to .gitignore and .Rbuildignore (only the ones not already present in each file):\n\n# .gitignore\n_quarto/*\n!_quarto/_freeze/\naltdoc/freeze.rds\naltdoc/pkgdown.yml\naltdoc/quarto_website.yml\naltdoc/index.md\naltdoc/reference.qmd\naltdoc/authors.qmd\naltdoc/altdown.scss\naltdoc/altdown-header.html\naltdoc/altdown-after-body.html\naltdoc/altdown-pre-render.R\n\n# .Rbuildignore\n^docs\\$\n^altdoc\\$\n^_quarto\\$\n\n\nThe first four mirror what altdoc::setup_docs(tool = \"quarto_website\") adds, plus altdoc/pkgdown.yml, which altdoc::render_docs() rewrites on every build. The rest are the files build_site() generates.\n\n\n\nInvisibly, the path to the altdoc/ directory.\n\n\n\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n#&gt; [1] \"altdown.yml\"\nunlink(pkg, recursive = TRUE)"
   },
   {
     "objectID": "man/use_altdown.html#set-up-a-package-to-use-altdown",
     "href": "man/use_altdown.html#set-up-a-package-to-use-altdown",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "Writes altdoc/altdown.yml, the one configuration file build_site() reads, with a starter reference: field listing every function currently documented in &lt;path&gt;/man/*.Rd in one \"All functions\" section. Also adds the .gitignore/.Rbuildignore entries the build needs (see Details) if they’re not already there.\n\n\n\nuse_altdown(path = \".\")\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\n\n\nAn existing altdoc/altdown.yml is never overwritten. If the package was set up with an earlier version of altdown, the reference: field is taken over from its altdoc/reference.yml; that file, and the altdoc/build-site.R and altdoc/quarto_website_static.yml copies, are no longer used and can be deleted.\nuse_altdown() adds the following lines to .gitignore and .Rbuildignore (only the ones not already present in each file):\n\n# .gitignore\n_quarto/*\n!_quarto/_freeze/\naltdoc/freeze.rds\naltdoc/pkgdown.yml\naltdoc/quarto_website.yml\naltdoc/index.md\naltdoc/reference.qmd\naltdoc/authors.qmd\naltdoc/altdown.scss\naltdoc/altdown-header.html\naltdoc/altdown-after-body.html\naltdoc/altdown-pre-render.R\n\n# .Rbuildignore\n^docs\\$\n^altdoc\\$\n^_quarto\\$\n\n\nThe first four mirror what altdoc::setup_docs(tool = \"quarto_website\") adds, plus altdoc/pkgdown.yml, which altdoc::render_docs() rewrites on every build. The rest are the files build_site() generates.\n\n\n\nInvisibly, the path to the altdoc/ directory.\n\n\n\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n#&gt; [1] \"altdown.yml\"\nunlink(pkg, recursive = TRUE)"
+    "text": "Writes altdoc/altdown.yml, the configuration file build_site() reads. It starts with a reference: field listing every function currently documented in &lt;path&gt;/man/*.Rd in one \"All functions\" section. Also adds the .gitignore/.Rbuildignore entries the build needs (see Details) if they’re not already there.\n\n\n\nuse_altdown(path = \".\")\n\n\n\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\n\n\nAn existing altdoc/altdown.yml is never overwritten. If the package was set up with an earlier version of altdown, the reference: field is taken over from its altdoc/reference.yml; that file, and the altdoc/build-site.R and altdoc/quarto_website_static.yml copies, are no longer used and can be deleted.\nuse_altdown() adds the following lines to .gitignore and .Rbuildignore (only the ones not already present in each file):\n\n# .gitignore\n_quarto/*\n!_quarto/_freeze/\naltdoc/freeze.rds\naltdoc/pkgdown.yml\naltdoc/quarto_website.yml\naltdoc/index.md\naltdoc/reference.qmd\naltdoc/authors.qmd\naltdoc/altdown.scss\naltdoc/altdown-header.html\naltdoc/altdown-after-body.html\naltdoc/altdown-pre-render.R\n\n# .Rbuildignore\n^docs\\$\n^altdoc\\$\n^_quarto\\$\n\n\nThe first four mirror what altdoc::setup_docs(tool = \"quarto_website\") adds, plus altdoc/pkgdown.yml, which altdoc::render_docs() rewrites on every build. The rest are the files build_site() generates.\n\n\n\nInvisibly, the path to the altdoc/ directory.\n\n\n\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_altdown(pkg)\nlist.files(file.path(pkg, \"altdoc\"))\n#&gt; [1] \"altdown.yml\"\nunlink(pkg, recursive = TRUE)"
   },
   {
     "objectID": "authors.html",
@@ -49,25 +35,46 @@
     "text": "Citation\n\nSource: DESCRIPTION\n\n\nHautop Kristensen B (2026). altdown: A ‘pkgdown’-Style Theme for ‘altdoc’ Websites. R package version 0.0.0.9000, https://github.com/bjarkehautop/altdown.\n\n@Manual{,\n  title = {altdown: A 'pkgdown'-Style Theme for 'altdoc' Websites},\n  author = {Bjarke {Hautop Kristensen}},\n  year = {2026},\n  note = {R package version 0.0.0.9000},\n  url = {https://github.com/bjarkehautop/altdown},\n}"
   },
   {
-    "objectID": "vignettes/getting-started.html",
-    "href": "vignettes/getting-started.html",
-    "title": "Getting started with altdown",
+    "objectID": "vignettes/altdown.html",
+    "href": "vignettes/altdown.html",
+    "title": "Get started with altdown",
     "section": "",
-    "text": "This vignette shows off a few Quarto callout blocks, and how they render on a site built with altdoc’s quarto_website tool, which lets Quarto handle vignettes directly instead of converting them to plain Markdown first.\ngreet() and add() below are not part of the real package API; they are toy functions injected during the site build for this showcase (see the reference index).\nlibrary(altdown)"
+    "text": "altdown builds a pkgdown-style website for an R package with altdoc and Quarto. This guide sets up a package, builds its site, and publishes it on GitHub Pages."
   },
   {
-    "objectID": "vignettes/getting-started.html#saying-hello",
-    "href": "vignettes/getting-started.html#saying-hello",
-    "title": "Getting started with altdown",
-    "section": "Saying hello",
-    "text": "Saying hello\n\n\n\n\n\n\nNote\n\n\n\ngreet() is a toy demo function; it just pastes together a friendly string. Nothing fancy.\n\n\n\ngreet(\"altdoc\")\n\n[1] \"Hello, altdoc!\"\n\n\nYou can also shout the greeting:\n\ngreet(\"altdoc\", loud = TRUE)\n\n[1] \"HELLO, ALTDOC!\"\n\n\n\n\n\n\n\n\nTipTip\n\n\n\nSet loud = TRUE when you really mean it."
+    "objectID": "vignettes/altdown.html#set-up",
+    "href": "vignettes/altdown.html#set-up",
+    "title": "Get started with altdown",
+    "section": "Set up",
+    "text": "Set up\nFrom the root of your package, run:\naltdown::use_altdown()\nThis writes altdoc/altdown.yml, the one configuration file you edit, and adds the files the build generates to .gitignore and .Rbuildignore."
   },
   {
-    "objectID": "vignettes/getting-started.html#adding-numbers",
-    "href": "vignettes/getting-started.html#adding-numbers",
-    "title": "Getting started with altdown",
-    "section": "Adding numbers",
-    "text": "Adding numbers\n\nadd(2, 40)\n\n[1] 42\n\n\n\n\n\n\n\n\nWarning\n\n\n\nLike greet(), add() is a toy stand-in: it does no input validation, so passing non-numeric arguments raises a base R error rather than a friendly one.\n\n\n\nadd(\"2\", 40)\n\nError in `x + y`:\n! non-numeric argument to binary operator"
+    "objectID": "vignettes/altdown.html#build-the-site",
+    "href": "vignettes/altdown.html#build-the-site",
+    "title": "Get started with altdown",
+    "section": "Build the site",
+    "text": "Build the site\naltdown::build_site()\naltdoc::preview_docs()\nbuild_site() builds the site into docs/, and altdoc::preview_docs() opens it in your browser.\n\n\n\n\n\n\nImportant\n\n\n\nExamples in the man pages and code in the vignettes run against the installed version of your package, so install it before building, e.g. with devtools::install().\n\n\nThe site is built from what’s already in your package:\n\nHome page: README.md, with a sidebar of links, the license, citation and developers taken from DESCRIPTION. Badges between &lt;!-- badges: start --&gt; and &lt;!-- badges: end --&gt; move into the sidebar.\nReference: one page per man/*.Rd file, and an index of them.\nGet started: the vignette named after the package, like this one.\nArticles: every other vignette, including those in vignettes/articles/.\nChangelog: NEWS.md."
+  },
+  {
+    "objectID": "vignettes/altdown.html#organize-the-reference-index",
+    "href": "vignettes/altdown.html#organize-the-reference-index",
+    "title": "Get started with altdown",
+    "section": "Organize the reference index",
+    "text": "Organize the reference index\nBy default the reference index lists every function in one section. To group them, edit the reference: field in altdoc/altdown.yml. It has the same shape as pkgdown’s:\nreference:\n  - title: Setting up\n    contents:\n      - use_altdown\n  - title: Building\n    contents:\n      - starts_with(\"build_\")\n?build_site lists the other fields: articles: sets the order of the “Articles” menu, and quarto: changes the Quarto configuration, e.g. to add navbar links."
+  },
+  {
+    "objectID": "vignettes/altdown.html#publish-on-github-pages",
+    "href": "vignettes/altdown.html#publish-on-github-pages",
+    "title": "Get started with altdown",
+    "section": "Publish on GitHub Pages",
+    "text": "Publish on GitHub Pages\naltdoc can write a GitHub Actions workflow that builds the site and deploys it to the gh-pages branch on every push:\naltdoc::setup_github_actions()\nThe workflow calls altdoc directly, so in .github/workflows/altdoc.yaml, change the “Build site” step to call altdown instead:\n      - name: Build site\n        run: |\n          install.packages(\".\", repos = NULL, type = \"source\")\n          install.packages(\"pak\")\n          pak::pak(\"BjarkeHautop/altdown\")\n          altdown::build_site(parallel = FALSE, freeze = FALSE)\n        shell: Rscript {0}\nThen, on GitHub, set the repository to serve Pages from the gh-pages branch (Settings → Pages)."
+  },
+  {
+    "objectID": "vignettes/altdown.html#learn-more",
+    "href": "vignettes/altdown.html#learn-more",
+    "title": "Get started with altdown",
+    "section": "Learn more",
+    "text": "Learn more\nTechnical details explains how a build works and how altdown makes an altdoc site look like pkgdown."
   },
   {
     "objectID": "CITATION.html",
@@ -95,7 +102,14 @@
     "href": "index.html",
     "title": "altdown",
     "section": "",
-    "text": "Browse source code\nReport a bug\n\n\n\nFull license\nMIT + file LICENSE\n\n\n\nContributing guide\n\n\n\nCiting altdown\n\n\n\nBjarke Hautop Kristensen\nAuthor, maintainer\n\n\n\n \n\naltdown is an R package that provides a theme for altdoc websites built with Quarto, styled to mirror the output of pkgdown (Bootstrap 5).\n\n\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/altdown\")\n\n\n\nBrowse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis writes altdoc/altdown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s reference: field. It also gitignores the files the build generates.\nThen build the site:\naltdown::build_site()\nA preview can then be viewed using altdoc::preview_docs().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. If reftip is installed, build_site() also adds hover tooltips to references to your package’s functions. See ?altdown::build_site for everything altdown.yml can configure.\n\n\n\nreftip adds hover tooltips to the function reference links that altdoc creates in a rendered R code block; build_site() runs it automatically when it’s installed. alttip shows an example site using altdown and reftip together.\n\n\n\npkgdown supports Quarto (see vignette(\"quarto\")), but the way it’s implemented is hard to maintain and lags behind in features. For instance, callout blocks, code annotations, and tabsets don’t work correctly. Callout blocks are what I personally wanted most, since I’ve grown fond of them.\nThis happens because pkgdown hardcodes theme: \"none\" and minimal: TRUE so it can supply its own CSS instead of Quarto’s, which strips the callout, annotation, and tabset styling. Callouts, for instance, get converted to plain blockquotes.\nThe fix would be patching pkgdown itself, but it’s a bit more involved than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown."
+    "text": "Browse source code\nReport a bug\n\n\n\nFull license\nMIT + file LICENSE\n\n\n\nContributing guide\n\n\n\nCiting altdown\n\n\n\nBjarke Hautop Kristensen\nAuthor, maintainer\n\n\n\n \n\naltdown is an R package that provides a theme for altdoc websites built with Quarto, styled to mirror the output of pkgdown (Bootstrap 5).\n\n\npkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (theme: \"none\", minimal: TRUE). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.\naltdown builds on altdoc, which uses Quarto’s own rendering, and adds a pkgdown-style layout on top. You get:\n\nfull Quarto support;\na familiar pkgdown look;\nlinks from your package’s functions to their reference page, with hover tooltips showing usage and a one-line summary.\n\n\n\n\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/altdown\")\n\n\n\nBrowse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis writes altdoc/altdown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s reference: field. It also gitignores the files the build generates.\nThen build the site:\naltdown::build_site()\nA preview can then be viewed using altdoc::preview_docs().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. See ?altdown::build_site for everything altdown.yml can configure.\n\n\n\n\njlbind\n\nUsing altdown for your package? Feel free to open a pull request adding it to this list."
+  },
+  {
+    "objectID": "index.html#why-altdown",
+    "href": "index.html#why-altdown",
+    "title": "altdown",
+    "section": "",
+    "text": "pkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (theme: \"none\", minimal: TRUE). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.\naltdown builds on altdoc, which uses Quarto’s own rendering, and adds a pkgdown-style layout on top. You get:\n\nfull Quarto support;\na familiar pkgdown look;\nlinks from your package’s functions to their reference page, with hover tooltips showing usage and a one-line summary."
   },
   {
     "objectID": "index.html#installation",
@@ -109,42 +123,63 @@
     "href": "index.html#usage",
     "title": "altdown",
     "section": "",
-    "text": "Browse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis writes altdoc/altdown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s reference: field. It also gitignores the files the build generates.\nThen build the site:\naltdown::build_site()\nA preview can then be viewed using altdoc::preview_docs().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. If reftip is installed, build_site() also adds hover tooltips to references to your package’s functions. See ?altdown::build_site for everything altdown.yml can configure."
+    "text": "Browse around to see how it looks! If you like what you see, and want to use it for your own package, run:\naltdown::use_altdown()\nThis writes altdoc/altdown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s reference: field. It also gitignores the files the build generates.\nThen build the site:\naltdown::build_site()\nA preview can then be viewed using altdoc::preview_docs().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. See ?altdown::build_site for everything altdown.yml can configure."
   },
   {
-    "objectID": "index.html#see-also",
-    "href": "index.html#see-also",
+    "objectID": "index.html#packages-using-altdown",
+    "href": "index.html#packages-using-altdown",
     "title": "altdown",
     "section": "",
-    "text": "reftip adds hover tooltips to the function reference links that altdoc creates in a rendered R code block; build_site() runs it automatically when it’s installed. alttip shows an example site using altdown and reftip together."
+    "text": "jlbind\n\nUsing altdown for your package? Feel free to open a pull request adding it to this list."
   },
   {
-    "objectID": "index.html#why",
-    "href": "index.html#why",
-    "title": "altdown",
-    "section": "",
-    "text": "pkgdown supports Quarto (see vignette(\"quarto\")), but the way it’s implemented is hard to maintain and lags behind in features. For instance, callout blocks, code annotations, and tabsets don’t work correctly. Callout blocks are what I personally wanted most, since I’ve grown fond of them.\nThis happens because pkgdown hardcodes theme: \"none\" and minimal: TRUE so it can supply its own CSS instead of Quarto’s, which strips the callout, annotation, and tabset styling. Callouts, for instance, get converted to plain blockquotes.\nThe fix would be patching pkgdown itself, but it’s a bit more involved than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html",
-    "href": "vignettes/articles/technical.html",
+    "objectID": "vignettes/technical.html",
+    "href": "vignettes/technical.html",
     "title": "Technical details",
     "section": "",
-    "text": "This page explains how the site is put together. It is a Quarto website built with altdoc, with some extra styling and JavaScript to make it look like a pkgdown (Bootstrap 5) site.\nThe only file a package keeps in altdoc/ is altdown.yml. Everything else there is written by altdown::build_site() on every build, and gitignored:"
+    "text": "This article explains how altdown builds a site. altdown doesn’t render anything itself: altdoc converts the man pages and vignettes and renders them with Quarto, and altdown supplies the pkgdown-style layout around them."
   },
   {
-    "objectID": "vignettes/articles/technical.html#why-generate-files",
-    "href": "vignettes/articles/technical.html#why-generate-files",
+    "objectID": "vignettes/technical.html#how-a-build-works",
+    "href": "vignettes/technical.html#how-a-build-works",
     "title": "Technical details",
-    "section": "Why generate files?",
-    "text": "Why generate files?\nFor a Quarto backend, the intended approach is to modify the source files with a script and then call altdoc::render_docs() yourself (see altdoc’s customization vignette).\nThat is what build_site() does. altdoc copies altdoc/ into its Quarto project, so files written there before altdoc::render_docs() end up in the site. The main ones are explained below.\n\nThe home page\naltdoc’s home page is an index.md that includes README.md. Since altdoc copies altdoc/ into its Quarto project after importing the README, build_site() writes its own altdoc/index.md to replace it: the README with a .column-margin sidebar, matching pkgdown’s layout, with the README’s badges moved into it. README.md itself is never modified.\n\n\nThe reference index\naltdoc does not currently have a _pkgdown.yml-style reference: field for controlling how the function index is grouped and ordered (etiennebacher/altdoc#326).\nSo altdoc/altdown.yml has a reference: field, using the same basic structure as pkgdown’s. build_site() uses it together with the \\name{} and \\alias{} entries in man/*.Rd to generate altdoc/reference.qmd.\n\n\nThe navbar and footer\naltdoc/quarto_website.yml is generated in full: the navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog, and the footer has the “Developed by .” text used by pkgdown, based on Authors@R. A quarto: field in altdown.yml is merged over it.\n\n\nThe man pages\naltdoc converts each man/*.Rd file to a .qmd page during altdoc::render_docs(), and renders the Quarto project straight after, so build_site() can’t edit those pages beforehand. Instead altdown-pre-render.R runs as a Quarto pre-render script, inside that render. It turns the Usage section into a highlighted R code block, rewrites inline &lt;code&gt; as Markdown code spans (so Pandoc doesn’t turn their \" into curly quotes), and turns examples that aren’t run (\\dontrun{}) into plain code blocks, so those pages don’t need knitr and a separate R session each."
+    "section": "How a build works",
+    "text": "How a build works\naltdown::build_site() runs in three stages:\n\nBefore rendering, it writes a set of files into altdoc/. altdoc copies that folder into its Quarto project, so these files end up in the site.\nDuring rendering, altdoc::render_docs() converts the Rd files to Quarto pages and renders the project. A pre-render script fixes up the man pages before Quarto sees them.\nAfter rendering, it adds hover tooltips to the HTML in docs/.\n\nCustomizing a site by generating its source files and then calling altdoc::render_docs() is the approach altdoc itself recommends for Quarto1.\nThe only file you edit is altdoc/altdown.yml. Everything else in altdoc/ is rewritten on every build, and gitignored by altdown::use_altdown():\naltdoc/\n├── altdown.yml                # configuration, edited by hand\n├── quarto_website.yml         # Quarto configuration (navbar, footer, theme)\n├── index.md                   # home page\n├── reference.qmd              # function reference index\n├── authors.qmd                # authors and citation page\n├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML\n├── altdown-header.html        # dark-mode default\n├── altdown-after-body.html    # navbar alignment\n└── altdown-pre-render.R       # fixes up altdoc's man pages"
   },
   {
-    "objectID": "vignettes/articles/technical.html#matching-the-pkgdown-look",
-    "href": "vignettes/articles/technical.html#matching-the-pkgdown-look",
+    "objectID": "vignettes/technical.html#before-rendering",
+    "href": "vignettes/technical.html#before-rendering",
+    "title": "Technical details",
+    "section": "Before rendering",
+    "text": "Before rendering\n\nThe home page\naltdoc’s home page is an index.md that includes README.md. altdoc copies altdoc/ into its Quarto project after importing the README, so the altdoc/index.md that build_site() writes takes its place. It holds the README’s content next to a pkgdown-style sidebar, with links, the license, the citation, the developers and the README’s badges.\nThe sidebar is a .column-margin div, Quarto’s margin column, so on a narrow screen it moves below the content as Quarto’s layout intends.\nA README image can have a light and a dark version, given GitHub’s way, as a &lt;picture&gt; with a &lt;source media=\"(prefers-color-scheme: dark)\"&gt;. On the site that would follow the operating system’s setting instead of the site’s own light/dark toggle, so each such &lt;picture&gt; becomes one &lt;img&gt; per theme, using Quarto’s .light-content and .dark-content classes.\n\n\nThe reference index\naltdoc has no way to group and order the function index, like pkgdown’s reference: field (etiennebacher/altdoc#326). So altdoc/altdown.yml has a reference: field of its own, in the same shape as pkgdown’s:\nreference:\n1  - title: Building the site\n2    desc: &gt;\n      Set up a package, then build its site.\n    contents:\n3      - use_altdown\n4      - starts_with(\"build_\")\n\n1\n\nEach entry becomes a section of the index, with this heading.\n\n2\n\nAn optional description, shown under the heading.\n\n3\n\nA topic, by any of its \\alias{} names.\n\n4\n\nA selector, as in pkgdown: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude and c() to combine.\n\n\nbuild_site() resolves these against the \\name{} and \\alias{} entries in man/*.Rd and writes the index to altdoc/reference.qmd.\n\n\nThe navbar and footer\naltdoc/quarto_website.yml is generated in full. The navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog. The footer has pkgdown’s “Developed by …” text, built from Authors@R.\n\n\n\n\n\n\nTipChanging the Quarto configuration\n\n\n\nA quarto: field in altdown.yml is merged over the generated configuration. A list of entries, like the navbar’s items, is added to; any other setting is replaced, and ~ removes it. For example, to add a link to the navbar and fold code blocks:\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n  format:\n    html:\n      code-fold: true"
+  },
+  {
+    "objectID": "vignettes/technical.html#during-rendering-the-man-pages",
+    "href": "vignettes/technical.html#during-rendering-the-man-pages",
+    "title": "Technical details",
+    "section": "During rendering: the man pages",
+    "text": "During rendering: the man pages\naltdoc converts each man/*.Rd file to a .qmd page during altdoc::render_docs() and renders the Quarto project straight after, so build_site() can’t edit those pages beforehand. Instead, altdown-pre-render.R runs as a Quarto pre-render script, inside that render. It makes the pages look like pkgdown’s:\n\nUsage becomes an R code block, so it’s syntax-highlighted and gets a copy button, like the examples.\nInline code becomes Markdown code spans. Pandoc would otherwise turn a \" inside &lt;code&gt; into a curly quote, and a trailing backslash would escape the closing &lt;/code&gt;.\nExamples that are run show their output in the same block, prefixed with #&gt;. The library() call altdoc adds for the package itself is hidden.\nExamples that aren’t run (\\dontrun{}) become plain code blocks, so their pages render without starting an R session2."
+  },
+  {
+    "objectID": "vignettes/technical.html#after-rendering-hover-tooltips",
+    "href": "vignettes/technical.html#after-rendering-hover-tooltips",
+    "title": "Technical details",
+    "section": "After rendering: hover tooltips",
+    "text": "After rendering: hover tooltips\nQuarto’s code-link option links function names in code blocks to their documentation with downlit, but downlit doesn’t know about this site, so it can’t link the package’s own functions to their man pages here. So after rendering, build_site() goes through every page in docs/ and links each reference to one of the package’s own functions, in a code block or in inline code, to its man page. Hovering over it shows a tooltip with the function’s usage and the first sentence of its description, taken from man/*.Rd.\nTry it: hover over build_site() or use_altdown(). To build without tooltips, use build_site(tooltips = FALSE).\n\n\n\n\n\n\nNote\n\n\n\nThe tooltip shows the first sentence of the description, cut off at 200 characters. build_site() warns when a sentence is longer, so you can shorten it."
+  },
+  {
+    "objectID": "vignettes/technical.html#matching-the-pkgdown-look",
+    "href": "vignettes/technical.html#matching-the-pkgdown-look",
     "title": "Technical details",
     "section": "Matching the pkgdown look",
-    "text": "Matching the pkgdown look\naltdown.scss is a Quarto theme layer:\ntheme: [default, altdown.scss]\nIt is based on pkgdown’s own pkgdown.scss, but the selectors have been adapted to Quarto’s HTML.\nIt does the following:\n\nLimiting the navbar to a centered, fixed-width container.\nPutting the navbar items (title, links, search, GitHub icon) in the same order as pkgdown.\nStyling the margin sidebar and reference index (&lt;dl class=\"ref-index\"&gt;) to look like their pkgdown counterparts.\n\nThere is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefore, the generated quarto_website.yml includes a small include-after-body script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly."
+    "text": "Matching the pkgdown look\naltdown.scss is a Quarto theme layer, added on top of Quarto’s own light and dark themes:\ntheme:\n  light: [default, altdown.scss]\n  dark: [darkly, altdown.scss]\nIt is based on pkgdown’s pkgdown.scss, with the selectors adapted to Quarto’s HTML. It:\n\nlimits the navbar to a centered, fixed-width container;\nputs the navbar items (title, links, search, GitHub icon) in pkgdown’s order;\nstyles the margin sidebar and the reference index to look like pkgdown’s.\n\nTwo things can’t be done in CSS alone:\n\nDark mode by default. Quarto’s light/dark toggle always starts new visitors on the light theme. altdown-header.html starts them on the dark theme if their system prefers it, unless they’ve used the toggle before.\nAligning the navbar title with the body text. Quarto’s home page uses a different layout from the other pages, so the body’s left edge isn’t in the same place on every page. altdown-after-body.html measures it once the page has loaded and adjusts the navbar’s padding to match."
+  },
+  {
+    "objectID": "vignettes/technical.html#footnotes",
+    "href": "vignettes/technical.html#footnotes",
+    "title": "Technical details",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nSee altdoc’s customization vignette.↩︎\nA ```{r} chunk makes Quarto render the page with knitr, even with eval=FALSE, and that starts a separate R session per page.↩︎"
   },
   {
     "objectID": "reference.html",
@@ -161,38 +196,17 @@
     "text": "build_site()\n\n\nBuild an altdown-themed altdoc website\n\n\nuse_altdown()\n\n\nSet up a package to use altdown"
   },
   {
-    "objectID": "reference.html#toy-demo-functions",
-    "href": "reference.html#toy-demo-functions",
-    "title": "Function reference",
-    "section": "Toy demo functions",
-    "text": "Toy demo functions\nNot part of the real package API. Injected during the site build for showcase.\n\n\ngreet()\n\n\nGreet someone\n\n\nadd()\n\n\nAdd two numbers"
-  },
-  {
     "objectID": "man/build_site.html",
     "href": "man/build_site.html",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "Builds the package website into docs/ with altdoc::render_docs(), styled to mirror pkgdown. Before rendering it generates, from the package sources and altdoc/altdown.yml:\n\n\n\nbuild_site(\n  path = \".\",\n  tooltips = requireNamespace(\"reftip\", quietly = TRUE),\n  ...\n)\n\n\n\n\n\n\npath\n\n\nPath to the package root.\n\n\n\n\ntooltips\n\n\nLogical. Add hover tooltips to references to the package’s own functions with reftip::add_tooltips()? Defaults to TRUE when reftip is installed.\n\n\n\n\n...\n\n\nPassed on to altdoc::render_docs(), e.g. freeze or parallel.\n\n\n\n\n\n\n\n\nthe navbar, with a \"Get started\" link, the function reference, an \"Articles\" menu and the changelog;\n\n\nthe home page, built from README.md plus a pkgdown-style sidebar (links, license, citation, developers and the README’s badges). An image with light and dark versions, given as a &lt;picture&gt; with a &lt;source media=\"(prefers-color-scheme: dark)\"&gt; as on GitHub, follows the site’s light/dark toggle;\n\n\nthe grouped function reference index;\n\n\nthe \"Authors and Citation\" page.\n\n\nThese generated files are written to altdoc/ (which altdoc copies into its Quarto project), so they’re gitignored by use_altdown(). README.md itself is never modified.\n\n\n\nInvisibly, the path to the built site.\n\n\n\naltdoc/altdown.yml (created by use_altdown()) can contain:\n\n\nreference: groups the function reference index, in the same shape as pkgdown’s reference: field. contents entries can be a topic alias or a selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude, and c() to combine. Without it, every topic is listed in one section.\n\n\narticles: the order of the \"Articles\" navbar menu, as vignette paths relative to vignettes/ without extension (e.g. articles/details). Without it, every vignette other than the \"Get started\" one is listed, top-level vignettes first, then those in vignettes/articles/.\n\n\nquarto: settings merged (with utils::modifyList()) over the generated Quarto configuration, e.g. to add navbar entries or extra SCSS files.\n\n\nThe \"Get started\" link points to the vignette named after the package, or to the only top-level vignette if there is just one."
+    "text": "Builds the package website into docs/ with altdoc::render_docs(), styled to mirror pkgdown. Before rendering it generates, from the package sources and altdoc/altdown.yml:\n\n\n\nbuild_site(path = \".\", tooltips = TRUE, ...)\n\n\n\n\n\n\npath\n\n\nPath to the package root.\n\n\n\n\ntooltips\n\n\nLogical. Link references to the package’s own functions (in code blocks and inline code) to their reference page, with a hover tooltip showing the function’s usage and the first sentence of its description?\n\n\n\n\n...\n\n\nPassed on to altdoc::render_docs(), e.g. freeze or parallel.\n\n\n\n\n\n\n\n\nthe navbar, with a \"Get started\" link, the function reference, an \"Articles\" menu and the changelog;\n\n\nthe home page, built from README.md plus a pkgdown-style sidebar (links, license, citation, developers and the README’s badges). An image with light and dark versions, given as a &lt;picture&gt; with a &lt;source media=\"(prefers-color-scheme: dark)\"&gt; as on GitHub, follows the site’s light/dark toggle;\n\n\nthe grouped function reference index;\n\n\nthe \"Authors and Citation\" page.\n\n\nThese generated files are written to altdoc/ (which altdoc copies into its Quarto project), so they’re gitignored by use_altdown(). README.md itself is never modified.\n\n\n\nInvisibly, the path to the built site.\n\n\n\naltdoc/altdown.yml (created by use_altdown()) can contain:\n\n\nreference: groups the function reference index, in the same shape as pkgdown’s reference: field. contents entries can be a topic alias or a selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude, and c() to combine. Without it, every topic is listed in one section.\n\n\narticles: the order of the \"Articles\" navbar menu, as vignette paths relative to vignettes/ without extension (e.g. articles/details). Without it, every vignette other than the \"Get started\" one is listed, top-level vignettes first, then those in vignettes/articles/.\n\n\nquarto: settings merged over the generated Quarto configuration. Settings are merged key by key: a list of entries (e.g. the navbar’s left: or right: items) is added to, any other value is replaced, and ~ removes a setting. For example, to add a navbar link:\n\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n\n\n\n\nThe \"Get started\" link points to the vignette named after the package, or to the only top-level vignette if there is just one."
   },
   {
     "objectID": "man/build_site.html#build-an-altdown-themed-altdoc-website",
     "href": "man/build_site.html#build-an-altdown-themed-altdoc-website",
     "title": "altdown 0.0.0.9000",
     "section": "",
-    "text": "Builds the package website into docs/ with altdoc::render_docs(), styled to mirror pkgdown. Before rendering it generates, from the package sources and altdoc/altdown.yml:\n\n\n\nbuild_site(\n  path = \".\",\n  tooltips = requireNamespace(\"reftip\", quietly = TRUE),\n  ...\n)\n\n\n\n\n\n\npath\n\n\nPath to the package root.\n\n\n\n\ntooltips\n\n\nLogical. Add hover tooltips to references to the package’s own functions with reftip::add_tooltips()? Defaults to TRUE when reftip is installed.\n\n\n\n\n...\n\n\nPassed on to altdoc::render_docs(), e.g. freeze or parallel.\n\n\n\n\n\n\n\n\nthe navbar, with a \"Get started\" link, the function reference, an \"Articles\" menu and the changelog;\n\n\nthe home page, built from README.md plus a pkgdown-style sidebar (links, license, citation, developers and the README’s badges). An image with light and dark versions, given as a &lt;picture&gt; with a &lt;source media=\"(prefers-color-scheme: dark)\"&gt; as on GitHub, follows the site’s light/dark toggle;\n\n\nthe grouped function reference index;\n\n\nthe \"Authors and Citation\" page.\n\n\nThese generated files are written to altdoc/ (which altdoc copies into its Quarto project), so they’re gitignored by use_altdown(). README.md itself is never modified.\n\n\n\nInvisibly, the path to the built site.\n\n\n\naltdoc/altdown.yml (created by use_altdown()) can contain:\n\n\nreference: groups the function reference index, in the same shape as pkgdown’s reference: field. contents entries can be a topic alias or a selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude, and c() to combine. Without it, every topic is listed in one section.\n\n\narticles: the order of the \"Articles\" navbar menu, as vignette paths relative to vignettes/ without extension (e.g. articles/details). Without it, every vignette other than the \"Get started\" one is listed, top-level vignettes first, then those in vignettes/articles/.\n\n\nquarto: settings merged (with utils::modifyList()) over the generated Quarto configuration, e.g. to add navbar entries or extra SCSS files.\n\n\nThe \"Get started\" link points to the vignette named after the package, or to the only top-level vignette if there is just one."
-  },
-  {
-    "objectID": "man/add.html",
-    "href": "man/add.html",
-    "title": "altdown 0.0.0.9000",
-    "section": "",
-    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of ‘x’ and ‘y’.\n\n\n\n\nadd(1, 2)\n#&gt; [1] 3"
-  },
-  {
-    "objectID": "man/add.html#add-two-numbers",
-    "href": "man/add.html#add-two-numbers",
-    "title": "altdown 0.0.0.9000",
-    "section": "",
-    "text": "Add two numbers\n\n\n\nadd(x, y)\n\n\n\n\n\n\nx\n\n\nA numeric value.\n\n\n\n\ny\n\n\nA numeric value.\n\n\n\n\n\n\nThe sum of ‘x’ and ‘y’.\n\n\n\n\nadd(1, 2)\n#&gt; [1] 3"
+    "text": "Builds the package website into docs/ with altdoc::render_docs(), styled to mirror pkgdown. Before rendering it generates, from the package sources and altdoc/altdown.yml:\n\n\n\nbuild_site(path = \".\", tooltips = TRUE, ...)\n\n\n\n\n\n\npath\n\n\nPath to the package root.\n\n\n\n\ntooltips\n\n\nLogical. Link references to the package’s own functions (in code blocks and inline code) to their reference page, with a hover tooltip showing the function’s usage and the first sentence of its description?\n\n\n\n\n...\n\n\nPassed on to altdoc::render_docs(), e.g. freeze or parallel.\n\n\n\n\n\n\n\n\nthe navbar, with a \"Get started\" link, the function reference, an \"Articles\" menu and the changelog;\n\n\nthe home page, built from README.md plus a pkgdown-style sidebar (links, license, citation, developers and the README’s badges). An image with light and dark versions, given as a &lt;picture&gt; with a &lt;source media=\"(prefers-color-scheme: dark)\"&gt; as on GitHub, follows the site’s light/dark toggle;\n\n\nthe grouped function reference index;\n\n\nthe \"Authors and Citation\" page.\n\n\nThese generated files are written to altdoc/ (which altdoc copies into its Quarto project), so they’re gitignored by use_altdown(). README.md itself is never modified.\n\n\n\nInvisibly, the path to the built site.\n\n\n\naltdoc/altdown.yml (created by use_altdown()) can contain:\n\n\nreference: groups the function reference index, in the same shape as pkgdown’s reference: field. contents entries can be a topic alias or a selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude, and c() to combine. Without it, every topic is listed in one section.\n\n\narticles: the order of the \"Articles\" navbar menu, as vignette paths relative to vignettes/ without extension (e.g. articles/details). Without it, every vignette other than the \"Get started\" one is listed, top-level vignettes first, then those in vignettes/articles/.\n\n\nquarto: settings merged over the generated Quarto configuration. Settings are merged key by key: a list of entries (e.g. the navbar’s left: or right: items) is added to, any other value is replaced, and ~ removes a setting. For example, to add a navbar link:\n\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n\n\n\n\nThe \"Get started\" link points to the vignette named after the package, or to the only top-level vignette if there is just one."
   }
 ]

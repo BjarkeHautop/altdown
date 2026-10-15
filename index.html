@@ -136,12 +136,12 @@ visitor has never toggled here before - an explicit past choice always wins.
 </script>
 
 
-<!-- reftip -->
+<!-- altdown-tooltips -->
 <style>
-.reftip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.reftip-float .reftip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.reftip-float .reftip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.reftip-ref{cursor:help;}
+.altdown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
+.altdown-tip-float .altdown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
+.altdown-tip-float .altdown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
+a.altdown-tip-ref{cursor:help;}
 </style>
 </head>
 
@@ -325,7 +325,7 @@ a.reftip-ref{cursor:help;}
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./vignettes/getting-started.html"> 
+    <a class="nav-link" href="./vignettes/altdown.html"> 
 <span class="menu-text">Get started</span></a>
   </li>  
   <li class="nav-item">
@@ -338,7 +338,7 @@ a.reftip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
-    <a class="dropdown-item" href="./vignettes/articles/technical.html">
+    <a class="dropdown-item" href="./vignettes/technical.html">
  <span class="dropdown-text">Technical details</span></a>
   </li>  
     </ul>
@@ -373,10 +373,10 @@ a.reftip-ref{cursor:help;}
   <ul>
   <li><a href="#altdown" id="toc-altdown" class="nav-link active" data-scroll-target="#altdown">altdown</a>
   <ul class="collapse">
+  <li><a href="#why-altdown" id="toc-why-altdown" class="nav-link" data-scroll-target="#why-altdown">Why altdown?</a></li>
   <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
   <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
-  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
-  <li><a href="#why" id="toc-why" class="nav-link" data-scroll-target="#why">Why?</a></li>
+  <li><a href="#packages-using-altdown" id="toc-packages-using-altdown" class="nav-link" data-scroll-target="#packages-using-altdown">Packages using altdown</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -420,6 +420,16 @@ a.reftip-ref{cursor:help;}
 <p><a href="https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml/badge.svg" class="img-fluid"></a> <a href="https://codecov.io/gh/bjarkehautop/altdown"><img src="https://codecov.io/gh/bjarkehautop/altdown/graph/badge.svg" class="img-fluid"></a></p>
 </section>
 </div></div><p>altdown is an R package that provides a theme for <a href="https://altdoc.etiennebacher.com/">altdoc</a> websites built with Quarto, styled to mirror the output of pkgdown (Bootstrap 5).</p>
+<section id="why-altdown" class="level2">
+<h2 class="anchored" data-anchor-id="why-altdown">Why altdown?</h2>
+<p>pkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (<code>theme: "none"</code>, <code>minimal: TRUE</code>). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.</p>
+<p>altdown builds on altdoc, which uses Quarto’s own rendering, and adds a pkgdown-style layout on top. You get:</p>
+<ul>
+<li>full Quarto support;</li>
+<li>a familiar pkgdown look;</li>
+<li>links from your package’s functions to their reference page, with hover tooltips showing usage and a one-line summary.</li>
+</ul>
+</section>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
 <p>Install from GitHub:</p>
@@ -428,22 +438,19 @@ a.reftip-ref{cursor:help;}
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <p>Browse around to see how it looks! If you like what you see, and want to use it for your own package, run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>altdown<span class="sc">::</span><span class="fu"><a class="reftip-ref" data-reftip="t1" href="man/use_altdown.html">use_altdown</a></span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>altdown<span class="sc">::</span><span class="fu"><a class="altdown-tip-ref" data-altdown-tip="t1" href="man/use_altdown.html">use_altdown</a></span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This writes <code>altdoc/altdown.yml</code>, with a <code>reference:</code> field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s <code>reference:</code> field. It also gitignores the files the build generates.</p>
 <p>Then build the site:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>altdown<span class="sc">::</span><span class="fu"><a class="reftip-ref" data-reftip="t2" href="man/build_site.html">build_site</a></span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>altdown<span class="sc">::</span><span class="fu"><a class="altdown-tip-ref" data-altdown-tip="t2" href="man/build_site.html">build_site</a></span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A preview can then be viewed using <code>altdoc::preview_docs()</code>.</p>
-<p>The navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in <code>vignettes/articles/</code>, go under “Articles”. If <a href="https://github.com/BjarkeHautop/reftip">reftip</a> is installed, <code><a class="reftip-ref" data-reftip="t2" href="man/build_site.html">build_site()</a></code> also adds hover tooltips to references to your package’s functions. See <code>?altdown::build_site</code> for everything <code>altdown.yml</code> can configure.</p>
+<p>The navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in <code>vignettes/articles/</code>, go under “Articles”. See <code>?altdown::build_site</code> for everything <code>altdown.yml</code> can configure.</p>
 </section>
-<section id="see-also" class="level2">
-<h2 class="anchored" data-anchor-id="see-also">See also</h2>
-<p><a href="https://github.com/BjarkeHautop/reftip">reftip</a> adds hover tooltips to the function reference links that altdoc creates in a rendered R code block; <code><a class="reftip-ref" data-reftip="t2" href="man/build_site.html">build_site()</a></code> runs it automatically when it’s installed. <a href="https://github.com/bjarkehautop/alttip">alttip</a> shows an example site using altdown and reftip together.</p>
-</section>
-<section id="why" class="level2">
-<h2 class="anchored" data-anchor-id="why">Why?</h2>
-<p>pkgdown supports Quarto (see <a href="https://pkgdown.r-lib.org/dev/articles/quarto.html"><code>vignette("quarto")</code></a>), but the way it’s implemented is hard to maintain and lags behind in features. For instance, callout blocks, code annotations, and tabsets don’t work correctly. Callout blocks are what I personally wanted most, since I’ve grown fond of them.</p>
-<p>This happens because pkgdown hardcodes <code>theme: "none"</code> and <code>minimal: TRUE</code> so it can supply its own CSS instead of Quarto’s, which strips the callout, annotation, and tabset styling. Callouts, for instance, get converted to plain blockquotes.</p>
-<p>The fix would be patching pkgdown itself, but it’s a bit more involved than one would first think. The tldr is you have to merge two competing asset systems, which is not trivial. Hence I use altdoc, and manually construct my layout for something that looks like pkgdown.</p>
+<section id="packages-using-altdown" class="level2">
+<h2 class="anchored" data-anchor-id="packages-using-altdown">Packages using altdown</h2>
+<ul>
+<li><a href="https://bjarkehautop.github.io/jlbind/">jlbind</a></li>
+</ul>
+<p>Using altdown for your package? Feel free to open a pull request adding it to this list.</p>
 
 
 </section>
@@ -945,16 +952,12 @@ instead, on every page, after layout settles.
 
 
 
-<div class="reftip-payload" hidden><div class="reftip-tip" data-for="t1"><code class="reftip-sig">use_altdown(path = &quot;.&quot;)</code><span class="reftip-brief">Writes <code>altdoc/altdown.yml</code>, the one configuration file <code>build_site()</code> reads, with a starter <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one &quot;All functions&quot;...</span></div><div class="reftip-tip" data-for="t2"><code class="reftip-sig">build_site(
-  path = &quot;.&quot;,
-  tooltips = requireNamespace(&quot;reftip&quot;, quietly = TRUE),
-  ...
-)</code><span class="reftip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div></div>
+<div class="altdown-tip-payload" hidden><div data-for="t1"><code class="altdown-tip-sig">use_altdown(path = &quot;.&quot;)</code><span class="altdown-tip-brief">Writes <code>altdoc/altdown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div><div data-for="t2"><code class="altdown-tip-sig">build_site(path = &quot;.&quot;, tooltips = TRUE, ...)</code><span class="altdown-tip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;
   var float = document.createElement('div');
-  float.className = 'reftip-float';
+  float.className = 'altdown-tip-float';
   float.setAttribute('role', 'tooltip');
   document.body.appendChild(float);
   var hideTimer;
@@ -970,7 +973,7 @@ instead, on every page, after layout settles.
     float.style.left = left + 'px';
   }
   function show(el){
-    var key = el.getAttribute('data-reftip');
+    var key = el.getAttribute('data-altdown-tip');
     var tip = payload.querySelector('[data-for="' + key + '"]');
     if (!tip) return;
     float.innerHTML = tip.innerHTML;
@@ -980,7 +983,7 @@ instead, on every page, after layout settles.
   function hide(){ float.style.display = 'none'; }
   function cancelHide(){ clearTimeout(hideTimer); }
   function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.reftip-ref');
+  var links = document.querySelectorAll('a.altdown-tip-ref');
   for (var i = 0; i < links.length; i++) {
     (function(el){
       el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });

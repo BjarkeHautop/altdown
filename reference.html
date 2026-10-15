@@ -101,12 +101,12 @@ visitor has never toggled here before - an explicit past choice always wins.
 </script>
 
 
-<!-- reftip -->
+<!-- altdown-tooltips -->
 <style>
-.reftip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.reftip-float .reftip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.reftip-float .reftip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.reftip-ref{cursor:help;}
+.altdown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
+.altdown-tip-float .altdown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
+.altdown-tip-float .altdown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
+a.altdown-tip-ref{cursor:help;}
 </style>
 </head>
 
@@ -290,7 +290,7 @@ a.reftip-ref{cursor:help;}
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./vignettes/getting-started.html"> 
+    <a class="nav-link" href="./vignettes/altdown.html"> 
 <span class="menu-text">Get started</span></a>
   </li>  
   <li class="nav-item">
@@ -303,7 +303,7 @@ a.reftip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
-    <a class="dropdown-item" href="./vignettes/articles/technical.html">
+    <a class="dropdown-item" href="./vignettes/technical.html">
  <span class="dropdown-text">Technical details</span></a>
   </li>  
     </ul>
@@ -337,7 +337,6 @@ a.reftip-ref{cursor:help;}
    
   <ul>
   <li><a href="#all-functions" id="toc-all-functions" class="nav-link active" data-scroll-target="#all-functions">All functions</a></li>
-  <li><a href="#toy-demo-functions" id="toc-toy-demo-functions" class="nav-link" data-scroll-target="#toy-demo-functions">Toy demo functions</a></li>
   </ul>
 </nav>
     </div>
@@ -368,34 +367,16 @@ a.reftip-ref{cursor:help;}
 <h2 class="anchored" data-anchor-id="all-functions">All functions</h2>
 <dl class="ref-index">
 <dt>
-<code><a class="reftip-ref" data-reftip="t1" href="man/build_site.html">build_site()</a></code>
+<code><a class="altdown-tip-ref" data-altdown-tip="t1" href="man/build_site.html">build_site()</a></code>
 </dt>
 <dd>
 Build an altdown-themed altdoc website
 </dd>
 <dt>
-<code><a class="reftip-ref" data-reftip="t2" href="man/use_altdown.html">use_altdown()</a></code>
+<code><a class="altdown-tip-ref" data-altdown-tip="t2" href="man/use_altdown.html">use_altdown()</a></code>
 </dt>
 <dd>
 Set up a package to use altdown
-</dd>
-</dl>
-</section>
-<section id="toy-demo-functions" class="level2">
-<h2 class="anchored" data-anchor-id="toy-demo-functions">Toy demo functions</h2>
-<p>Not part of the real package API. Injected during the site build for showcase.</p>
-<dl class="ref-index">
-<dt>
-<code><a class="reftip-ref" data-reftip="t3" href="man/greet.html">greet()</a></code>
-</dt>
-<dd>
-Greet someone
-</dd>
-<dt>
-<code><a class="reftip-ref" data-reftip="t4" href="man/add.html">add()</a></code>
-</dt>
-<dd>
-Add two numbers
 </dd>
 </dl>
 
@@ -898,16 +879,12 @@ instead, on every page, after layout settles.
 
 
 
-<div class="reftip-payload" hidden><div class="reftip-tip" data-for="t1"><code class="reftip-sig">build_site(
-  path = &quot;.&quot;,
-  tooltips = requireNamespace(&quot;reftip&quot;, quietly = TRUE),
-  ...
-)</code><span class="reftip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div><div class="reftip-tip" data-for="t2"><code class="reftip-sig">use_altdown(path = &quot;.&quot;)</code><span class="reftip-brief">Writes <code>altdoc/altdown.yml</code>, the one configuration file <code>build_site()</code> reads, with a starter <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one &quot;All functions&quot;...</span></div><div class="reftip-tip" data-for="t3"><code class="reftip-sig">greet(name = &quot;world&quot;, loud = FALSE)</code><span class="reftip-brief">A toy function that returns a greeting message.</span></div><div class="reftip-tip" data-for="t4"><code class="reftip-sig">add(x, y)</code><span class="reftip-brief">Add two numbers</span></div></div>
+<div class="altdown-tip-payload" hidden><div data-for="t1"><code class="altdown-tip-sig">build_site(path = &quot;.&quot;, tooltips = TRUE, ...)</code><span class="altdown-tip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div><div data-for="t2"><code class="altdown-tip-sig">use_altdown(path = &quot;.&quot;)</code><span class="altdown-tip-brief">Writes <code>altdoc/altdown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;
   var float = document.createElement('div');
-  float.className = 'reftip-float';
+  float.className = 'altdown-tip-float';
   float.setAttribute('role', 'tooltip');
   document.body.appendChild(float);
   var hideTimer;
@@ -923,7 +900,7 @@ instead, on every page, after layout settles.
     float.style.left = left + 'px';
   }
   function show(el){
-    var key = el.getAttribute('data-reftip');
+    var key = el.getAttribute('data-altdown-tip');
     var tip = payload.querySelector('[data-for="' + key + '"]');
     if (!tip) return;
     float.innerHTML = tip.innerHTML;
@@ -933,7 +910,7 @@ instead, on every page, after layout settles.
   function hide(){ float.style.display = 'none'; }
   function cancelHide(){ clearTimeout(hideTimer); }
   function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.reftip-ref');
+  var links = document.querySelectorAll('a.altdown-tip-ref');
   for (var i = 0; i < links.length; i++) {
     (function(el){
       el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
