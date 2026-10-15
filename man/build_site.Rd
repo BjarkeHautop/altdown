@@ -73,3 +73,10 @@ The "Get started" link points to the vignette named after the package, or
 to the only top-level vignette if there is just one.
 }
 
+\examples{
+\dontrun{
+use_altdown()
+build_site()
+altdoc::preview_docs()
+}
+}

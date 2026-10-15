@@ -14,7 +14,7 @@ title: "Authors and Citation"
 
 <p>Hautop Kristensen B (2026).
 <em>altdown: A 'pkgdown'-Style Theme for 'altdoc' Websites</em>.
-R package version 0.0.0.9000, <a href="https://github.com/bjarkehautop/altdown">https://github.com/bjarkehautop/altdown</a>. 
+R package version 0.0.0.9000, <a href="https://bjarkehautop.github.io/altdown/">https://bjarkehautop.github.io/altdown/</a>. 
 </p>
 
 ```bibtex
@@ -23,6 +23,6 @@ R package version 0.0.0.9000, <a href="https://github.com/bjarkehautop/altdown">
   author = {Bjarke {Hautop Kristensen}},
   year = {2026},
   note = {R package version 0.0.0.9000},
-  url = {https://github.com/bjarkehautop/altdown},
+  url = {https://bjarkehautop.github.io/altdown/},
 }
 ```

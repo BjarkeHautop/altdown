@@ -19,7 +19,7 @@ website:
     - text: Articles
       menu:
       - text: Technical details
-        file: vignettes/technical.qmd
+        file: vignettes/articles/technical.qmd
     - text: Changelog
       file: NEWS.md
     right:

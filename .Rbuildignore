@@ -1,6 +1,5 @@
 ^docs$
 ^altdoc$
-^vignettes$
 ^_quarto$
 ^LICENSE\.md$
 ^README\.qmd$
@@ -13,3 +12,4 @@
 ^panache\.toml$
 ^jarl\.toml$
 ^\.pre-commit-config\.yaml$
+^vignettes/articles$

@@ -61,7 +61,7 @@ cran_url_if_available <- function(pkg_name) {
   cran_url <- paste0("https://cloud.r-project.org/package=", pkg_name)
   resp <- tryCatch(
     httr2::req_perform(httr2::req_error(
-      httr2::request(cran_url),
+      httr2::req_timeout(httr2::request(cran_url), 5),
       function(resp) FALSE
     )),
     error = function(e) NULL

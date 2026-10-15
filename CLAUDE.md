@@ -91,7 +91,8 @@ package, or the only top-level vignette. Remaining vignettes (top-level, then
 - Tests create throwaway packages in temp dirs (see `new_pkg()` helper in
   [tests/testthat/test-build-site.R](tests/testthat/test-build-site.R)) and test
   the generation functions directly rather than running a full Quarto render.
-- [vignettes/technical.qmd](vignettes/technical.qmd) documents the build
-  internals in more depth; keep it in sync when changing build behavior.
+- [vignettes/articles/technical.qmd](vignettes/articles/technical.qmd) documents
+  the build internals in more depth; keep it in sync when changing build
+  behavior.
 - Roxygen with markdown; `@section Configuration:` in `build_site()` is the
   user-facing reference for `altdown.yml` — update it when adding config keys.

@@ -5,12 +5,14 @@ Date: 2026-08-27
 Authors@R:
     person(given = "Bjarke", family = "Hautop Kristensen", email = "bjarke.hautop@gmail.com", role = c("aut", "cre"))
 Description: Provides a theme and helper functions for building package
-    websites with 'altdoc' and 'Quarto', styled to resemble 'pkgdown'
-    while supporting 'Quarto' features such as callout blocks that
-    'pkgdown' does not render correctly.
+    websites with 'altdoc' and 'Quarto', styled to resemble 'pkgdown'.
+    Because the site is rendered by 'Quarto', all 'Quarto' features are
+    supported.
 License: MIT + file LICENSE
-URL: https://github.com/bjarkehautop/altdown
+URL: https://bjarkehautop.github.io/altdown/, https://github.com/bjarkehautop/altdown
 BugReports: https://github.com/bjarkehautop/altdown/issues
+SystemRequirements: Quarto command line tool
+    (<https://github.com/quarto-dev/quarto-cli>).
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:
@@ -23,7 +25,10 @@ Imports:
     yaml
 Suggests:
     httr2,
+    quarto,
     testthat (>= 3.0.0),
     withr
+VignetteBuilder:
+    quarto
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

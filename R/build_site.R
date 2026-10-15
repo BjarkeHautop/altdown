@@ -57,6 +57,13 @@
 #'   `parallel`.
 #' @return Invisibly, the path to the built site.
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' use_altdown()
+#' build_site()
+#' altdoc::preview_docs()
+#' }
 build_site <- function(
   path = ".",
   tooltips = TRUE,

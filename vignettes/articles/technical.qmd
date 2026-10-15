@@ -13,7 +13,7 @@ and renders them with Quarto, and altdown supplies the
 
 1. **Before rendering**, it writes a set of files into `altdoc/`, which altdoc
    copies into its Quarto project. This is the approach altdoc
-   [recommends](https://altdoc.etiennebacher.com/articles/customize.html) for
+   [recommends](https://altdoc.etiennebacher.com/#/vignettes/customize) for
    customizing Quarto sites.
 2. **During rendering**, `altdoc::render_docs()` converts the Rd files to Quarto
    pages and renders the project, with a pre-render script fixing up the man
