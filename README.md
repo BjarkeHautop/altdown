@@ -12,6 +12,21 @@ altdown is an R package that provides a theme for
 [altdoc](https://altdoc.etiennebacher.com/) websites built with Quarto,
 styled to mirror the output of pkgdown (Bootstrap 5).
 
+## Why altdown?
+
+pkgdown can render Quarto vignettes, but it replaces Quarto’s styling
+with its own (`theme: "none"`, `minimal: TRUE`). As a result, Quarto
+features such as callout blocks, code annotations and tabsets don’t
+render correctly; callouts, for instance, become plain blockquotes.
+
+altdown builds on altdoc, which uses Quarto’s own rendering, and adds a
+pkgdown-style layout on top. You get:
+
+- full Quarto support;
+- a familiar pkgdown look;
+- links from your package’s functions to their reference page, with
+  hover tooltips showing usage and a one-line summary.
+
 ## Installation
 
 Install from GitHub:
@@ -44,35 +59,12 @@ A preview can then be viewed using `altdoc::preview_docs()`.
 
 The navbar is built from your vignettes: the one named after the package
 (or the only top-level one) becomes “Get started”, and the rest,
-including those in `vignettes/articles/`, go under “Articles”. If
-[reftip](https://github.com/BjarkeHautop/reftip) is installed,
-`build_site()` also adds hover tooltips to references to your package’s
-functions. See `?altdown::build_site` for everything `altdown.yml` can
-configure.
+including those in `vignettes/articles/`, go under “Articles”. See
+`?altdown::build_site` for everything `altdown.yml` can configure.
 
-## See also
+## Packages using altdown
 
-[reftip](https://github.com/BjarkeHautop/reftip) adds hover tooltips to
-the function reference links that altdoc creates in a rendered R code
-block; `build_site()` runs it automatically when it’s installed.
-[alttip](https://github.com/bjarkehautop/alttip) shows an example site
-using altdown and reftip together.
+- [jlbind](https://bjarkehautop.github.io/jlbind/)
 
-## Why?
-
-pkgdown supports Quarto (see
-[`vignette("quarto")`](https://pkgdown.r-lib.org/dev/articles/quarto.html)),
-but the way it’s implemented is hard to maintain and lags behind in
-features. For instance, callout blocks, code annotations, and tabsets
-don’t work correctly. Callout blocks are what I personally wanted most,
-since I’ve grown fond of them.
-
-This happens because pkgdown hardcodes `theme: "none"` and
-`minimal: TRUE` so it can supply its own CSS instead of Quarto’s, which
-strips the callout, annotation, and tabset styling. Callouts, for
-instance, get converted to plain blockquotes.
-
-The fix would be patching pkgdown itself, but it’s a bit more involved
-than one would first think. The tldr is you have to merge two competing
-asset systems, which is not trivial. Hence I use altdoc, and manually
-construct my layout for something that looks like pkgdown.
+Using altdown for your package? Feel free to open a pull request adding
+it to this list.

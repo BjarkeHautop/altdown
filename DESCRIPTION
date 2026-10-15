@@ -24,11 +24,8 @@ Imports:
     yaml
 Suggests:
     httr2,
-    reftip,
     testthat (>= 3.0.0),
     withr
-Remotes:
-    BjarkeHautop/reftip
 Config/Needs/website: pkgload, roxygen2
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

@@ -38,16 +38,17 @@
 #' to the only top-level vignette if there is just one.
 #'
 #' @param path Path to the package root.
-#' @param tooltips Logical. Add hover tooltips to references to the
-#'   package's own functions with [reftip::add_tooltips()]? Defaults to
-#'   `TRUE` when reftip is installed.
+#' @param tooltips Logical. Link references to the package's own functions
+#'   (in code blocks and inline code) to their reference page, with a hover
+#'   tooltip showing the function's usage and the first sentence of its
+#'   description?
 #' @param ... Passed on to [altdoc::render_docs()], e.g. `freeze` or
 #'   `parallel`.
 #' @return Invisibly, the path to the built site.
 #' @export
 build_site <- function(
   path = ".",
-  tooltips = requireNamespace("reftip", quietly = TRUE),
+  tooltips = TRUE,
   ...
 ) {
   config <- read_config(path)
@@ -65,12 +66,7 @@ build_site <- function(
   unlink(file.path(path, "docs", c("altdown.yml", generated_files)))
 
   if (isTRUE(tooltips)) {
-    if (!requireNamespace("reftip", quietly = TRUE)) {
-      cli::cli_abort(
-        "{.arg tooltips} is {.val TRUE} but the {.pkg reftip} package isn't installed."
-      )
-    }
-    reftip::add_tooltips(path = path)
+    add_tooltips(path)
   }
 
   invisible(file.path(path, "docs"))

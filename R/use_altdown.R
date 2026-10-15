@@ -1,9 +1,8 @@
 #' Set up a package to use altdown
 #'
-#' Writes `altdoc/altdown.yml`, the one configuration file [build_site()]
-#' reads, with a starter `reference:` field listing every function
-#' currently documented in `<path>/man/*.Rd` in one "All functions"
-#' section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
+#' Writes `altdoc/altdown.yml`, the configuration file [build_site()] reads.
+#' It starts with a `reference:` field listing every function currently
+#' documented in `<path>/man/*.Rd` in one "All functions" section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
 #' needs (see Details) if they're not already there.
 #'
 #' An existing `altdoc/altdown.yml` is never overwritten. If the package was

@@ -4,18 +4,15 @@
 \alias{build_site}
 \title{Build an altdown-themed altdoc website}
 \usage{
-build_site(
-  path = ".",
-  tooltips = requireNamespace("reftip", quietly = TRUE),
-  ...
-)
+build_site(path = ".", tooltips = TRUE, ...)
 }
 \arguments{
 \item{path}{Path to the package root.}
 
-\item{tooltips}{Logical. Add hover tooltips to references to the
-package's own functions with \code{\link[reftip:add_tooltips]{reftip::add_tooltips()}}? Defaults to
-\code{TRUE} when reftip is installed.}
+\item{tooltips}{Logical. Link references to the package's own functions
+(in code blocks and inline code) to their reference page, with a hover
+tooltip showing the function's usage and the first sentence of its
+description?}
 
 \item{...}{Passed on to \code{\link[altdoc:render_docs]{altdoc::render_docs()}}, e.g. \code{freeze} or
 \code{parallel}.}

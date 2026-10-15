@@ -14,10 +14,9 @@ directory.}
 Invisibly, the path to the \verb{altdoc/} directory.
 }
 \description{
-Writes \code{altdoc/altdown.yml}, the one configuration file \code{\link[=build_site]{build_site()}}
-reads, with a starter \verb{reference:} field listing every function
-currently documented in \verb{<path>/man/*.Rd} in one "All functions"
-section. Also adds the \code{.gitignore}/\code{.Rbuildignore} entries the build
+Writes \code{altdoc/altdown.yml}, the configuration file \code{\link[=build_site]{build_site()}} reads.
+It starts with a \verb{reference:} field listing every function currently
+documented in \verb{<path>/man/*.Rd} in one "All functions" section. Also adds the \code{.gitignore}/\code{.Rbuildignore} entries the build
 needs (see Details) if they're not already there.
 }
 \details{

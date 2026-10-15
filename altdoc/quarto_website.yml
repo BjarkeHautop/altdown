@@ -1,6 +1,7 @@
 project:
   type: website
   output-dir: ../docs/
+  pre-render: altdown-pre-render.R
 language:
   search-text-placeholder: ' Search for'
 website:
