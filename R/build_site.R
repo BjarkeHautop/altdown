@@ -7,7 +7,10 @@
 #' * the navbar, with a "Get started" link, the function reference, an
 #'   "Articles" menu and the changelog;
 #' * the home page, built from `README.md` plus a pkgdown-style sidebar
-#'   (links, license, citation, developers and the README's badges);
+#'   (links, license, citation, developers and the README's badges). An image
+#'   with light and dark versions, given as a `<picture>` with a
+#'   `<source media="(prefers-color-scheme: dark)">` as on GitHub, follows the
+#'   site's light/dark toggle;
 #' * the grouped function reference index;
 #' * the "Authors and Citation" page.
 #'
@@ -246,6 +249,7 @@ write_home <- function(path) {
 }
 
 build_website_readme <- function(lines, path = ".") {
+  lines <- theme_pictures_to_images(lines)
   badges <- extract_readme_badges(lines)
   lines <- remove_marker_block(
     lines,
@@ -303,4 +307,87 @@ remove_marker_block <- function(lines, start_marker, end_marker) {
     return(lines)
   }
   lines[-seq(start, end)]
+}
+
+# ---- light/dark images --------------------------------------------------------
+#
+# GitHub's way to give a README image a light and a dark version is a
+# `<picture>` with a `<source media="(prefers-color-scheme: dark)">`. On the
+# site that follows the OS setting rather than the site's own light/dark
+# toggle, and Quarto doesn't copy an image referenced only by `srcset`. So
+# each such `<picture>` becomes one `<img>` per scheme, with Quarto's
+# `.light-content` / `.dark-content` class to show it only in that theme.
+
+theme_pictures_to_images <- function(lines) {
+  if (!any(grepl("<picture", lines, fixed = TRUE))) {
+    return(lines)
+  }
+  text <- paste(lines, collapse = "\n")
+  m <- gregexpr("(?s)<picture\\b.*?</picture>", text, perl = TRUE)
+  regmatches(text, m) <- lapply(regmatches(text, m), function(pictures) {
+    vapply(pictures, theme_picture_to_images, character(1), USE.NAMES = FALSE)
+  })
+  # The sentinel keeps trailing empty lines, which strsplit() would drop.
+  utils::head(strsplit(paste0(text, "\n."), "\n", fixed = TRUE)[[1]], -1)
+}
+
+theme_picture_to_images <- function(picture) {
+  img <- regmatches(picture, regexpr("<img\\b[^>]*>", picture, perl = TRUE))
+  if (length(img) == 0) {
+    return(picture)
+  }
+  sources <- regmatches(picture, gregexpr("<source\\b[^>]*>", picture, perl = TRUE))[[1]]
+  media <- vapply(sources, html_attr, character(1), name = "media", USE.NAMES = FALSE)
+  scheme_pattern <- "^.*prefers-color-scheme\\s*:\\s*(light|dark).*$"
+  is_scheme <- !is.na(media) & grepl(scheme_pattern, media, perl = TRUE)
+  if (!any(is_scheme)) {
+    return(picture)
+  }
+  schemes <- sub(scheme_pattern, "\\1", media[is_scheme], perl = TRUE)
+  sources <- sources[is_scheme][!duplicated(schemes)]
+  schemes <- unique(schemes)
+
+  images <- vapply(seq_along(sources), function(i) {
+    srcset <- html_attr(sources[i], "srcset")
+    # The first candidate's URL, without a width or density descriptor.
+    src <- sub("\\s.*$", "", trimws(strsplit(srcset, ",", fixed = TRUE)[[1]][1]))
+    with_theme_class(set_html_attr(img, "src", src), schemes[i])
+  }, character(1))
+  # The <img> is the fallback, so it covers the scheme no <source> names.
+  fallback <- setdiff(c("light", "dark"), schemes)
+  if (length(fallback) == 1) {
+    images <- c(with_theme_class(img, fallback), images)
+  }
+  paste(images, collapse = "")
+}
+
+with_theme_class <- function(tag, scheme) {
+  class <- html_attr(tag, "class")
+  class <- if (is.na(class)) "" else class
+  set_html_attr(tag, "class", trimws(paste(class, paste0(scheme, "-content"))))
+}
+
+html_attr_pattern <- function(name) {
+  sprintf("(?i)\\s%s\\s*=\\s*(\"[^\"]*\"|'[^']*')", name)
+}
+
+# The value of attribute `name` in the HTML start tag `tag`, or NA.
+html_attr <- function(tag, name) {
+  m <- regmatches(tag, regexec(html_attr_pattern(name), tag, perl = TRUE))[[1]]
+  if (length(m) == 0) {
+    return(NA_character_)
+  }
+  substr(m[2], 2, nchar(m[2]) - 1)
+}
+
+set_html_attr <- function(tag, name, value) {
+  new <- sprintf(" %s=\"%s\"", name, value)
+  m <- regexpr(html_attr_pattern(name), tag, perl = TRUE)
+  if (m == -1) {
+    m <- regexpr("\\s*/?>$", tag, perl = TRUE)
+    regmatches(tag, m) <- paste0(new, regmatches(tag, m))
+  } else {
+    regmatches(tag, m) <- new
+  }
+  tag
 }

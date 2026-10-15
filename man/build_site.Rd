@@ -33,7 +33,10 @@ generates, from the package sources and \code{altdoc/altdown.yml}:
 \item the navbar, with a "Get started" link, the function reference, an
 "Articles" menu and the changelog;
 \item the home page, built from \code{README.md} plus a pkgdown-style sidebar
-(links, license, citation, developers and the README's badges);
+(links, license, citation, developers and the README's badges). An image
+with light and dark versions, given as a \verb{<picture>} with a
+\verb{<source media="(prefers-color-scheme: dark)">} as on GitHub, follows the
+site's light/dark toggle;
 \item the grouped function reference index;
 \item the "Authors and Citation" page.
 }

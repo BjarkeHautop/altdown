@@ -204,6 +204,49 @@ test_that("build_website_readme() moves badges into the sidebar and keeps the bo
   expect_identical(home[dev_status + 2], "[![badge](b.svg)](https://example.org)")
 })
 
+test_that("theme_pictures_to_images() turns a light/dark <picture> into themed <img>s", {
+  readme <- c(
+    "# pkg <picture><source media=\"(prefers-color-scheme: dark)\" srcset=\"dark.png\" /><img src=\"light.png\" align=\"right\" alt=\"logo\" /></picture>",
+    ""
+  )
+  expect_identical(
+    theme_pictures_to_images(readme),
+    c(
+      paste0(
+        "# pkg ",
+        "<img src=\"light.png\" align=\"right\" alt=\"logo\" class=\"light-content\" />",
+        "<img src=\"dark.png\" align=\"right\" alt=\"logo\" class=\"dark-content\" />"
+      ),
+      ""
+    )
+  )
+})
+
+test_that("theme_pictures_to_images() handles multi-line pictures, both sources and existing classes", {
+  readme <- c(
+    "<picture>",
+    "  <source media=\"(prefers-color-scheme: light)\" srcset=\"l.png 1x, l@2x.png 2x\">",
+    "  <source media='(prefers-color-scheme: dark)' srcset='d.png'>",
+    "  <img src=\"fallback.png\" class=\"logo\">",
+    "</picture>",
+    "Text."
+  )
+  expect_identical(
+    theme_pictures_to_images(readme),
+    c(
+      "<img src=\"l.png\" class=\"logo light-content\"><img src=\"d.png\" class=\"logo dark-content\">",
+      "Text."
+    )
+  )
+})
+
+test_that("theme_pictures_to_images() leaves other pictures and plain READMEs alone", {
+  other <- "<picture><source media=\"(min-width: 600px)\" srcset=\"w.png\"><img src=\"n.png\"></picture>"
+  expect_identical(theme_pictures_to_images(other), other)
+  plain <- c("# pkg", "", "Text.", "")
+  expect_identical(theme_pictures_to_images(plain), plain)
+})
+
 test_that("write_home() writes altdoc/index.md and leaves README.md alone", {
   dir <- new_pkg()
   readme_path <- file.path(dir, "README.md")
