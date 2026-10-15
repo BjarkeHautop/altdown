@@ -288,18 +288,17 @@ build_website_readme <- function(lines, path = ".") {
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {
-    # `.column-margin` must come *first* here: none of `.page-columns`'s
-    # direct children get an explicit `grid-row`, so the browser falls
-    # back to sparse row auto-placement, which assigns rows strictly by
-    # DOM order and never revisits an earlier row. Putting the sidebar
-    # first is what puts it in row 1, where its (taller) content simply
-    # overflows down the page next to the rest of the body - that
-    # overflow is the entire mechanism that makes it look like a
-    # full-height sidebar on desktop. Reordering the DOM to move it
-    # below the body on small screens is handled in CSS instead (see
-    # `.column-margin`'s `order` in altdown.scss), since that also
-    # reorders grid auto-placement without disturbing this.
-    c(title, "", sidebar, "", body)
+    # Every direct child of `.page-columns` is its own grid item, and a
+    # float can't reach across grid items - so a logo floated right in the
+    # title (pkgdown-style) would stretch the heading instead of letting
+    # the text wrap beside it. Wrapping title and body in one div makes
+    # them a single grid item. None of the items get an explicit
+    # `grid-row`, so sparse auto-placement puts that div in row 1 and the
+    # sidebar, which comes next in the DOM and sits in a column to its
+    # right, in row 1 beside it. On small screens, where the grid collapses
+    # to one column, the same DOM order stacks the sidebar below the body,
+    # as in pkgdown.
+    c("::::: {.altdown-home}", title, "", body, ":::::", "", sidebar)
   }
 }
 

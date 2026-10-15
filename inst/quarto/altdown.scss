@@ -325,18 +325,13 @@ dl.ref-index dd {
 }
 
 // Below Quarto's own single-column breakpoint (see the `page-columns`
-// comment above), the sidebar stacks as plain content with no visual
-// separation, in whatever position its source order landed it (see
-// `build_website_readme()` in R/build_site.R: it has to come *first* in
-// the markdown for desktop's grid layout to work, which without this
-// would leave it stacked above the README body on mobile too). pkgdown
-// draws a grey box around its sidebar on mobile (BS5/assets/pkgdown.scss's
-// `.row>aside` rule, `media-breakpoint-down(md)`) - replicate that here,
-// and use `order` (which reorders grid auto-placement, not just paint
-// order) to additionally move it below the body, pkgdown-style.
+// comment above), the sidebar stacks below the README body (see
+// `build_website_readme()` in R/build_site.R) as plain content with no
+// visual separation. pkgdown draws a grey box around its sidebar on mobile
+// (BS5/assets/pkgdown.scss's `.row>aside` rule, `media-breakpoint-down(md)`)
+// - replicate that here.
 @media (max-width: 767.98px) {
   .column-margin {
-    order: 1;
     margin: 1.5rem 0 1rem;
     padding: 1rem;
     background-color: RGBA(var(--bs-body-color-rgb), 0.1);

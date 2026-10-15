@@ -52,7 +52,9 @@ README's content next to a pkgdown-style sidebar, with links, the license, the
 citation, the developers and the README's badges.
 
 The sidebar is a `.column-margin` div, Quarto's margin column, so on a narrow
-screen it moves below the content as Quarto's layout intends.
+screen it moves below the content as Quarto's layout intends. The README's
+title and body share one div, so text wraps around a logo floated in the
+title.
 
 A README image can have a light and a dark version, given GitHub's way, as a
 `<picture>` with a `<source media="(prefers-color-scheme: dark)">`. On the site

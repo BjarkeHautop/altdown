@@ -221,9 +221,9 @@ test_that("build_website_readme() moves badges into the sidebar and keeps the bo
   )
 
   home <- build_website_readme(readme, dir)
-  expect_identical(home[1], "# examplepkg")
-  expect_identical(home[3], "::: {.column-margin}")
-  expect_identical(home[length(home)], "Some text.")
+  expect_identical(home[1:5], c("::::: {.altdown-home}", "# examplepkg", "", "Some text.", ":::::"))
+  expect_identical(home[7], "::: {.column-margin}")
+  expect_identical(home[length(home)], ":::")
   expect_false(any(grepl("badges:", home, fixed = TRUE)))
   dev_status <- which(home == "#### Dev status")
   expect_identical(home[dev_status + 2], "[![badge](b.svg)](https://example.org)")
@@ -282,7 +282,7 @@ test_that("write_home() writes altdoc/index.md and leaves README.md alone", {
 
   expect_identical(readBin(readme_path, "raw", file.size(readme_path)), before)
   home <- readLines(file.path(dir, "altdoc", "index.md"))
-  expect_identical(home[1], "# examplepkg")
+  expect_true("# examplepkg" %in% home)
   expect_true("Some text." %in% home)
 })
 

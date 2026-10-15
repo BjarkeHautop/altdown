@@ -6,7 +6,7 @@
 [![](https://codecov.io/gh/bjarkehautop/altdown/graph/badge.svg)](https://codecov.io/gh/bjarkehautop/altdown)
 <!-- badges: end -->
 
-# altdown
+# altdown <picture><source media="(prefers-color-scheme: dark)" srcset="man/figures/logo.png" /><img src="man/figures/logo-light.png" align="right" height="139" alt="altdown logo" /></picture>
 
 altdown is an R package that provides a theme for
 [altdoc](https://altdoc.etiennebacher.com/) websites built with Quarto,
