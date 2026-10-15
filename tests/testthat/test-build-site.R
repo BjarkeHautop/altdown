@@ -183,6 +183,31 @@ test_that("quarto_config() links GitHub and merges `quarto:` overrides", {
   expect_true(settings$format$html$toc)
 })
 
+test_that("`quarto:` adds navbar entries and `~` removes a setting", {
+  dir <- new_pkg()
+  write("URL: https://github.com/someuser/examplepkg", file.path(dir, "DESCRIPTION"), append = TRUE)
+
+  config <- yaml::yaml.load("
+quarto:
+  website:
+    navbar:
+      right:
+        - text: Blog
+          href: https://example.com
+  format:
+    html:
+      toc: ~
+")
+  settings <- quarto_config(dir, config)
+
+  right <- settings$website$navbar$right
+  expect_length(right, 2)
+  expect_identical(right[[1]]$icon, "github")
+  expect_identical(right[[2]], list(text = "Blog", href = "https://example.com"))
+  expect_false("toc" %in% names(settings$format$html))
+  expect_true(settings$format$html$`code-link`)
+})
+
 test_that("build_website_readme() moves badges into the sidebar and keeps the body", {
   dir <- new_pkg()
   readme <- c(

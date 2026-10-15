@@ -11,15 +11,3 @@ title: "Function reference"
 <dt><code><a href="man/use_altdown.qmd">use_altdown()</a></code></dt>
 <dd>Set up a package to use altdown</dd>
 </dl>
-
-## Toy demo functions
-
-Not part of the real package API. Injected during the site build for showcase.
-
-<dl class="ref-index">
-<dt><code><a href="man/greet.qmd">greet()</a></code></dt>
-<dd>Greet someone</dd>
-
-<dt><code><a href="man/add.qmd">add()</a></code></dt>
-<dd>Add two numbers</dd>
-</dl>

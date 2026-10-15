@@ -2,13 +2,31 @@
 title: "Technical details"
 ---
 
-This page explains how the site is put together. It is a Quarto website
-built with [altdoc](https://altdoc.etiennebacher.com/), with some extra
-styling and JavaScript to make it look like a [pkgdown](https://pkgdown.r-lib.org/)
-(Bootstrap 5) site.
+This article explains how altdown builds a site. altdown doesn't render
+anything itself: [altdoc](https://altdoc.etiennebacher.com/) converts the man
+pages and vignettes and renders them with Quarto, and altdown supplies the
+[pkgdown](https://pkgdown.r-lib.org/)-style layout around them.
 
-The only file a package keeps in `altdoc/` is `altdown.yml`. Everything else
-there is written by `altdown::build_site()` on every build, and gitignored:
+## How a build works
+
+`altdown::build_site()` runs in three stages:
+
+1. **Before rendering**, it writes a set of files into `altdoc/`. altdoc copies
+   that folder into its Quarto project, so these files end up in the site.
+2. **During rendering**, `altdoc::render_docs()` converts the Rd files to
+   Quarto pages and renders the project. A pre-render script fixes up the man
+   pages before Quarto sees them.
+3. **After rendering**, it adds hover tooltips to the HTML in `docs/`.
+
+Customizing a site by generating its source files and then calling
+`altdoc::render_docs()` is the approach altdoc itself recommends for
+Quarto[^customize].
+
+[^customize]: See altdoc's
+    [customization vignette](https://altdoc.etiennebacher.com/articles/customize.html).
+
+The only file you edit is `altdoc/altdown.yml`. Everything else in `altdoc/` is
+rewritten on every build, and gitignored by `altdown::use_altdown()`:
 
 ```text
 altdoc/
@@ -19,79 +37,149 @@ altdoc/
 ├── authors.qmd                # authors and citation page
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
 ├── altdown-header.html        # dark-mode default
-├── altdown-after-body.html    # navbar alignment, see below
-└── altdown-pre-render.R       # fixes up altdoc's man pages, see below
+├── altdown-after-body.html    # navbar alignment
+└── altdown-pre-render.R       # fixes up altdoc's man pages
 ```
 
-## Why generate files?
-
-For a Quarto backend, the intended approach is to modify the source files with a script and then
-call `altdoc::render_docs()` yourself (see altdoc's
-[customization vignette](https://altdoc.etiennebacher.com/articles/customize.html)).
-
-That is what `build_site()` does. altdoc copies `altdoc/` into its Quarto
-project, so files written there before `altdoc::render_docs()` end up in the
-site. The main ones are explained below.
+## Before rendering
 
 ### The home page
 
-altdoc's home page is an `index.md` that includes `README.md`. Since altdoc
-copies `altdoc/` into its Quarto project after importing the README,
-`build_site()` writes its own `altdoc/index.md` to replace it: the README with
-a `.column-margin` sidebar, matching pkgdown's layout, with the README's badges
-moved into it. `README.md` itself is never modified.
+altdoc's home page is an `index.md` that includes `README.md`. altdoc copies
+`altdoc/` into its Quarto project after importing the README, so the
+`altdoc/index.md` that `build_site()` writes takes its place. It holds the
+README's content next to a pkgdown-style sidebar, with links, the license, the
+citation, the developers and the README's badges.
+
+The sidebar is a `.column-margin` div, Quarto's margin column, so on a narrow
+screen it moves below the content as Quarto's layout intends.
+
+A README image can have a light and a dark version, given GitHub's way, as a
+`<picture>` with a `<source media="(prefers-color-scheme: dark)">`. On the site
+that would follow the operating system's setting instead of the site's own
+light/dark toggle, so each such `<picture>` becomes one `<img>` per theme, using
+Quarto's `.light-content` and `.dark-content` classes.
 
 ### The reference index
 
-altdoc does not currently have a `_pkgdown.yml`-style `reference:` field for
-controlling how the function index is grouped and ordered
+altdoc has no way to group and order the function index, like pkgdown's
+`reference:` field
 ([etiennebacher/altdoc#326](https://github.com/etiennebacher/altdoc/issues/326)).
+So `altdoc/altdown.yml` has a `reference:` field of its own, in the same shape
+as pkgdown's:
 
-So `altdoc/altdown.yml` has a `reference:` field, using the same basic
-structure as pkgdown's. `build_site()` uses it together with the `\name{}` and
-`\alias{}` entries in `man/*.Rd` to generate `altdoc/reference.qmd`.
+```yaml
+reference:
+  - title: Building the site       # <1>
+    desc: >                        # <2>
+      Set up a package, then build its site.
+    contents:
+      - use_altdown                # <3>
+      - starts_with("build_")      # <4>
+```
+1. Each entry becomes a section of the index, with this heading.
+2. An optional description, shown under the heading.
+3. A topic, by any of its `\alias{}` names.
+4. A selector, as in pkgdown: `starts_with()`, `ends_with()`, `contains()`,
+   `matches()`, `has_concept()`, `has_keyword()`, `-` to exclude and `c()` to
+   combine.
+
+`build_site()` resolves these against the `\name{}` and `\alias{}` entries in
+`man/*.Rd` and writes the index to `altdoc/reference.qmd`.
 
 ### The navbar and footer
 
-`altdoc/quarto_website.yml` is generated in full: the navbar links the "Get
-started" vignette, the reference index, the other vignettes under "Articles"
-and the changelog, and the footer has the "Developed by <authors>." text used
-by pkgdown, based on `Authors@R`. A `quarto:` field in `altdown.yml` is merged
-over it.
+`altdoc/quarto_website.yml` is generated in full. The navbar links the "Get
+started" vignette, the reference index, the other vignettes under "Articles" and
+the changelog. The footer has pkgdown's "Developed by ..." text, built from
+`Authors@R`.
 
-### The man pages
+::: {.callout-tip}
+## Changing the Quarto configuration
+
+A `quarto:` field in `altdown.yml` is merged over the generated configuration.
+A list of entries, like the navbar's items, is added to; any other setting is
+replaced, and `~` removes it. For example, to add a link to the navbar and fold
+code blocks:
+
+```yaml
+quarto:
+  website:
+    navbar:
+      right:
+        - text: Blog
+          href: https://example.com
+  format:
+    html:
+      code-fold: true
+```
+:::
+
+## During rendering: the man pages
 
 altdoc converts each `man/*.Rd` file to a `.qmd` page during
-`altdoc::render_docs()`, and renders the Quarto project straight after, so
-`build_site()` can't edit those pages beforehand. Instead
+`altdoc::render_docs()` and renders the Quarto project straight after, so
+`build_site()` can't edit those pages beforehand. Instead,
 `altdown-pre-render.R` runs as a Quarto pre-render script, inside that render.
-It turns the Usage section into a highlighted R code block, rewrites inline
-`<code>` as Markdown code spans (so Pandoc doesn't turn their `"` into curly
-quotes), and turns examples that aren't run (`\dontrun{}`) into plain code
-blocks, so those pages don't need knitr and a separate R session each.
+It makes the pages look like pkgdown's:
+
+- **Usage** becomes an R code block, so it's syntax-highlighted and gets a copy
+  button, like the examples.
+- **Inline code** becomes Markdown code spans. Pandoc would otherwise turn a `"`
+  inside `<code>` into a curly quote, and a trailing backslash would escape the
+  closing `</code>`.
+- **Examples** that are run show their output in the same block, prefixed with
+  `#>`. The `library()` call altdoc adds for the package itself is hidden.
+- **Examples that aren't run** (`\dontrun{}`) become plain code blocks, so their
+  pages render without starting an R session[^knitr].
+
+[^knitr]: A ```` ```{r} ```` chunk makes Quarto render the page with knitr, even
+    with `eval=FALSE`, and that starts a separate R session per page.
+
+## After rendering: hover tooltips
+
+Quarto's `code-link` option links function names in code blocks to their
+documentation with downlit, but downlit doesn't know about this site, so it
+can't link the package's own functions to their man pages here. So after
+rendering, `build_site()` goes through every
+page in `docs/` and links each reference to one of the package's own functions,
+in a code block or in inline code, to its man page. Hovering over it shows a
+tooltip with the function's usage and the first sentence of its description,
+taken from `man/*.Rd`.
+
+Try it: hover over `build_site()` or `use_altdown()`. To build without
+tooltips, use `build_site(tooltips = FALSE)`.
+
+::: {.callout-note}
+The tooltip shows the first sentence of the description, cut off at 200
+characters. `build_site()` warns when a sentence is longer, so you can shorten
+it.
+:::
 
 ## Matching the pkgdown look
 
-`altdown.scss` is a Quarto theme layer:
+`altdown.scss` is a Quarto theme layer, added on top of Quarto's own light and
+dark themes:
 
 ```yaml
-theme: [default, altdown.scss]
+theme:
+  light: [default, altdown.scss]
+  dark: [darkly, altdown.scss]
 ```
 
-It is based on pkgdown's own `pkgdown.scss`, but the selectors have been
-adapted to Quarto's HTML.
+It is based on pkgdown's `pkgdown.scss`, with the selectors adapted to Quarto's
+HTML. It:
 
-It does the following:
+- limits the navbar to a centered, fixed-width container;
+- puts the navbar items (title, links, search, GitHub icon) in pkgdown's order;
+- styles the margin sidebar and the reference index to look like pkgdown's.
 
-- Limiting the navbar to a centered, fixed-width container.
-- Putting the navbar items (title, links, search, GitHub icon) in the same
-  order as pkgdown.
-- Styling the margin sidebar and reference index
-  (`<dl class="ref-index">`) to look like their pkgdown counterparts.
+Two things can't be done in CSS alone:
 
-There is one annoying thing that can't be fixed though: the navbar title does
-not line up with the body text automatically. Quarto uses a different layout
-for the home page, so the body's left edge is not in the same place on every page.
-Therefore, the generated `quarto_website.yml` includes a small
-`include-after-body` script that measures the actual offset after the page has
-loaded and adjusts the navbar padding accordingly.
+- **Dark mode by default.** Quarto's light/dark toggle always starts new
+  visitors on the light theme. `altdown-header.html` starts them on the dark
+  theme if their system prefers it, unless they've used the toggle before.
+- **Aligning the navbar title with the body text.** Quarto's home page uses a
+  different layout from the other pages, so the body's left edge isn't in the
+  same place on every page. `altdown-after-body.html` measures it once the page
+  has loaded and adjusts the navbar's padding to match.

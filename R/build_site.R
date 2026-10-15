@@ -30,9 +30,19 @@
 #'   relative to `vignettes/` without extension (e.g. `articles/details`).
 #'   Without it, every vignette other than the "Get started" one is listed,
 #'   top-level vignettes first, then those in `vignettes/articles/`.
-#' * `quarto`: settings merged (with [utils::modifyList()]) over the
-#'   generated Quarto configuration, e.g. to add navbar entries or extra
-#'   SCSS files.
+#' * `quarto`: settings merged over the generated Quarto configuration.
+#'   Settings are merged key by key: a list of entries (e.g. the navbar's
+#'   `left:` or `right:` items) is added to, any other value is replaced, and
+#'   `~` removes a setting. For example, to add a navbar link:
+#'
+#'   ```yaml
+#'   quarto:
+#'     website:
+#'       navbar:
+#'         right:
+#'           - text: Blog
+#'             href: https://example.com
+#'   ```
 #'
 #' The "Get started" link points to the vignette named after the package, or
 #' to the only top-level vignette if there is just one.
@@ -172,9 +182,29 @@ quarto_config <- function(path, config = list()) {
   )
 
   if (!is.null(config$quarto)) {
-    settings <- utils::modifyList(settings, config$quarto)
+    settings <- merge_quarto_config(settings, config$quarto)
   }
   settings
+}
+
+# Like utils::modifyList(), but a list of entries (an unnamed list, e.g. the
+# navbar's `left:` items) is appended to, where modifyList() would silently
+# ignore it. A plain value is replaced, as is a sequence of plain values,
+# which yaml reads as an atomic vector, indistinguishable from one value.
+# `~` (NULL) removes the setting.
+merge_quarto_config <- function(x, val) {
+  for (name in names(val)) {
+    if (is.list(x[[name]]) && is.list(val[[name]])) {
+      x[[name]] <- if (is.null(names(val[[name]]))) {
+        c(x[[name]], val[[name]])
+      } else {
+        merge_quarto_config(x[[name]], val[[name]])
+      }
+    } else {
+      x[[name]] <- val[[name]] # NULL removes it
+    }
+  }
+  x
 }
 
 write_quarto_config <- function(path, config = list()) {

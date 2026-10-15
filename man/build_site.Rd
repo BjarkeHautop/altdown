@@ -55,9 +55,18 @@ Without it, every topic is listed in one section.
 relative to \verb{vignettes/} without extension (e.g. \code{articles/details}).
 Without it, every vignette other than the "Get started" one is listed,
 top-level vignettes first, then those in \verb{vignettes/articles/}.
-\item \code{quarto}: settings merged (with \code{\link[utils:modifyList]{utils::modifyList()}}) over the
-generated Quarto configuration, e.g. to add navbar entries or extra
-SCSS files.
+\item \code{quarto}: settings merged over the generated Quarto configuration.
+Settings are merged key by key: a list of entries (e.g. the navbar's
+\verb{left:} or \verb{right:} items) is added to, any other value is replaced, and
+\code{~} removes a setting. For example, to add a navbar link:
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{quarto:
+  website:
+    navbar:
+      right:
+        - text: Blog
+          href: https://example.com
+}\if{html}{\out{</div>}}
 }
 
 The "Get started" link points to the vignette named after the package, or

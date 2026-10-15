@@ -1,17 +1,7 @@
 # Configuration for altdown::build_site(). See ?altdown::build_site.
 
-# `greet` and `add` aren't real package functions - they're a toy API
-# staged into man/ only for the duration of the build (see demo/demo.R and
-# demo/build-site.R), so they only show up here while a build is running.
 reference:
   - title: All functions
     contents:
       - build_site
       - use_altdown
-  - title: Toy demo functions
-    desc: >
-      Not part of the real package API. Injected during the site
-      build for showcase.
-    contents:
-      - greet
-      - add

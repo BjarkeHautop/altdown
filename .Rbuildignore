@@ -1,8 +1,7 @@
 ^docs$
 ^altdoc$
-^vignettes/articles$
+^vignettes$
 ^_quarto$
 ^LICENSE\.md$
 ^README\.qmd$
 ^\.github$
-^demo$

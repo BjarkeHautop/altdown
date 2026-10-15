@@ -26,6 +26,5 @@ Suggests:
     httr2,
     testthat (>= 3.0.0),
     withr
-Config/Needs/website: pkgload, roxygen2
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

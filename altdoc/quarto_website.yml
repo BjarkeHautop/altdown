@@ -13,7 +13,7 @@ website:
     search: true
     left:
     - text: Get started
-      file: vignettes/getting-started.qmd
+      file: vignettes/altdown.qmd
     - text: Reference
       file: reference.qmd
     - text: Articles
