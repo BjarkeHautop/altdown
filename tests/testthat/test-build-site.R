@@ -57,7 +57,12 @@ test_that("find_vignettes() lists top-level vignettes, then vignettes/articles/"
 
   expect_identical(
     find_vignettes(dir),
-    c("examplepkg.Rmd", "z.qmd", "articles/a-article.qmd", "articles/b-article.qmd")
+    c(
+      "examplepkg.Rmd",
+      "z.qmd",
+      "articles/a-article.qmd",
+      "articles/b-article.qmd"
+    )
   )
 
   dir_none <- withr::local_tempdir()
@@ -168,26 +173,47 @@ test_that("write_quarto_config() writes a complete config with no altdoc variabl
 
 test_that("quarto_config() links GitHub and merges `quarto:` overrides", {
   dir <- new_pkg()
-  write("URL: https://github.com/someuser/examplepkg", file.path(dir, "DESCRIPTION"), append = TRUE)
+  write(
+    "URL: https://github.com/someuser/examplepkg",
+    file.path(dir, "DESCRIPTION"),
+    append = TRUE
+  )
 
-  config <- list(quarto = list(
-    format = list(html = list(theme = list(light = c("default", "altdown.scss", "custom.scss")))),
-    website = list(`site-url` = "https://example.org")
-  ))
+  config <- list(
+    quarto = list(
+      format = list(
+        html = list(
+          theme = list(light = c("default", "altdown.scss", "custom.scss"))
+        )
+      ),
+      website = list(`site-url` = "https://example.org")
+    )
+  )
   settings <- quarto_config(dir, config)
 
-  expect_identical(settings$website$navbar$right[[1]]$href, "https://github.com/someuser/examplepkg")
+  expect_identical(
+    settings$website$navbar$right[[1]]$href,
+    "https://github.com/someuser/examplepkg"
+  )
   expect_identical(settings$website$`site-url`, "https://example.org")
-  expect_identical(settings$format$html$theme$light, c("default", "altdown.scss", "custom.scss"))
+  expect_identical(
+    settings$format$html$theme$light,
+    c("default", "altdown.scss", "custom.scss")
+  )
   expect_identical(settings$format$html$theme$dark, c("darkly", "altdown.scss"))
   expect_true(settings$format$html$toc)
 })
 
 test_that("`quarto:` adds navbar entries and `~` removes a setting", {
   dir <- new_pkg()
-  write("URL: https://github.com/someuser/examplepkg", file.path(dir, "DESCRIPTION"), append = TRUE)
+  write(
+    "URL: https://github.com/someuser/examplepkg",
+    file.path(dir, "DESCRIPTION"),
+    append = TRUE
+  )
 
-  config <- yaml::yaml.load("
+  config <- yaml::yaml.load(
+    "
 quarto:
   website:
     navbar:
@@ -197,13 +223,17 @@ quarto:
   format:
     html:
       toc: ~
-")
+"
+  )
   settings <- quarto_config(dir, config)
 
   right <- settings$website$navbar$right
   expect_length(right, 2)
   expect_identical(right[[1]]$icon, "github")
-  expect_identical(right[[2]], list(text = "Blog", href = "https://example.com"))
+  expect_identical(
+    right[[2]],
+    list(text = "Blog", href = "https://example.com")
+  )
   expect_false("toc" %in% names(settings$format$html))
   expect_true(settings$format$html$`code-link`)
 })
@@ -221,12 +251,18 @@ test_that("build_website_readme() moves badges into the sidebar and keeps the bo
   )
 
   home <- build_website_readme(readme, dir)
-  expect_identical(home[1:5], c("::::: {.altdown-home}", "# examplepkg", "", "Some text.", ":::::"))
+  expect_identical(
+    home[1:5],
+    c("::::: {.altdown-home}", "# examplepkg", "", "Some text.", ":::::")
+  )
   expect_identical(home[7], "::: {.column-margin}")
   expect_identical(home[length(home)], ":::")
   expect_false(any(grepl("badges:", home, fixed = TRUE)))
   dev_status <- which(home == "#### Dev status")
-  expect_identical(home[dev_status + 2], "[![badge](b.svg)](https://example.org)")
+  expect_identical(
+    home[dev_status + 2],
+    "[![badge](b.svg)](https://example.org)"
+  )
 })
 
 test_that("theme_pictures_to_images() turns a light/dark <picture> into themed <img>s", {
@@ -316,7 +352,10 @@ test_that("data_sidebar_authors() links to authors.html only when a non-default-
     file.path(dir_ctb, "DESCRIPTION")
   )
   bullets_ctb <- data_sidebar_authors(dir_ctb)
-  expect_true(any(grepl("More about authors...\\]\\(authors.html\\)", bullets_ctb)))
+  expect_true(any(grepl(
+    "More about authors...\\]\\(authors.html\\)",
+    bullets_ctb
+  )))
   expect_false(any(grepl("John Smith", bullets_ctb)))
 })
 
@@ -351,11 +390,18 @@ test_that("build_authors_qmd() writes an Authors and Citation page with all auth
   expect_true(any(grepl("Jane Doe", lines, fixed = TRUE)))
   expect_true(any(grepl("John Smith", lines, fixed = TRUE)))
   expect_true(any(grepl("^## Citation \\{#citation\\}$", lines)))
-  expect_true(any(grepl("Source: <a href=\"DESCRIPTION\"><code>DESCRIPTION</code></a>", lines, fixed = TRUE)))
+  expect_true(any(grepl(
+    "Source: <a href=\"DESCRIPTION\"><code>DESCRIPTION</code></a>",
+    lines,
+    fixed = TRUE
+  )))
   expect_true(any(lines == "```bibtex"))
   open_idx <- which(lines == "```bibtex")
   close_idx <- which(lines == "```")
-  bibtex_block <- lines[seq(open_idx + 1, close_idx[close_idx > open_idx][1] - 1)]
+  bibtex_block <- lines[seq(
+    open_idx + 1,
+    close_idx[close_idx > open_idx][1] - 1
+  )]
   expect_true(any(grepl("@Manual\\{", bibtex_block)))
 })
 
@@ -389,7 +435,14 @@ test_that("build_authors_qmd() prefers an inst/CITATION file and links the Sourc
   )))
 })
 
-write_rd <- function(dir, name, alias = name, title = name, concept = NULL, keyword = NULL) {
+write_rd <- function(
+  dir,
+  name,
+  alias = name,
+  title = name,
+  concept = NULL,
+  keyword = NULL
+) {
   lines <- c(
     sprintf("\\name{%s}", name),
     sprintf("\\alias{%s}", alias),
@@ -421,7 +474,13 @@ reference_config <- function(text) {
 
 test_that("rd_topics() reads alias/title/concept/keyword tags from every man/*.Rd", {
   dir <- new_pkg_with_man()
-  write_rd(dir, "foo_bar", title = "Foo bar", concept = "strings", keyword = "internal")
+  write_rd(
+    dir,
+    "foo_bar",
+    title = "Foo bar",
+    concept = "strings",
+    keyword = "internal"
+  )
 
   topics <- rd_topics(dir)
   expect_length(topics, 1)
@@ -455,8 +514,8 @@ test_that("build_reference_qmd() supports starts_with()/-exclude/has_concept()/h
   expect_true(any(grepl("str_bar()", lines, fixed = TRUE)))
   expect_true(any(grepl("num_add()", lines, fixed = TRUE)))
 
-  strings_start <- which(grepl("^## Strings$", lines))
-  internal_start <- which(grepl("^## Internal$", lines))
+  strings_start <- grep("^## Strings$", lines)
+  internal_start <- grep("^## Internal$", lines)
   strings_block <- lines[strings_start:(internal_start - 1)]
   expect_false(any(grepl("num_add()", strings_block, fixed = TRUE)))
 })
@@ -478,15 +537,30 @@ test_that("build_reference_qmd() warns about topics missing from `reference:`", 
   write_rd(dir, "listed_fun")
   write_rd(dir, "orphan_fun")
 
-  config <- reference_config(c("reference:", "  - title: All", "    contents:", "      - listed_fun"))
+  config <- reference_config(c(
+    "reference:",
+    "  - title: All",
+    "    contents:",
+    "      - listed_fun"
+  ))
   expect_warning(build_reference_qmd(dir, config), "orphan_fun")
 })
 
 test_that("build_reference_qmd() accepts a non-syntactic alias like a *-package alias verbatim", {
   dir <- new_pkg_with_man()
-  write_rd(dir, "examplepkg-package", alias = "examplepkg-package", title = "examplepkg")
+  write_rd(
+    dir,
+    "examplepkg-package",
+    alias = "examplepkg-package",
+    title = "examplepkg"
+  )
 
-  config <- reference_config(c("reference:", "  - title: All", "    contents:", "      - examplepkg-package"))
+  config <- reference_config(c(
+    "reference:",
+    "  - title: All",
+    "    contents:",
+    "      - examplepkg-package"
+  ))
   build_reference_qmd(dir, config)
   lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
   expect_true(any(grepl("examplepkg-package()", lines, fixed = TRUE)))
@@ -496,13 +570,20 @@ test_that("build_reference_qmd() errors on a selector matching no topic", {
   dir <- new_pkg_with_man()
   write_rd(dir, "listed_fun")
 
-  config <- reference_config(c("reference:", "  - title: All", "    contents:", "      - not_a_real_function"))
+  config <- reference_config(c(
+    "reference:",
+    "  - title: All",
+    "    contents:",
+    "      - not_a_real_function"
+  ))
   expect_error(build_reference_qmd(dir, config), "known")
 })
 
 test_that("convert_inline_code() turns raw <code> into Markdown code spans", {
   expect_identical(
-    convert_inline_code("stored in <code>tools::R_user_dir(&quot;pkg&quot;, &quot;data&quot;)</code>."),
+    convert_inline_code(
+      "stored in <code>tools::R_user_dir(&quot;pkg&quot;, &quot;data&quot;)</code>."
+    ),
     "stored in `tools::R_user_dir(\"pkg\", \"data\")`."
   )
   expect_identical(
@@ -515,7 +596,13 @@ test_that("convert_inline_code() turns raw <code> into Markdown code spans", {
 })
 
 test_that("convert_inline_code() leaves fenced code blocks alone", {
-  lines <- c("<code>a</code>", "```r", "x <- \"<code>b</code>\"", "```", "<code>c</code>")
+  lines <- c(
+    "<code>a</code>",
+    "```r",
+    "x <- \"<code>b</code>\"",
+    "```",
+    "<code>c</code>"
+  )
   expect_identical(
     convert_inline_code(lines),
     c("`a`", "```r", "x <- \"<code>b</code>\"", "```", "`c`")
@@ -533,7 +620,14 @@ test_that("unevaluated_chunks_to_code() turns only eval=FALSE chunks into plain 
   )
   expect_identical(
     unevaluated_chunks_to_code(lines),
-    c("```r", "f()", "```", "```{r, warning=FALSE, message=FALSE}", "g()", "```")
+    c(
+      "```r",
+      "f()",
+      "```",
+      "```{r, warning=FALSE, message=FALSE}",
+      "g()",
+      "```"
+    )
   )
 })
 
@@ -562,13 +656,23 @@ test_that("write_pre_render_script() writes a standalone script that fixes up ma
   expect_identical(status, 0L)
   expect_identical(
     readLines(qmd),
-    c("Uses `f(\"a\")`.", "```r", "foo(x = \"a\")", "```", "```r", "foo()", "```")
+    c(
+      "Uses `f(\"a\")`.",
+      "```r",
+      "foo(x = \"a\")",
+      "```",
+      "```r",
+      "foo()",
+      "```"
+    )
   )
 })
 
 test_that("convert_inline_code() handles <code> with attributes but leaves <pre><code> alone", {
   expect_identical(
-    convert_inline_code("a `/` (or <code style=\"white-space: pre;\">\\</code> on Windows), or"),
+    convert_inline_code(
+      "a `/` (or <code style=\"white-space: pre;\">\\</code> on Windows), or"
+    ),
     "a `/` (or `\\` on Windows), or"
   )
   block <- "<pre><code class='language-R'>x</code></pre>"
@@ -576,7 +680,22 @@ test_that("convert_inline_code() handles <code> with attributes but leaves <pre>
 })
 
 test_that("trim_code_blocks() drops leading and trailing blank lines inside code blocks only", {
-  lines <- c("", "```r", "", "f()", "", "g()", "", "", "```", "", "```{r}", "", "h()", "```")
+  lines <- c(
+    "",
+    "```r",
+    "",
+    "f()",
+    "",
+    "g()",
+    "",
+    "",
+    "```",
+    "",
+    "```{r}",
+    "",
+    "h()",
+    "```"
+  )
   expect_identical(
     trim_code_blocks(lines),
     c("", "```r", "f()", "", "g()", "```", "", "```{r}", "h()", "```")
@@ -584,7 +703,14 @@ test_that("trim_code_blocks() drops leading and trailing blank lines inside code
 })
 
 test_that("collapse_example_output() makes run examples show output pkgdown-style", {
-  lines <- c("```{r, warning=FALSE, message=FALSE, eval=TRUE}", "f()", "```", "```{r}", "```r", "```{r, collapse=FALSE}")
+  lines <- c(
+    "```{r, warning=FALSE, message=FALSE, eval=TRUE}",
+    "f()",
+    "```",
+    "```{r}",
+    "```r",
+    "```{r, collapse=FALSE}"
+  )
   expect_identical(
     collapse_example_output(lines),
     c(
@@ -600,19 +726,45 @@ test_that("collapse_example_output() makes run examples show output pkgdown-styl
 
 test_that("hide_library_calls() drops the package's own library() from plain blocks and hides it before run chunks", {
   lines <- c(
-    "```r", "library(\"my.pkg\")", "", "f()", "```",
-    "```{r, eval=TRUE}", "library(my.pkg)", "", "g()", "```",
-    "```{r}", "library(\"other\")", "h()", "```",
-    "```r", "library(\"myXpkg\")", "```"
+    "```r",
+    "library(\"my.pkg\")",
+    "",
+    "f()",
+    "```",
+    "```{r, eval=TRUE}",
+    "library(my.pkg)",
+    "",
+    "g()",
+    "```",
+    "```{r}",
+    "library(\"other\")",
+    "h()",
+    "```",
+    "```r",
+    "library(\"myXpkg\")",
+    "```"
   )
   expect_identical(
     hide_library_calls(lines, "my.pkg"),
     c(
-      "```r", "", "f()", "```",
-      "```{r, include=FALSE}", "library(my.pkg)", "```",
-      "```{r, eval=TRUE}", "", "g()", "```",
-      "```{r}", "library(\"other\")", "h()", "```",
-      "```r", "library(\"myXpkg\")", "```"
+      "```r",
+      "",
+      "f()",
+      "```",
+      "```{r, include=FALSE}",
+      "library(my.pkg)",
+      "```",
+      "```{r, eval=TRUE}",
+      "",
+      "g()",
+      "```",
+      "```{r}",
+      "library(\"other\")",
+      "h()",
+      "```",
+      "```r",
+      "library(\"myXpkg\")",
+      "```"
     )
   )
 })

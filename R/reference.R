@@ -25,7 +25,11 @@ rd_topics <- function(path) {
     rd <- tools::parse_Rd(rd_file)
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
     tag_text <- function(tag) {
-      trimws(vapply(rd[tags == tag], function(x) as.character(x[[1]]), character(1)))
+      trimws(vapply(
+        rd[tags == tag],
+        function(x) as.character(x[[1]]),
+        character(1)
+      ))
     }
 
     list(
@@ -57,18 +61,34 @@ match_env <- function(topics) {
     which(vapply(alias_vecs, function(x) any(f(x)), logical(1)))
   }
 
-  assign("starts_with", function(x) any_alias(function(a) grepl(paste0("^", x), a)), envir = env)
-  assign("ends_with", function(x) any_alias(function(a) grepl(paste0(x, "$"), a)), envir = env)
-  assign("contains", function(x) any_alias(function(a) grepl(x, a, fixed = TRUE)), envir = env)
+  assign(
+    "starts_with",
+    function(x) any_alias(function(a) grepl(paste0("^", x), a)),
+    envir = env
+  )
+  assign(
+    "ends_with",
+    function(x) any_alias(function(a) grepl(paste0(x, "$"), a)),
+    envir = env
+  )
+  assign(
+    "contains",
+    function(x) any_alias(function(a) grepl(x, a, fixed = TRUE)),
+    envir = env
+  )
   assign("matches", function(x) any_alias(function(a) grepl(x, a)), envir = env)
   assign(
     "has_concept",
-    function(x) which(vapply(topics, function(t) any(t$concepts == x), logical(1))),
+    function(x) {
+      which(vapply(topics, function(t) any(t$concepts == x), logical(1)))
+    },
     envir = env
   )
   assign(
     "has_keyword",
-    function(x) which(vapply(topics, function(t) any(t$keywords %in% x), logical(1))),
+    function(x) {
+      which(vapply(topics, function(t) any(t$keywords %in% x), logical(1)))
+    },
     envir = env
   )
 
@@ -163,7 +183,11 @@ build_reference_qmd <- function(path, config = list()) {
 
   unlisted <- setdiff(seq_along(topics), unique(unlist(block_indexes)))
   if (length(unlisted) > 0) {
-    unlisted_names <- vapply(topics[unlisted], function(t) t$alias[[1]], character(1))
+    unlisted_names <- vapply(
+      topics[unlisted],
+      function(t) t$alias[[1]],
+      character(1)
+    )
     cli::cli_warn(
       "man/*.Rd defines {.val {unlisted_names}}, which {?is/are} not listed under `reference:` in altdoc/altdown.yml and won't appear on the reference page."
     )

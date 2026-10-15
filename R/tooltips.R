@@ -29,7 +29,9 @@ tooltip_marker <- "<!-- altdown-tooltips -->"
 add_tooltips <- function(path = ".", quiet = FALSE) {
   docs_dir <- file.path(path, "docs")
   if (!dir.exists(file.path(docs_dir, "man"))) {
-    cli::cli_abort("No built site with a {.path man/} directory found at {.path {docs_dir}}.")
+    cli::cli_abort(
+      "No built site with a {.path man/} directory found at {.path {docs_dir}}."
+    )
   }
 
   index <- build_topic_index(path, quiet = quiet)
@@ -43,7 +45,10 @@ add_tooltips <- function(path = ".", quiet = FALSE) {
   n_links <- 0L
 
   for (f in html_files) {
-    html <- paste(readLines(f, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+    html <- paste(
+      readLines(f, warn = FALSE, encoding = "UTF-8"),
+      collapse = "\n"
+    )
     if (grepl(tooltip_marker, html, fixed = TRUE)) {
       next
     }
@@ -54,8 +59,16 @@ add_tooltips <- function(path = ".", quiet = FALSE) {
       next
     }
 
-    new_html <- sub("</head>", paste0(tooltip_css_block(), "</head>"), result$html, fixed = TRUE)
-    body_addition <- paste0(tooltip_payload_html(result$tips), tooltip_script_block())
+    new_html <- sub(
+      "</head>",
+      paste0(tooltip_css_block(), "</head>"),
+      result$html,
+      fixed = TRUE
+    )
+    body_addition <- paste0(
+      tooltip_payload_html(result$tips),
+      tooltip_script_block()
+    )
     # A plain `sub("</body>", ...)` would match the first literal
     # occurrence anywhere in the raw HTML text, including one inside a
     # <script> block's own source (e.g. a JS comment mentioning "</body>").
@@ -97,7 +110,12 @@ reference_href_prefix <- function(file, docs_dir) {
 # `tips` collects one entry per unique resolved name (id -> {usage, brief,
 # topic, name}), the page's hidden tooltip payload. `pkg` is the package's
 # own name, so an inline `pkg::foo()` resolves like `foo()`.
-inject_tooltips_html <- function(html, index, href_prefix = "man/", pkg = NULL) {
+inject_tooltips_html <- function(
+  html,
+  index,
+  href_prefix = "man/",
+  pkg = NULL
+) {
   m <- gregexpr(tooltip_link_re, html, perl = TRUE)[[1]]
   if (m[1] == -1) {
     return(list(html = html, n = 0L, tips = list()))
@@ -149,7 +167,10 @@ inject_tooltips_html <- function(html, index, href_prefix = "man/", pkg = NULL) 
       }
       link <- sprintf(
         '<a class="altdown-tip-ref" data-altdown-tip="%s" href="%s%s.html">%s</a>',
-        id, href_prefix, entry$topic, name_html
+        id,
+        href_prefix,
+        entry$topic,
+        name_html
       )
       pieces[[pi]] <- if (is_block) {
         sprintf('<span class="%s">%s</span>', capture(i, 1L), link)
@@ -183,19 +204,39 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
   index <- list()
   for (rd_file in fs::dir_ls(man_dir, regexp = "\\.Rd$")) {
     rd <- tryCatch(tools::parse_Rd(rd_file), error = function(e) NULL)
-    if (is.null(rd)) next
+    if (is.null(rd)) {
+      next
+    }
     topic <- fs::path_ext_remove(fs::path_file(rd_file))
     rd_name <- basename(rd_file)
 
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-    aliases <- vapply(rd[tags == "\\alias"], function(x) as.character(x[[1]]), character(1))
-    if (length(aliases) == 0) next
+    aliases <- vapply(
+      rd[tags == "\\alias"],
+      function(x) as.character(x[[1]]),
+      character(1)
+    )
+    if (length(aliases) == 0) {
+      next
+    }
 
     usage_node <- rd[tags == "\\usage"]
-    usage_blocks <- if (length(usage_node) == 0) character(0) else rd_usage_blocks(usage_node[[1]])
-    usage_whole <- if (length(usage_blocks) == 0) NULL else paste(usage_blocks, collapse = "\n\n")
+    usage_blocks <- if (length(usage_node) == 0) {
+      character(0)
+    } else {
+      rd_usage_blocks(usage_node[[1]])
+    }
+    usage_whole <- if (length(usage_blocks) == 0) {
+      NULL
+    } else {
+      paste(usage_blocks, collapse = "\n\n")
+    }
     usage_by_name <- usage_blocks
-    names(usage_by_name) <- vapply(usage_blocks, rd_usage_leading_name, character(1))
+    names(usage_by_name) <- vapply(
+      usage_blocks,
+      rd_usage_leading_name,
+      character(1)
+    )
 
     sentence <- first_sentence(rd_section_text(rd, tags, "\\description"))
 
@@ -216,7 +257,11 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
     for (alias in aliases) {
       match_idx <- match(alias, names(usage_by_name))
       usage <- if (is.na(match_idx)) usage_whole else usage_by_name[[match_idx]]
-      index[[alias]] <- list(usage = usage, brief = sentence$text, topic = topic)
+      index[[alias]] <- list(
+        usage = usage,
+        brief = sentence$text,
+        topic = topic
+      )
     }
   }
   index
@@ -240,7 +285,8 @@ rd_usage_blocks <- function(usage_node) {
   for (child in usage_node) {
     if (identical(attr(child, "Rd_tag"), "\\method")) {
       current[[length(current) + 1L]] <- paste0(
-        paste(unlist(child[[1]]), collapse = ""), ".",
+        paste(unlist(child[[1]]), collapse = ""),
+        ".",
         paste(unlist(child[[2]]), collapse = "")
       )
     } else {
@@ -337,7 +383,8 @@ html_unescape <- function(text) {
 
 tooltip_css_block <- function() {
   paste0(
-    tooltip_marker, "\n",
+    tooltip_marker,
+    "\n",
     "<style>\n",
     ".altdown-tip-float{display:none;position:fixed;z-index:10000;",
     "min-width:220px;max-width:420px;",
@@ -361,23 +408,33 @@ tooltip_css_block <- function() {
 # `tips`: id -> list(usage, brief, name), rendered as a hidden payload the
 # script below reads via `data-for`/`data-altdown-tip`.
 tooltip_payload_html <- function(tips) {
-  entries <- vapply(names(tips), function(id) {
-    tip <- tips[[id]]
-    sig <- if (!is.null(tip$usage)) tip$usage else tip$name
-    brief_html <- if (!is.null(tip$brief)) {
-      # `code` in the brief (kept from Rd \code{}) becomes <code>
-      brief <- gsub("`([^`]+)`", "<code>\\1</code>", html_escape(tip$brief))
-      paste0("<span class=\"altdown-tip-brief\">", brief, "</span>")
-    } else {
-      ""
-    }
-    sprintf(
-      '<div data-for="%s"><code class="altdown-tip-sig">%s</code>%s</div>',
-      id, html_escape(sig), brief_html
-    )
-  }, character(1))
+  entries <- vapply(
+    names(tips),
+    function(id) {
+      tip <- tips[[id]]
+      sig <- if (!is.null(tip$usage)) tip$usage else tip$name
+      brief_html <- if (!is.null(tip$brief)) {
+        # `code` in the brief (kept from Rd \code{}) becomes <code>
+        brief <- gsub("`([^`]+)`", "<code>\\1</code>", html_escape(tip$brief))
+        paste0("<span class=\"altdown-tip-brief\">", brief, "</span>")
+      } else {
+        ""
+      }
+      sprintf(
+        '<div data-for="%s"><code class="altdown-tip-sig">%s</code>%s</div>',
+        id,
+        html_escape(sig),
+        brief_html
+      )
+    },
+    character(1)
+  )
 
-  paste0('<div class="altdown-tip-payload" hidden>', paste(entries, collapse = ""), "</div>\n")
+  paste0(
+    '<div class="altdown-tip-payload" hidden>',
+    paste(entries, collapse = ""),
+    "</div>\n"
+  )
 }
 
 tooltip_script_block <- function() {

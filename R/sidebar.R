@@ -265,4 +265,3 @@ data_developed_by <- function(path, roles = default_roles()) {
   names <- vapply(authors, author_name, character(1))
   sprintf("Developed by %s.", paste(names, collapse = ", "))
 }
-

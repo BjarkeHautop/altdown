@@ -1,0 +1,28 @@
+repos:
+  - repo: https://github.com/jolars/panache-pre-commit
+    rev: v3.16.0
+
+    hooks:
+      - id: panache-format
+      - id: panache-lint
+
+  - repo: https://github.com/posit-dev/air-pre-commit
+    rev: 0.12.0
+    hooks:
+      - id: air-format
+
+  - repo: https://github.com/etiennebacher/jarl-pre-commit
+    rev: 0.6.0
+    hooks:
+      - id: jarl-check
+
+  - repo: local
+    hooks:
+      - id: needs-roxygenize
+        name: roxygen2 documentation is up to date
+        entry: >
+          Rscript -e 'if (roxygen2::needs_roxygenize())
+          stop("Documentation is out of date; run roxygen2::roxygenise()")'
+        language: system
+        files: '^(R/|DESCRIPTION|NAMESPACE|man/)'
+        pass_filenames: false

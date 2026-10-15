@@ -15,9 +15,9 @@ and renders them with Quarto, and altdown supplies the
    copies into its Quarto project. This is the approach altdoc
    [recommends](https://altdoc.etiennebacher.com/articles/customize.html) for
    customizing Quarto sites.
-2. **During rendering**, `altdoc::render_docs()` converts the Rd files to
-   Quarto pages and renders the project, with a pre-render script fixing up the
-   man pages.
+2. **During rendering**, `altdoc::render_docs()` converts the Rd files to Quarto
+   pages and renders the project, with a pre-render script fixing up the man
+   pages.
 3. **After rendering**, it adds hover tooltips to the HTML in `docs/`.
 
 The only file you edit is `altdoc/altdown.yml`. Everything else in `altdoc/` is
@@ -45,8 +45,8 @@ pkgdown-style sidebar with links, the license, the citation, the developers and
 the README's badges. On narrow screens the sidebar moves below the content.
 
 A README `<picture>` with a light and a dark version (GitHub's
-`prefers-color-scheme` convention) becomes one `<img>` per theme, switched by the
-site's light/dark toggle.
+`prefers-color-scheme` convention) becomes one `<img>` per theme, switched by
+the site's light/dark toggle.
 
 ### The reference index
 
@@ -63,6 +63,7 @@ reference:
       - use_altdown                # <3>
       - starts_with("build_")      # <4>
 ```
+
 1. Each entry becomes a section of the index, with this heading.
 2. An optional description, shown under the heading.
 3. A topic, by any of its `\alias{}` names.
@@ -114,8 +115,8 @@ like pkgdown's:
 ## After rendering: hover tooltips
 
 After rendering, `build_site()` links every reference to one of the package's
-functions, in code blocks or inline code, to its man page. Hovering shows
-a tooltip with its usage and the first sentence of its description. Try it: hover
+functions, in code blocks or inline code, to its man page. Hovering shows a
+tooltip with its usage and the first sentence of its description. Try it: hover
 over `build_site()` or `use_altdown()`.
 
 The sentence is cut off at 200 characters, and `build_site()` warns when one is

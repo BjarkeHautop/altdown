@@ -9,3 +9,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^CLAUDE\.md$
+^[.]?air[.]toml$
+^panache\.toml$
+^jarl\.toml$
+^\.pre-commit-config\.yaml$

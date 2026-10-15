@@ -95,7 +95,11 @@ generated_files <- c(
   "altdown-pre-render.R"
 )
 
-theme_files <- c("altdown.scss", "altdown-header.html", "altdown-after-body.html")
+theme_files <- c(
+  "altdown.scss",
+  "altdown-header.html",
+  "altdown-after-body.html"
+)
 
 read_config <- function(path) {
   config_path <- file.path(path, "altdoc", "altdown.yml")
@@ -110,7 +114,12 @@ read_config <- function(path) {
 }
 
 copy_theme_files <- function(path) {
-  src <- system.file("quarto", theme_files, package = "altdown", mustWork = TRUE)
+  src <- system.file(
+    "quarto",
+    theme_files,
+    package = "altdown",
+    mustWork = TRUE
+  )
   file.copy(src, file.path(path, "altdoc", theme_files), overwrite = TRUE)
   invisible()
 }
@@ -129,7 +138,11 @@ quarto_config <- function(path, config = list()) {
 
   navbar <- list(search = TRUE, left = navbar_left(path, config))
   if (!is.na(gh_url)) {
-    navbar$right <- list(list(icon = "github", href = gh_url, `aria-label` = "GitHub"))
+    navbar$right <- list(list(
+      icon = "github",
+      href = gh_url,
+      `aria-label` = "GitHub"
+    ))
   }
 
   settings <- list(
@@ -205,14 +218,20 @@ write_quarto_config <- function(path, config = list()) {
 navbar_left <- function(path, config = list()) {
   vignettes <- find_vignettes(path)
   getting_started <- find_getting_started_vignette(path, vignettes)
-  articles <- select_articles(setdiff(vignettes, getting_started), config$articles)
+  articles <- select_articles(
+    setdiff(vignettes, getting_started),
+    config$articles
+  )
 
   left <- list()
   if (!is.null(getting_started)) {
-    left <- c(left, list(list(
-      text = "Get started",
-      file = file.path("vignettes", getting_started)
-    )))
+    left <- c(
+      left,
+      list(list(
+        text = "Get started",
+        file = file.path("vignettes", getting_started)
+      ))
+    )
   }
   left <- c(left, list(list(text = "Reference", file = "reference.qmd")))
   if (length(articles) > 0) {
@@ -253,7 +272,11 @@ news_file <- function(path) {
 # altdoc/index.md replaces that page without touching README.md.
 
 write_home <- function(path) {
-  readme <- readLines(file.path(path, "README.md"), warn = FALSE, encoding = "UTF-8")
+  readme <- readLines(
+    file.path(path, "README.md"),
+    warn = FALSE,
+    encoding = "UTF-8"
+  )
   writeLines(
     enc2utf8(build_website_readme(readme, path)),
     file.path(path, "altdoc", "index.md"),
@@ -348,8 +371,17 @@ theme_picture_to_images <- function(picture) {
   if (length(img) == 0) {
     return(picture)
   }
-  sources <- regmatches(picture, gregexpr("<source\\b[^>]*>", picture, perl = TRUE))[[1]]
-  media <- vapply(sources, html_attr, character(1), name = "media", USE.NAMES = FALSE)
+  sources <- regmatches(
+    picture,
+    gregexpr("<source\\b[^>]*>", picture, perl = TRUE)
+  )[[1]]
+  media <- vapply(
+    sources,
+    html_attr,
+    character(1),
+    name = "media",
+    USE.NAMES = FALSE
+  )
   scheme_pattern <- "^.*prefers-color-scheme\\s*:\\s*(light|dark).*$"
   is_scheme <- !is.na(media) & grepl(scheme_pattern, media, perl = TRUE)
   if (!any(is_scheme)) {
@@ -359,12 +391,20 @@ theme_picture_to_images <- function(picture) {
   sources <- sources[is_scheme][!duplicated(schemes)]
   schemes <- unique(schemes)
 
-  images <- vapply(seq_along(sources), function(i) {
-    srcset <- html_attr(sources[i], "srcset")
-    # The first candidate's URL, without a width or density descriptor.
-    src <- sub("\\s.*$", "", trimws(strsplit(srcset, ",", fixed = TRUE)[[1]][1]))
-    with_theme_class(set_html_attr(img, "src", src), schemes[i])
-  }, character(1))
+  images <- vapply(
+    seq_along(sources),
+    function(i) {
+      srcset <- html_attr(sources[i], "srcset")
+      # The first candidate's URL, without a width or density descriptor.
+      src <- sub(
+        "\\s.*$",
+        "",
+        trimws(strsplit(srcset, ",", fixed = TRUE)[[1]][1])
+      )
+      with_theme_class(set_html_attr(img, "src", src), schemes[i])
+    },
+    character(1)
+  )
   # The <img> is the fallback, so it covers the scheme no <source> names.
   fallback <- setdiff(c("light", "dark"), schemes)
   if (length(fallback) == 1) {

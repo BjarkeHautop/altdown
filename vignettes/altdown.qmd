@@ -36,8 +36,8 @@ version of your package, so install it before building, e.g. with
 The site is built from what's already in your package:
 
 - **Home page**: `README.md`, with a sidebar of links, the license, citation and
-  developers taken from `DESCRIPTION`. Badges between
-  `<!-- badges: start -->` and `<!-- badges: end -->` move into the sidebar.
+  developers taken from `DESCRIPTION`. Badges between `<!-- badges: start -->`
+  and `<!-- badges: end -->` move into the sidebar.
 - **Reference**: one page per `man/*.Rd` file, and an index of them.
 - **Get started**: the vignette named after the package, like this one.
 - **Articles**: every other vignette, including those in `vignettes/articles/`.
@@ -90,5 +90,5 @@ Then, on GitHub, set the repository to serve Pages from the `gh-pages` branch
 
 ## Learn more
 
-[Technical details](technical.qmd) explains how a build works and how
-altdown makes an altdoc site look like pkgdown.
+[Technical details](technical.qmd) explains how a build works and how altdown
+makes an altdoc site look like pkgdown.

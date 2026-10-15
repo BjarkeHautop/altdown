@@ -54,7 +54,10 @@
 use_altdown <- function(path = ".") {
   if (!file.exists(file.path(path, "DESCRIPTION"))) {
     stop(
-      sprintf("No DESCRIPTION file found at '%s' - is this a package root?", path),
+      sprintf(
+        "No DESCRIPTION file found at '%s' - is this a package root?",
+        path
+      ),
       call. = FALSE
     )
   }
@@ -69,7 +72,10 @@ use_altdown <- function(path = ".") {
     message(sprintf("Skipping '%s': already exists.", config_dest))
   } else {
     writeLines(.starter_config_yml(path), config_dest)
-    message(sprintf("Wrote '%s' (edit this to group your functions).", config_dest))
+    message(sprintf(
+      "Wrote '%s' (edit this to group your functions).",
+      config_dest
+    ))
   }
 
   .add_ignore_lines(
@@ -104,7 +110,11 @@ use_altdown <- function(path = ".") {
 # altdoc's own `.add_gitignore()`/`.add_rbuildignore()` do.
 .add_ignore_lines <- function(path, file_name, lines) {
   dest <- file.path(path, file_name)
-  existing <- if (file.exists(dest)) readLines(dest, warn = FALSE) else character()
+  existing <- if (file.exists(dest)) {
+    readLines(dest, warn = FALSE)
+  } else {
+    character()
+  }
 
   missing <- lines[!lines %in% existing]
   if (length(missing) == 0) {
@@ -142,11 +152,15 @@ use_altdown <- function(path = ".") {
     character()
   }
 
-  names <- vapply(rd_files, function(rd_file) {
-    rd <- tools::parse_Rd(rd_file)
-    tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-    as.character(rd[tags == "\\name"][[1]][[1]])
-  }, character(1))
+  names <- vapply(
+    rd_files,
+    function(rd_file) {
+      rd <- tools::parse_Rd(rd_file)
+      tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
+      as.character(rd[tags == "\\name"][[1]][[1]])
+    },
+    character(1)
+  )
 
   c(
     "reference:",

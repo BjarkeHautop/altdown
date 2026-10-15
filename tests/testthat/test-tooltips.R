@@ -7,35 +7,61 @@ sample_html <- function(body) {
   paste0("<html><head><title>t</title></head><body>", body, "</body></html>")
 }
 
-foo_index <- list(foo = list(usage = "foo(a, b)", brief = "Adds a and b.", topic = "foo"))
+foo_index <- list(
+  foo = list(usage = "foo(a, b)", brief = "Adds a and b.", topic = "foo")
+)
 
 # ---- build_topic_index() ------------------------------------------------------
 
 test_that("build_topic_index() extracts usage and first-sentence brief", {
   dir <- withr::local_tempdir()
-  write_rd(dir, "foo", c(
-    "\\name{foo}", "\\alias{foo}", "\\title{Add two numbers}",
-    "\\usage{", "foo(a, b)", "}",
-    "\\description{",
-    "Adds \\code{a} and \\code{b} together and returns the sum. See details.",
-    "}"
-  ))
+  write_rd(
+    dir,
+    "foo",
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Add two numbers}",
+      "\\usage{",
+      "foo(a, b)",
+      "}",
+      "\\description{",
+      "Adds \\code{a} and \\code{b} together and returns the sum. See details.",
+      "}"
+    )
+  )
 
   index <- build_topic_index(dir)
 
   expect_named(index, "foo")
   expect_equal(index$foo$usage, "foo(a, b)")
-  expect_equal(index$foo$brief, "Adds `a` and `b` together and returns the sum.")
+  expect_equal(
+    index$foo$brief,
+    "Adds `a` and `b` together and returns the sum."
+  )
   expect_equal(index$foo$topic, "foo")
 })
 
 test_that("build_topic_index() narrows a multi-alias \\usage{} block by name", {
   dir <- withr::local_tempdir()
-  write_rd(dir, "print.foo", c(
-    "\\name{print.foo}", "\\alias{print.foo}", "\\alias{foo}", "\\title{Foo methods}",
-    "\\usage{", "foo(x)", "", "\\method{print}{foo}(x, ...)", "}",
-    "\\description{", "Prints a foo object.", "}"
-  ))
+  write_rd(
+    dir,
+    "print.foo",
+    c(
+      "\\name{print.foo}",
+      "\\alias{print.foo}",
+      "\\alias{foo}",
+      "\\title{Foo methods}",
+      "\\usage{",
+      "foo(x)",
+      "",
+      "\\method{print}{foo}(x, ...)",
+      "}",
+      "\\description{",
+      "Prints a foo object.",
+      "}"
+    )
+  )
 
   index <- build_topic_index(dir)
 
@@ -48,11 +74,22 @@ test_that("build_topic_index() narrows a multi-alias \\usage{} block by name", {
 
 test_that("an alias with no matching \\usage{} block falls back to the whole block and warns", {
   dir <- withr::local_tempdir()
-  write_rd(dir, "print.foo", c(
-    "\\name{print.foo}", "\\alias{print.foo}", "\\alias{foo}", "\\title{Foo methods}",
-    "\\usage{", "\\method{print}{foo}(x, ...)", "}",
-    "\\description{", "Prints a foo object.", "}"
-  ))
+  write_rd(
+    dir,
+    "print.foo",
+    c(
+      "\\name{print.foo}",
+      "\\alias{print.foo}",
+      "\\alias{foo}",
+      "\\title{Foo methods}",
+      "\\usage{",
+      "\\method{print}{foo}(x, ...)",
+      "}",
+      "\\description{",
+      "Prints a foo object.",
+      "}"
+    )
+  )
 
   expect_warning(index <- build_topic_index(dir), "foo")
   expect_equal(index[["foo"]]$usage, "print.foo(x, ...)")
@@ -66,29 +103,61 @@ test_that("build_topic_index() errors without a man/ directory", {
 test_that("a description longer than 200 characters warns and clips with '...'", {
   dir <- withr::local_tempdir()
   # no sentence boundary at all
-  write_rd(dir, "foo", c(
-    "\\name{foo}", "\\alias{foo}", "\\title{Foo}", "\\usage{", "foo()", "}",
-    "\\description{", paste(rep("word", 60), collapse = " "), "}"
-  ))
+  write_rd(
+    dir,
+    "foo",
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\usage{",
+      "foo()",
+      "}",
+      "\\description{",
+      paste(rep("word", 60), collapse = " "),
+      "}"
+    )
+  )
   expect_warning(index <- build_topic_index(dir), "truncated mid-word")
   expect_true(endsWith(index$foo$brief, "..."))
   expect_no_warning(build_topic_index(dir, quiet = TRUE))
 
   # one well-formed sentence that simply runs past 200 characters
-  write_rd(dir, "foo", c(
-    "\\name{foo}", "\\alias{foo}", "\\title{Foo}", "\\usage{", "foo()", "}",
-    "\\description{", paste0(paste(rep("word", 45), collapse = " "), "."), "}"
-  ))
+  write_rd(
+    dir,
+    "foo",
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\usage{",
+      "foo()",
+      "}",
+      "\\description{",
+      paste0(paste(rep("word", 45), collapse = " "), "."),
+      "}"
+    )
+  )
   expect_warning(index <- build_topic_index(dir), "truncated mid-word")
   expect_true(endsWith(index$foo$brief, "..."))
 })
 
 test_that("a topic with no description prose has a NULL brief", {
   dir <- withr::local_tempdir()
-  write_rd(dir, "bar", c(
-    "\\name{bar}", "\\alias{bar}", "\\title{Bar}", "\\usage{", "bar()", "}",
-    "\\description{", "}"
-  ))
+  write_rd(
+    dir,
+    "bar",
+    c(
+      "\\name{bar}",
+      "\\alias{bar}",
+      "\\title{Bar}",
+      "\\usage{",
+      "bar()",
+      "}",
+      "\\description{",
+      "}"
+    )
+  )
   expect_null(build_topic_index(dir)$bar$brief)
 })
 
@@ -114,14 +183,22 @@ test_that("a downlit-linked code block reference is relinked to the local man pa
 })
 
 test_that("an unlinked fu span is linked and tagged too", {
-  html <- sample_html("<span class=\"fu\">foo</span><span class=\"op\">(</span>")
+  html <- sample_html(
+    "<span class=\"fu\">foo</span><span class=\"op\">(</span>"
+  )
   result <- inject_tooltips_html(html, foo_index, "man/")
   expect_equal(result$n, 1L)
-  expect_match(result$html, 'data-altdown-tip="t1" href="man/foo.html">foo</a></span>', fixed = TRUE)
+  expect_match(
+    result$html,
+    'data-altdown-tip="t1" href="man/foo.html">foo</a></span>',
+    fixed = TRUE
+  )
 })
 
 test_that("a va-class span (e.g. an R6 class name used as a value) is tagged too", {
-  index <- list(Counter = list(usage = NULL, brief = "An R6 counter.", topic = "Counter"))
+  index <- list(
+    Counter = list(usage = NULL, brief = "An R6 counter.", topic = "Counter")
+  )
   html <- sample_html(paste0(
     "<span class=\"va\"><a href=\"https://rdrr.io/pkg/p/man/Counter.html\">Counter</a></span>",
     "<span class=\"op\">$</span><span class=\"fu\">new</span>"
@@ -130,7 +207,11 @@ test_that("a va-class span (e.g. an R6 class name used as a value) is tagged too
   result <- inject_tooltips_html(html, index, "man/")
 
   expect_equal(result$n, 1L)
-  expect_match(result$html, '<span class="va"><a class="altdown-tip-ref"', fixed = TRUE)
+  expect_match(
+    result$html,
+    '<span class="va"><a class="altdown-tip-ref"',
+    fixed = TRUE
+  )
   expect_match(result$html, 'href="man/Counter.html"', fixed = TRUE)
   expect_equal(result$tips[["t1"]]$name, "Counter")
 })
@@ -148,14 +229,30 @@ test_that("inline code references are linked and tagged, with or without a downl
   )
 
   # e.g. an S3 method written out by name, which downlit leaves unlinked
-  index <- list(print.animal = list(usage = "print.animal(x, ...)", brief = NULL, topic = "animal"))
+  index <- list(
+    print.animal = list(
+      usage = "print.animal(x, ...)",
+      brief = NULL,
+      topic = "animal"
+    )
+  )
   html <- sample_html("<p>See <code>print.animal()</code> for details.</p>")
   result <- inject_tooltips_html(html, index, "man/")
-  expect_match(result$html, 'href="man/animal.html">print.animal()</a></code>', fixed = TRUE)
+  expect_match(
+    result$html,
+    'href="man/animal.html">print.animal()</a></code>',
+    fixed = TRUE
+  )
 })
 
 test_that("an inline reference to a backtick-quoted name resolves through its backticks", {
-  index <- list(`name<-` = list(usage = "name(x) <- value", brief = "Set the name.", topic = "animal"))
+  index <- list(
+    `name<-` = list(
+      usage = "name(x) <- value",
+      brief = "Set the name.",
+      topic = "animal"
+    )
+  )
   html <- sample_html("<p>See <code>`name&lt;-`()</code>.</p>")
   result <- inject_tooltips_html(html, index, "man/")
   expect_equal(result$n, 1L)
@@ -163,11 +260,17 @@ test_that("an inline reference to a backtick-quoted name resolves through its ba
 })
 
 test_that("references qualified with the package's own namespace resolve, others don't", {
-  html <- sample_html("<p><code>p::foo()</code> and <code>p:::foo(1, 2)</code></p>")
+  html <- sample_html(
+    "<p><code>p::foo()</code> and <code>p:::foo(1, 2)</code></p>"
+  )
   result <- inject_tooltips_html(html, foo_index, "man/", pkg = "p")
   expect_equal(result$n, 2L)
   expect_length(result$tips, 1L)
-  expect_match(result$html, 'href="man/foo.html">p::foo()</a></code>', fixed = TRUE)
+  expect_match(
+    result$html,
+    'href="man/foo.html">p::foo()</a></code>',
+    fixed = TRUE
+  )
 
   html <- sample_html("<p><code>other::foo()</code></p>")
   result <- inject_tooltips_html(html, foo_index, "man/", pkg = "p")
@@ -187,27 +290,45 @@ test_that("references to names not in the index are left untouched", {
 
 test_that("repeated references to the same name share one tip id", {
   link <- "<span class=\"fu\"><a href=\"foo.html\">foo</a></span>"
-  result <- inject_tooltips_html(sample_html(paste(link, link)), foo_index, "man/")
+  result <- inject_tooltips_html(
+    sample_html(paste(link, link)),
+    foo_index,
+    "man/"
+  )
   expect_equal(result$n, 2L)
   expect_length(result$tips, 1L)
-  expect_length(gregexpr('data-altdown-tip="t1"', result$html, fixed = TRUE)[[1]], 2L)
+  expect_length(
+    gregexpr('data-altdown-tip="t1"', result$html, fixed = TRUE)[[1]],
+    2L
+  )
 })
 
 test_that("reference_href_prefix() points at docs/man/ relative to the page's depth", {
   expect_equal(reference_href_prefix("/x/docs/index.html", "/x/docs"), "man/")
-  expect_equal(reference_href_prefix("/x/docs/vignettes/using.html", "/x/docs"), "../man/")
+  expect_equal(
+    reference_href_prefix("/x/docs/vignettes/using.html", "/x/docs"),
+    "../man/"
+  )
   expect_equal(reference_href_prefix("/x/docs/man/foo.html", "/x/docs"), "./")
 })
 
 # ---- tooltip payload ----------------------------------------------------------
 
 test_that("a topic with no \\usage{} shows its name as the signature", {
-  tips <- list(t1 = list(usage = NULL, brief = "An R6 counter.", name = "Counter"))
-  expect_match(tooltip_payload_html(tips), '<code class="altdown-tip-sig">Counter</code>', fixed = TRUE)
+  tips <- list(
+    t1 = list(usage = NULL, brief = "An R6 counter.", name = "Counter")
+  )
+  expect_match(
+    tooltip_payload_html(tips),
+    '<code class="altdown-tip-sig">Counter</code>',
+    fixed = TRUE
+  )
 })
 
 test_that("code in the brief is rendered as <code>, with its contents escaped", {
-  tips <- list(t1 = list(usage = "f()", brief = "Stored in `dir(\"a\") < b`.", name = "f"))
+  tips <- list(
+    t1 = list(usage = "f()", brief = "Stored in `dir(\"a\") < b`.", name = "f")
+  )
   expect_match(
     tooltip_payload_html(tips),
     '<span class="altdown-tip-brief">Stored in <code>dir(&quot;a&quot;) &lt; b</code>.</span>',
@@ -220,15 +341,29 @@ test_that("code in the brief is rendered as <code>, with its contents escaped", 
 test_that("add_tooltips() rewrites pages on disk and is idempotent on rerun", {
   dir <- withr::local_tempdir()
   writeLines("Package: p", file.path(dir, "DESCRIPTION"))
-  write_rd(dir, "foo", c(
-    "\\name{foo}", "\\alias{foo}", "\\title{Foo}", "\\usage{", "foo(a, b)", "}",
-    "\\description{", "Adds a and b.", "}"
-  ))
+  write_rd(
+    dir,
+    "foo",
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\usage{",
+      "foo(a, b)",
+      "}",
+      "\\description{",
+      "Adds a and b.",
+      "}"
+    )
+  )
   dir.create(file.path(dir, "docs", "man"), recursive = TRUE)
   page <- file.path(dir, "docs", "index.html")
-  writeLines(sample_html(
-    "<span class=\"fu\"><a href=\"https://rdrr.io/pkg/p/man/foo.html\">foo</a></span>"
-  ), page)
+  writeLines(
+    sample_html(
+      "<span class=\"fu\"><a href=\"https://rdrr.io/pkg/p/man/foo.html\">foo</a></span>"
+    ),
+    page
+  )
 
   res1 <- add_tooltips(dir, quiet = TRUE)
   expect_equal(res1, list(files = 1L, links = 1L))

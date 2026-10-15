@@ -10,13 +10,19 @@ vignette_pattern <- "\\.(qmd|[Rr]md)$"
 find_vignettes <- function(path) {
   vig_dir <- file.path(path, "vignettes")
   top <- sort(list.files(vig_dir, pattern = vignette_pattern))
-  articles <- sort(list.files(file.path(vig_dir, "articles"), pattern = vignette_pattern))
+  articles <- sort(list.files(
+    file.path(vig_dir, "articles"),
+    pattern = vignette_pattern
+  ))
   c(top, file.path("articles", articles))
 }
 
 # The top-level vignette named after the package, or the only top-level
 # vignette if there's just one. NULL if neither exists.
-find_getting_started_vignette <- function(path, vignettes = find_vignettes(path)) {
+find_getting_started_vignette <- function(
+  path,
+  vignettes = find_vignettes(path)
+) {
   top <- vignettes[dirname(vignettes) == "."]
   if (length(top) == 1) {
     return(top)

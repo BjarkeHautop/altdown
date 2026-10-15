@@ -10,22 +10,23 @@ format: gfm
 
 # altdown <picture><source media="(prefers-color-scheme: dark)" srcset="man/figures/logo.png" /><img src="man/figures/logo-light.png" align="right" height="139" alt="altdown logo" /></picture>
 
-altdown is an R package that provides a theme for [altdoc](https://altdoc.etiennebacher.com/)
-websites built with Quarto, styled to mirror the output of pkgdown (Bootstrap 5).
+altdown is an R package that provides a theme for
+[altdoc](https://altdoc.etiennebacher.com/) websites built with Quarto, styled
+to mirror the output of pkgdown (Bootstrap 5).
 
 ## Why altdown?
 
-pkgdown can render Quarto vignettes, but it replaces Quarto's styling with
-its own (`theme: "none"`, `minimal: TRUE`). As a result, Quarto features
-such as callout blocks, code annotations and tabsets don't render
-correctly; callouts, for instance, become plain blockquotes.
+pkgdown can render Quarto vignettes, but it replaces Quarto's styling with its
+own (`theme: "none"`, `minimal: TRUE`). As a result, Quarto features such as
+callout blocks, code annotations and tabsets don't render correctly; callouts,
+for instance, become plain blockquotes.
 
 altdown builds on altdoc, which uses Quarto's own rendering, and adds a
 pkgdown-style layout on top. You get:
 
-* full Quarto support;
-* a familiar pkgdown look;
-* links from your package's functions to their reference page, with hover
+- full Quarto support;
+- a familiar pkgdown look;
+- links from your package's functions to their reference page, with hover
   tooltips showing usage and a one-line summary.
 
 ## Installation
@@ -38,30 +39,32 @@ pak::pak("https://github.com/BjarkeHautop/altdown")
 
 ## Usage
 
-Browse around to see how it looks! If you like what you see, and want to use it for your own package,
-run:
+Browse around to see how it looks! If you like what you see, and want to use it
+for your own package, run:
+
 ```r
 altdown::use_altdown()
 ```
 This writes `altdoc/altdown.yml`, with a `reference:` field that lists your
-package's current functions in one section; edit it to group them however
-you'd like, in the same shape as pkgdown's `reference:` field. It also
-gitignores the files the build generates.
+package's current functions in one section; edit it to group them however you'd
+like, in the same shape as pkgdown's `reference:` field. It also gitignores the
+files the build generates.
 
 Then build the site:
+
 ```r
 altdown::build_site()
 ```
 A preview can then be viewed using `altdoc::preview_docs()`.
 
-The navbar is built from your vignettes: the one named after the package (or
-the only top-level one) becomes "Get started", and the rest, including those in
+The navbar is built from your vignettes: the one named after the package (or the
+only top-level one) becomes "Get started", and the rest, including those in
 `vignettes/articles/`, go under "Articles". See `?altdown::build_site` for
 everything `altdown.yml` can configure.
 
 ## Packages using altdown
 
-* [jlbind](https://bjarkehautop.github.io/jlbind/)
+- [jlbind](https://bjarkehautop.github.io/jlbind/)
 
-Using altdown for your package? Feel free to open a pull request adding it
-to this list.
+Using altdown for your package? Feel free to open a pull request adding it to
+this list.
