@@ -82,9 +82,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-6f1807773e46e89979bbe455adae23f4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-fe45675247739dffee76f114a0f81a45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-6f1807773e46e89979bbe455adae23f4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-ce80eb38b4ff0a069bed34489cac8baa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-14b6e9e50bb12fbffe2adc5b09422565.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-ce80eb38b4ff0a069bed34489cac8baa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -136,12 +136,12 @@ visitor has never toggled here before - an explicit past choice always wins.
 </script>
 
 
-<!-- reftip -->
+<!-- altdown-tooltips -->
 <style>
-.reftip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.reftip-float .reftip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.reftip-float .reftip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.reftip-ref{cursor:help;}
+.altdown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
+.altdown-tip-float .altdown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
+.altdown-tip-float .altdown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
+a.altdown-tip-ref{cursor:help;}
 </style>
 </head>
 
@@ -325,7 +325,7 @@ a.reftip-ref{cursor:help;}
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../vignettes/getting-started.html"> 
+    <a class="nav-link" href="../../vignettes/altdown.html"> 
 <span class="menu-text">Get started</span></a>
   </li>  
   <li class="nav-item">
@@ -371,13 +371,15 @@ a.reftip-ref{cursor:help;}
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#why-generate-files" id="toc-why-generate-files" class="nav-link active" data-scroll-target="#why-generate-files">Why generate files?</a>
+  <li><a href="#how-a-build-works" id="toc-how-a-build-works" class="nav-link active" data-scroll-target="#how-a-build-works">How a build works</a></li>
+  <li><a href="#before-rendering" id="toc-before-rendering" class="nav-link" data-scroll-target="#before-rendering">Before rendering</a>
   <ul class="collapse">
   <li><a href="#the-home-page" id="toc-the-home-page" class="nav-link" data-scroll-target="#the-home-page">The home page</a></li>
   <li><a href="#the-reference-index" id="toc-the-reference-index" class="nav-link" data-scroll-target="#the-reference-index">The reference index</a></li>
   <li><a href="#the-navbar-and-footer" id="toc-the-navbar-and-footer" class="nav-link" data-scroll-target="#the-navbar-and-footer">The navbar and footer</a></li>
-  <li><a href="#the-man-pages" id="toc-the-man-pages" class="nav-link" data-scroll-target="#the-man-pages">The man pages</a></li>
   </ul></li>
+  <li><a href="#during-rendering-the-man-pages" id="toc-during-rendering-the-man-pages" class="nav-link" data-scroll-target="#during-rendering-the-man-pages">During rendering: the man pages</a></li>
+  <li><a href="#after-rendering-hover-tooltips" id="toc-after-rendering-hover-tooltips" class="nav-link" data-scroll-target="#after-rendering-hover-tooltips">After rendering: hover tooltips</a></li>
   <li><a href="#matching-the-pkgdown-look" id="toc-matching-the-pkgdown-look" class="nav-link" data-scroll-target="#matching-the-pkgdown-look">Matching the pkgdown look</a></li>
   </ul>
 </nav>
@@ -405,8 +407,16 @@ a.reftip-ref{cursor:help;}
 </header>
 
 
-<p>This page explains how the site is put together. It is a Quarto website built with <a href="https://altdoc.etiennebacher.com/">altdoc</a>, with some extra styling and JavaScript to make it look like a <a href="https://pkgdown.r-lib.org/">pkgdown</a> (Bootstrap 5) site.</p>
-<p>The only file a package keeps in <code>altdoc/</code> is <code>altdown.yml</code>. Everything else there is written by <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">altdown::build_site()</a></code> on every build, and gitignored:</p>
+<p>altdown doesn’t render anything itself: <a href="https://altdoc.etiennebacher.com/">altdoc</a> converts the man pages and vignettes and renders them with Quarto, and altdown supplies the <a href="https://pkgdown.r-lib.org/">pkgdown</a>-style layout around them.</p>
+<section id="how-a-build-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-a-build-works">How a build works</h2>
+<p><code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">altdown::build_site()</a></code> runs in three stages:</p>
+<ol type="1">
+<li><strong>Before rendering</strong>, it writes a set of files into <code>altdoc/</code>, which altdoc copies into its Quarto project. This is the approach altdoc <a href="https://altdoc.etiennebacher.com/#/vignettes/customize">recommends</a> for customizing Quarto sites.</li>
+<li><strong>During rendering</strong>, <code>altdoc::render_docs()</code> converts the Rd files to Quarto pages and renders the project, with a pre-render script fixing up the man pages.</li>
+<li><strong>After rendering</strong>, it adds hover tooltips to the HTML in <code>docs/</code>.</li>
+</ol>
+<p>The only file you edit is <code>altdoc/altdown.yml</code>. Everything else in <code>altdoc/</code> is rewritten on every build, and gitignored by <code><a class="altdown-tip-ref" data-altdown-tip="t2" href="../../man/use_altdown.html">altdown::use_altdown()</a></code>:</p>
 <pre class="text"><code>altdoc/
 ├── altdown.yml                # configuration, edited by hand
 ├── quarto_website.yml         # Quarto configuration (navbar, footer, theme)
@@ -415,42 +425,98 @@ a.reftip-ref{cursor:help;}
 ├── authors.qmd                # authors and citation page
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
 ├── altdown-header.html        # dark-mode default
-├── altdown-after-body.html    # navbar alignment, see below
-└── altdown-pre-render.R       # fixes up altdoc's man pages, see below</code></pre>
-<section id="why-generate-files" class="level2">
-<h2 class="anchored" data-anchor-id="why-generate-files">Why generate files?</h2>
-<p>For a Quarto backend, the intended approach is to modify the source files with a script and then call <code>altdoc::render_docs()</code> yourself (see altdoc’s <a href="https://altdoc.etiennebacher.com/articles/customize.html">customization vignette</a>).</p>
-<p>That is what <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> does. altdoc copies <code>altdoc/</code> into its Quarto project, so files written there before <code>altdoc::render_docs()</code> end up in the site. The main ones are explained below.</p>
+├── altdown-after-body.html    # navbar alignment
+└── altdown-pre-render.R       # fixes up altdoc's man pages</code></pre>
+</section>
+<section id="before-rendering" class="level2">
+<h2 class="anchored" data-anchor-id="before-rendering">Before rendering</h2>
 <section id="the-home-page" class="level3">
 <h3 class="anchored" data-anchor-id="the-home-page">The home page</h3>
-<p>altdoc’s home page is an <code>index.md</code> that includes <code>README.md</code>. Since altdoc copies <code>altdoc/</code> into its Quarto project after importing the README, <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> writes its own <code>altdoc/index.md</code> to replace it: the README with a <code>.column-margin</code> sidebar, matching pkgdown’s layout, with the README’s badges moved into it. <code>README.md</code> itself is never modified.</p>
+<p><code>altdoc/index.md</code> replaces altdoc’s home page. It holds the README next to a pkgdown-style sidebar with links, the license, the citation, the developers and the README’s badges. On narrow screens the sidebar moves below the content.</p>
+<p>A README <code>&lt;picture&gt;</code> with a light and a dark version (GitHub’s <code>prefers-color-scheme</code> convention) becomes one <code>&lt;img&gt;</code> per theme, switched by the site’s light/dark toggle.</p>
 </section>
 <section id="the-reference-index" class="level3">
 <h3 class="anchored" data-anchor-id="the-reference-index">The reference index</h3>
-<p>altdoc does not currently have a <code>_pkgdown.yml</code>-style <code>reference:</code> field for controlling how the function index is grouped and ordered (<a href="https://github.com/etiennebacher/altdoc/issues/326">etiennebacher/altdoc#326</a>).</p>
-<p>So <code>altdoc/altdown.yml</code> has a <code>reference:</code> field, using the same basic structure as pkgdown’s. <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> uses it together with the <code>\name{}</code> and <code>\alias{}</code> entries in <code>man/*.Rd</code> to generate <code>altdoc/reference.qmd</code>.</p>
+<p>altdoc can’t group and order the function index (<a href="https://github.com/etiennebacher/altdoc/issues/326">etiennebacher/altdoc#326</a>), so <code>altdoc/altdown.yml</code> has a <code>reference:</code> field in the same shape as pkgdown’s:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reference</span><span class="kw">:</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-2-2" class="code-annotation-target"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">title</span><span class="kw">:</span><span class="at"> Building the site</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-3" class="code-annotation-target"><a href="#annotated-cell-2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">    desc</span><span class="kw">: </span><span class="ch">&gt;</span></span>
+<span id="annotated-cell-2-4"><a href="#annotated-cell-2-4" aria-hidden="true" tabindex="-1"></a>      Set up a package, then build its site.</span>
+<span id="annotated-cell-2-5"><a href="#annotated-cell-2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">contents</span><span class="kw">:</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-2-6" class="code-annotation-target"><a href="#annotated-cell-2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> use_altdown</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-2-7" class="code-annotation-target"><a href="#annotated-cell-2-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> starts_with("build_")</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-2" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="2" data-code-annotation="1">Each entry becomes a section of the index, with this heading.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="3" data-code-annotation="2">An optional description, shown under the heading.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="6" data-code-annotation="3">A topic, by any of its <code>\alias{}</code> names.</span>
+</dd>
+<dt data-target-cell="annotated-cell-2" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-2" data-code-lines="7" data-code-annotation="4">A selector, as in pkgdown: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>has_concept()</code>, <code>has_keyword()</code>, <code>-</code> to exclude and <code>c()</code> to combine.</span>
+</dd>
+</dl>
 </section>
 <section id="the-navbar-and-footer" class="level3">
 <h3 class="anchored" data-anchor-id="the-navbar-and-footer">The navbar and footer</h3>
-<p><code>altdoc/quarto_website.yml</code> is generated in full: the navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog, and the footer has the “Developed by <authors>.” text used by pkgdown, based on <code>Authors@R</code>. A <code>quarto:</code> field in <code>altdown.yml</code> is merged over it.</authors></p>
+<p>The navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog. The footer has pkgdown’s “Developed by …” text, built from <code>Authors@R</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Changing the Quarto configuration
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A <code>quarto:</code> field in <code>altdown.yml</code> is merged over the generated configuration. Lists, like the navbar’s items, are appended to; any other setting is replaced, and <code>~</code> removes it. For example, to add a navbar link and fold code blocks:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">navbar</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">right</span><span class="kw">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">text</span><span class="kw">:</span><span class="at"> Blog</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://example.com</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">code-fold</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
 </section>
-<section id="the-man-pages" class="level3">
-<h3 class="anchored" data-anchor-id="the-man-pages">The man pages</h3>
-<p>altdoc converts each <code>man/*.Rd</code> file to a <code>.qmd</code> page during <code>altdoc::render_docs()</code>, and renders the Quarto project straight after, so <code><a class="reftip-ref" data-reftip="t1" href="../../man/build_site.html">build_site()</a></code> can’t edit those pages beforehand. Instead <code>altdown-pre-render.R</code> runs as a Quarto pre-render script, inside that render. It turns the Usage section into a highlighted R code block, rewrites inline <code>&lt;code&gt;</code> as Markdown code spans (so Pandoc doesn’t turn their <code>"</code> into curly quotes), and turns examples that aren’t run (<code>\dontrun{}</code>) into plain code blocks, so those pages don’t need knitr and a separate R session each.</p>
 </section>
+<section id="during-rendering-the-man-pages" class="level2">
+<h2 class="anchored" data-anchor-id="during-rendering-the-man-pages">During rendering: the man pages</h2>
+<p>altdoc converts <code>man/*.Rd</code> to <code>.qmd</code> and renders straight after, so <code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">build_site()</a></code> can’t edit those pages beforehand. Instead, <code>altdown-pre-render.R</code> runs as a Quarto pre-render script and makes them look like pkgdown’s:</p>
+<ul>
+<li><strong>Usage</strong> is a syntax-highlighted R code block with a copy button.</li>
+<li><strong>Inline code</strong> is rendered as Markdown code spans, so quotes and backslashes survive Pandoc.</li>
+<li><strong>Examples</strong> show their output in the same block, prefixed with <code>#&gt;</code>, and the <code>library()</code> call for the package itself is hidden.</li>
+<li><strong><code>\dontrun{}</code> examples</strong> become plain code blocks, so the page renders without starting an R session.</li>
+</ul>
+</section>
+<section id="after-rendering-hover-tooltips" class="level2">
+<h2 class="anchored" data-anchor-id="after-rendering-hover-tooltips">After rendering: hover tooltips</h2>
+<p>After rendering, <code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">build_site()</a></code> links every reference to one of the package’s functions, in code blocks or inline code, to its man page. Hovering shows a tooltip with its usage and the first sentence of its description. Try it: hover over <code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">build_site()</a></code> or <code><a class="altdown-tip-ref" data-altdown-tip="t2" href="../../man/use_altdown.html">use_altdown()</a></code>.</p>
+<p>The sentence is cut off at 200 characters, and <code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">build_site()</a></code> warns when one is longer. To build without tooltips, use <code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">build_site(tooltips = FALSE)</a></code>.</p>
 </section>
 <section id="matching-the-pkgdown-look" class="level2">
 <h2 class="anchored" data-anchor-id="matching-the-pkgdown-look">Matching the pkgdown look</h2>
-<p><code>altdown.scss</code> is a Quarto theme layer:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">default</span><span class="kw">,</span><span class="at"> altdown.scss</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>It is based on pkgdown’s own <code>pkgdown.scss</code>, but the selectors have been adapted to Quarto’s HTML.</p>
-<p>It does the following:</p>
+<p><code>altdown.scss</code> is based on pkgdown’s <code>pkgdown.scss</code>, adapted to Quarto’s HTML, and layered on top of Quarto’s own themes:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">light</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">default</span><span class="kw">,</span><span class="at"> altdown.scss</span><span class="kw">]</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dark</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">darkly</span><span class="kw">,</span><span class="at"> altdown.scss</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Two things need JavaScript:</p>
 <ul>
-<li>Limiting the navbar to a centered, fixed-width container.</li>
-<li>Putting the navbar items (title, links, search, GitHub icon) in the same order as pkgdown.</li>
-<li>Styling the margin sidebar and reference index (<code>&lt;dl class="ref-index"&gt;</code>) to look like their pkgdown counterparts.</li>
+<li><strong>Dark mode by default.</strong> <code>altdown-header.html</code> starts new visitors on the dark theme if their system prefers it.</li>
+<li><strong>Aligning the navbar title with the body text.</strong> The body’s left edge differs between the home page and other pages, so <code>altdown-after-body.html</code> measures it and adjusts the navbar’s padding.</li>
 </ul>
-<p>There is one annoying thing that can’t be fixed though: the navbar title does not line up with the body text automatically. Quarto uses a different layout for the home page, so the body’s left edge is not in the same place on every page. Therefore, the generated <code>quarto_website.yml</code> includes a small <code>include-after-body</code> script that measures the actual offset after the page has loaded and adjusts the navbar padding accordingly.</p>
 
 
 </section>
@@ -951,16 +1017,12 @@ instead, on every page, after layout settles.
 
 
 
-<div class="reftip-payload" hidden><div class="reftip-tip" data-for="t1"><code class="reftip-sig">build_site(
-  path = &quot;.&quot;,
-  tooltips = requireNamespace(&quot;reftip&quot;, quietly = TRUE),
-  ...
-)</code><span class="reftip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div></div>
+<div class="altdown-tip-payload" hidden><div data-for="t1"><code class="altdown-tip-sig">build_site(path = &quot;.&quot;, tooltips = TRUE, ...)</code><span class="altdown-tip-brief">Builds the package website into <code>docs/</code> with <code>altdoc::render_docs()</code>, styled to mirror pkgdown.</span></div><div data-for="t2"><code class="altdown-tip-sig">use_altdown(path = &quot;.&quot;)</code><span class="altdown-tip-brief">Writes <code>altdoc/altdown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;
   var float = document.createElement('div');
-  float.className = 'reftip-float';
+  float.className = 'altdown-tip-float';
   float.setAttribute('role', 'tooltip');
   document.body.appendChild(float);
   var hideTimer;
@@ -976,7 +1038,7 @@ instead, on every page, after layout settles.
     float.style.left = left + 'px';
   }
   function show(el){
-    var key = el.getAttribute('data-reftip');
+    var key = el.getAttribute('data-altdown-tip');
     var tip = payload.querySelector('[data-for="' + key + '"]');
     if (!tip) return;
     float.innerHTML = tip.innerHTML;
@@ -986,7 +1048,7 @@ instead, on every page, after layout settles.
   function hide(){ float.style.display = 'none'; }
   function cancelHide(){ clearTimeout(hideTimer); }
   function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.reftip-ref');
+  var links = document.querySelectorAll('a.altdown-tip-ref');
   for (var i = 0; i < links.length; i++) {
     (function(el){
       el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
