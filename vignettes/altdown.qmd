@@ -90,5 +90,5 @@ Then, on GitHub, set the repository to serve Pages from the `gh-pages` branch
 
 ## Learn more
 
-[Technical details](articles/technical.qmd) explains how a build works and how
+[Technical details](technical.qmd) explains how a build works and how
 altdown makes an altdoc site look like pkgdown.

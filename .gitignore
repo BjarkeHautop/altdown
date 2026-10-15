@@ -30,3 +30,6 @@ Thumbs.db
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Claude Code
+.claude/
