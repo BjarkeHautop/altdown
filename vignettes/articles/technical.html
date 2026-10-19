@@ -426,7 +426,8 @@ a.altdown-tip-ref{cursor:help;}
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
 ├── altdown-header.html        # dark-mode default
 ├── altdown-after-body.html    # navbar alignment
-└── altdown-pre-render.R       # fixes up altdoc's man pages</code></pre>
+├── altdown-pre-render.R       # fixes up altdoc's man pages
+└── altdown-rd-sections.rds    # man page sections using Rd macros</code></pre>
 </section>
 <section id="before-rendering" class="level2">
 <h2 class="anchored" data-anchor-id="before-rendering">Before rendering</h2>
@@ -499,6 +500,7 @@ a.altdown-tip-ref{cursor:help;}
 <li><strong>Inline code</strong> is rendered as Markdown code spans, so quotes and backslashes survive Pandoc.</li>
 <li><strong>Examples</strong> show their output in the same block, prefixed with <code>#&gt;</code>, and the <code>library()</code> call for the package itself is hidden.</li>
 <li><strong><code>\dontrun{}</code> examples</strong> become plain code blocks, so the page renders without starting an R session.</li>
+<li><strong>Rd macros</strong> work: altdoc ignores the package’s own Rd macros (<code>RdMacros:</code> in <code>DESCRIPTION</code>, or <code>man/macros/</code>), so Rdpack’s <code>\insertRef{}</code>, for instance, shows its raw arguments. <code><a class="altdown-tip-ref" data-altdown-tip="t1" href="../../man/build_site.html">build_site()</a></code> renders those Rd files again with them, and the script swaps in the sections that differ.</li>
 </ul>
 </section>
 <section id="after-rendering-hover-tooltips" class="level2">
