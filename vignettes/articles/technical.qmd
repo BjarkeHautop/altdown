@@ -133,6 +133,10 @@ theme:
   dark: [darkly, altdown.scss]
 ```
 
+`darkly` normally uses the Lato web font and larger headings, so text would
+reflow when toggling between light and dark. `altdown.scss` therefore sets
+Bootstrap's system font stack and heading sizes for both themes.
+
 Two things need JavaScript:
 
 - **Dark mode by default.** `altdown-header.html` starts new visitors on the

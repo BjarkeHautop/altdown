@@ -24,8 +24,7 @@ pkgdown-style layout on top. You get:
 
 - full Quarto support;
 - a familiar pkgdown look;
-- links from your package’s functions to their reference page, with
-  hover tooltips showing usage and a one-line summary.
+- function links with hover tooltips.
 
 ## Installation
 
