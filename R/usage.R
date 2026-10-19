@@ -202,9 +202,17 @@ fix_man_qmd <- function(lines, pkg) {
 }
 
 pre_render_main <- function(pkg) {
+  # Sections rendered with the package's Rd macros, see write_rd_sections().
+  rd_sections <- if (file.exists("altdown-rd-sections.rds")) {
+    readRDS("altdown-rd-sections.rds")
+  } else {
+    list()
+  }
   for (f in list.files("man", pattern = "\\.qmd$", full.names = TRUE)) {
     lines <- readLines(f, warn = FALSE, encoding = "UTF-8")
-    fixed <- fix_man_qmd(lines, pkg)
+    topic <- sub("\\.qmd$", "", basename(f))
+    fixed <- splice_rd_sections(lines, rd_sections[[topic]])
+    fixed <- fix_man_qmd(fixed, pkg)
     if (!identical(fixed, lines)) {
       writeLines(enc2utf8(fixed), f, useBytes = TRUE)
     }
@@ -227,6 +235,7 @@ pre_render_objects <- c(
   "hide_library_calls",
   "trim_code_blocks",
   "fix_man_qmd",
+  "splice_rd_sections",
   "pre_render_main"
 )
 

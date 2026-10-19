@@ -20,9 +20,10 @@
 # functions have something to match against.
 rd_topics <- function(path) {
   rd_files <- fs::dir_ls(file.path(path, "man"), regexp = "\\.Rd$")
+  macros <- rd_macros(path)
 
   lapply(rd_files, function(rd_file) {
-    rd <- tools::parse_Rd(rd_file)
+    rd <- tools::parse_Rd(rd_file, macros = macros)
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
     tag_text <- function(tag) {
       trimws(vapply(

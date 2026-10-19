@@ -76,9 +76,13 @@ build_site <- function(
   build_reference_qmd(path, config)
   build_authors_qmd(path)
   write_quarto_config(path, config)
+  write_rd_sections(path)
   write_pre_render_script(path)
 
-  altdoc::render_docs(path = path, ...)
+  muffle_package_macro_warnings(
+    altdoc::render_docs(path = path, ...),
+    package_rd_macros(path)
+  )
   # altdoc copies altdoc/ into docs/ after rendering; drop altdown's sources.
   unlink(file.path(path, "docs", c("altdown.yml", generated_files)))
 
@@ -99,7 +103,8 @@ generated_files <- c(
   "altdown.scss",
   "altdown-header.html",
   "altdown-after-body.html",
-  "altdown-pre-render.R"
+  "altdown-pre-render.R",
+  "altdown-rd-sections.rds"
 )
 
 theme_files <- c(

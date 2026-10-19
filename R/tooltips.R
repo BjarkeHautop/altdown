@@ -201,9 +201,13 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
     cli::cli_abort("No {.path man/} directory found at {.path {path}}.")
   }
 
+  macros <- rd_macros(path)
   index <- list()
   for (rd_file in fs::dir_ls(man_dir, regexp = "\\.Rd$")) {
-    rd <- tryCatch(tools::parse_Rd(rd_file), error = function(e) NULL)
+    rd <- tryCatch(
+      tools::parse_Rd(rd_file, macros = macros),
+      error = function(e) NULL
+    )
     if (is.null(rd)) {
       next
     }

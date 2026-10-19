@@ -823,3 +823,100 @@ test_that("hide_library_calls() drops the package's own library() from plain blo
     )
   )
 })
+
+test_that("rd_macro_sections() renders sections using the package's Rd macros", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "man", "macros"), recursive = TRUE)
+  writeLines(
+    "\\newcommand{\\shout}{\\Sexpr[stage=build,results=rd]{toupper(\"#1\")}}",
+    file.path(dir, "man", "macros", "macros.Rd")
+  )
+  writeLines(
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\description{Plain.}",
+      "\\usage{foo()}",
+      "\\references{\\shout{hello}}"
+    ),
+    file.path(dir, "man", "foo.Rd")
+  )
+
+  sections <- rd_macro_sections(dir)
+  expect_named(sections, "foo")
+  expect_named(sections$foo, "References")
+  expect_true(any(grepl("HELLO", sections$foo$References)))
+})
+
+test_that("rd_macro_sections() is empty for a package without Rd macros", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "man"))
+  writeLines(
+    c("\\name{foo}", "\\alias{foo}", "\\title{Foo}", "\\description{Plain.}"),
+    file.path(dir, "man", "foo.Rd")
+  )
+  expect_identical(rd_macro_sections(dir), list())
+})
+
+test_that("splice_rd_sections() replaces only the named sections' bodies", {
+  lines <- c(
+    "### Description",
+    "",
+    "old",
+    "",
+    "### References",
+    "",
+    "\\insertRefkeypkg",
+    "",
+    "### Examples",
+    "f()"
+  )
+  expect_identical(
+    splice_rd_sections(lines, list(References = "Doe J (2020)")),
+    c(
+      "### Description",
+      "",
+      "old",
+      "",
+      "### References",
+      "",
+      "Doe J (2020)",
+      "",
+      "### Examples",
+      "f()"
+    )
+  )
+  expect_identical(splice_rd_sections(lines, NULL), lines)
+})
+
+test_that("muffle_package_macro_warnings() muffles only unknown-macro warnings for the package's macros", {
+  expect_no_warning(
+    muffle_package_macro_warnings(
+      warning("man/id.Rd:72: unknown macro '\\insertRef'"),
+      "\\insertRef"
+    )
+  )
+  expect_warning(
+    muffle_package_macro_warnings(
+      warning("man/id.Rd:72: unknown macro '\\other'"),
+      "\\insertRef"
+    ),
+    "other"
+  )
+  expect_warning(
+    muffle_package_macro_warnings(warning("something else"), "\\insertRef"),
+    "something else"
+  )
+})
+
+test_that("package_rd_macros() lists only the package's own macros", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "man", "macros"), recursive = TRUE)
+  writeLines(
+    "\\newcommand{\\shout}{#1}",
+    file.path(dir, "man", "macros", "macros.Rd")
+  )
+  expect_identical(package_rd_macros(dir), "\\shout")
+  expect_identical(package_rd_macros(new_pkg()), character())
+})

@@ -60,6 +60,10 @@ altdoc::preview_docs()
    - `altdown-pre-render.R`: Quarto pre-render hook that fixes altdoc's
      `man/*.qmd` (Usage highlighting, inline code, hiding `library(pkg)` in
      examples, etc.).
+   - `altdown-rd-sections.rds` ([R/rd-macros.R](R/rd-macros.R)): sections of Rd
+     files rendered with the package's Rd macros (e.g. Rdpack's `\insertRef{}`),
+     which altdoc ignores; the pre-render hook splices each into its `man/*.qmd`
+     in place of altdoc's.
 2. **Rendering** — `altdoc::render_docs()` converts Rd → qmd and renders into
    `docs/`; altdown's own source files are then deleted from `docs/`.
 3. **After rendering** — `add_tooltips()` ([R/tooltips.R](R/tooltips.R))

@@ -25,6 +25,7 @@
 #' altdoc/altdown-header.html
 #' altdoc/altdown-after-body.html
 #' altdoc/altdown-pre-render.R
+#' altdoc/altdown-rd-sections.rds
 #'
 #' # .Rbuildignore
 #' ^docs$

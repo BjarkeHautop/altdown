@@ -33,7 +33,8 @@ altdoc/
 ├── altdown.scss               # pkgdown-style theme on top of Quarto's HTML
 ├── altdown-header.html        # dark-mode default
 ├── altdown-after-body.html    # navbar alignment
-└── altdown-pre-render.R       # fixes up altdoc's man pages
+├── altdown-pre-render.R       # fixes up altdoc's man pages
+└── altdown-rd-sections.rds    # man page sections using Rd macros
 ```
 
 ## Before rendering
@@ -111,6 +112,10 @@ like pkgdown's:
   `library()` call for the package itself is hidden.
 - **`\dontrun{}` examples** become plain code blocks, so the page renders
   without starting an R session.
+- **Rd macros** work: altdoc ignores the package's own Rd macros (`RdMacros:` in
+  `DESCRIPTION`, or `man/macros/`), so Rdpack's `\insertRef{}`, for instance,
+  shows its raw arguments. `build_site()` renders those Rd files again with
+  them, and the script swaps in the sections that differ.
 
 ## After rendering: hover tooltips
 
