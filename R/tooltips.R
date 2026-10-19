@@ -208,7 +208,9 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
       next
     }
     topic <- fs::path_ext_remove(fs::path_file(rd_file))
-    rd_name <- basename(rd_file)
+    # Relative to the working directory, so the {.file} hyperlink in the
+    # warnings below resolves to the actual file.
+    rd_name <- fs::path_rel(rd_file)
 
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
     aliases <- vapply(
