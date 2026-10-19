@@ -446,12 +446,14 @@ write_rd <- function(
   alias = name,
   title = name,
   concept = NULL,
-  keyword = NULL
+  keyword = NULL,
+  usage = paste0(name, "()")
 ) {
   lines <- c(
     sprintf("\\name{%s}", name),
     sprintf("\\alias{%s}", alias),
     sprintf("\\title{%s}", title),
+    if (!is.null(usage)) c("\\usage{", usage, "}"),
     if (!is.null(concept)) sprintf("\\concept{%s}", concept),
     if (!is.null(keyword)) sprintf("\\keyword{%s}", keyword),
     "\\description{d}"
@@ -557,7 +559,8 @@ test_that("build_reference_qmd() accepts a non-syntactic alias like a *-package 
     dir,
     "examplepkg-package",
     alias = "examplepkg-package",
-    title = "examplepkg"
+    title = "examplepkg",
+    usage = NULL
   )
 
   config <- reference_config(c(
@@ -568,7 +571,54 @@ test_that("build_reference_qmd() accepts a non-syntactic alias like a *-package 
   ))
   build_reference_qmd(dir, config)
   lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
-  expect_true(any(grepl("examplepkg-package()", lines, fixed = TRUE)))
+  expect_true(any(grepl(">examplepkg-package</a>", lines, fixed = TRUE)))
+})
+
+test_that("build_reference_qmd() lists every function in a topic's usage, like pkgdown", {
+  dir <- new_pkg_with_man()
+  write_rd(
+    dir,
+    "is_bound",
+    alias = c("is_bound", "check_bound"),
+    usage = c("is_bound(pkg)", "", "check_bound(pkg)")
+  )
+
+  build_reference_qmd(dir)
+  lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
+  expect_true(any(grepl(
+    '<dt><code><a href="man/is_bound.qmd">is_bound()</a></code> <code><a href="man/is_bound.qmd">check_bound()</a></code></dt>',
+    lines,
+    fixed = TRUE
+  )))
+})
+
+test_that("usage_names() formats data, infix, replacement and method usages", {
+  rd_usage <- function(usage) {
+    rd <- tools::parse_Rd(textConnection(c(
+      "\\name{x}",
+      "\\usage{",
+      usage,
+      "}"
+    )))
+    rd[vapply(rd, attr, character(1), "Rd_tag") == "\\usage"]
+  }
+
+  expect_identical(usage_names(rd_usage("mtcars")), "mtcars")
+  expect_identical(usage_names(rd_usage("x \\%in\\% table")), "`%in%`")
+  expect_identical(usage_names(rd_usage("names(x) <- value")), "`names&lt;-`()")
+  expect_identical(
+    usage_names(rd_usage("\\method{print}{foo}(x, \\dots)")),
+    "print(<i>&lt;foo&gt;</i>)"
+  )
+  # A method of a generic documented in the same topic is dropped.
+  expect_identical(
+    usage_names(rd_usage(c(
+      "summary(object, ...)",
+      "\\method{summary}{foo}(object, ...)"
+    ))),
+    "summary()"
+  )
+  expect_identical(usage_names(list()), character())
 })
 
 test_that("build_reference_qmd() errors on a selector matching no topic", {

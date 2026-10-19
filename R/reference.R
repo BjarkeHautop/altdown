@@ -32,14 +32,173 @@ rd_topics <- function(path) {
       ))
     }
 
+    alias <- tag_text("\\alias")
+    names <- usage_names(rd[tags == "\\usage"])
     list(
       basename = fs::path_ext_remove(basename(rd_file)),
       title = trimws(paste(unlist(rd[tags == "\\title"]), collapse = "")),
-      alias = tag_text("\\alias"),
+      alias = alias,
+      names = if (length(names) > 0) names else alias,
       concepts = tag_text("\\concept"),
       keywords = tag_text("\\keyword")
     )
   })
+}
+
+# ---- index names from \usage ------------------------------------------------
+#
+# A topic's index row lists every function in
+# its \usage section, side by side: `f()` for a function, `name` for data or
+# an infix operator, `generic(<class>)` for a method (dropped when the
+# generic is documented in the same topic). A topic without a usage, such as
+# a *-package topic, falls back to its aliases.
+
+# Turns the Rd markup of a \usage section into parseable R code, writing
+# \method{generic}{class} as S3method(`generic`, `class`).
+usage_code <- function(x) {
+  if (is.character(x) && is.null(attr(x, "Rd_tag"))) {
+    return(paste(x, collapse = ""))
+  }
+  collapse <- function(x) {
+    paste(vapply(x, usage_code, character(1)), collapse = "")
+  }
+  tag <- attr(x, "Rd_tag")
+  switch(
+    if (is.null(tag)) "" else tag,
+    TEXT = ,
+    RCODE = ,
+    VERB = paste(as.character(x), collapse = ""),
+    COMMENT = "",
+    "\\dots" = ,
+    "\\ldots" = "...",
+    "\\method" = ,
+    "\\S3method" = sprintf(
+      "S3method(`%s`, `%s`)",
+      usage_code(x[[1]]),
+      usage_code(x[[2]])
+    ),
+    "\\S4method" = sprintf(
+      "S4method(`%s`, list(%s))",
+      usage_code(x[[1]]),
+      paste0("`", strsplit(usage_code(x[[2]]), ",")[[1]], "`", collapse = ",")
+    ),
+    collapse(x)
+  )
+}
+
+is_infix <- function(name) {
+  grepl("^%.*%$", name) ||
+    name %in%
+      c(
+        "+",
+        "-",
+        "*",
+        "^",
+        "/",
+        "==",
+        ">",
+        "<",
+        "!=",
+        "<=",
+        ">=",
+        "&",
+        "|",
+        "[[",
+        "[",
+        "$"
+      )
+}
+
+# Returns list(type, name, signature) for one usage expression, with type
+# "data", "fun", "s3" or "s4", or NULL for anything else.
+usage_type <- function(x) {
+  if (is.symbol(x)) {
+    return(list(type = "data", name = as.character(x)))
+  }
+  if (!is.call(x)) {
+    return(NULL)
+  }
+  if (identical(x[[1]], quote(data))) {
+    return(list(type = "data", name = as.character(x[[2]])))
+  }
+  replacement <- identical(x[[1]], quote(`<-`))
+  if (replacement) {
+    x <- x[[2]]
+    if (!is.call(x)) return(NULL)
+  }
+
+  fun <- x[[1]]
+  out <- if (is.symbol(fun)) {
+    list(type = "fun", name = as.character(fun))
+  } else if (identical(fun[[1]], quote(S3method))) {
+    list(
+      type = "s3",
+      name = as.character(fun[[2]]),
+      signature = as.character(fun[[3]])
+    )
+  } else if (identical(fun[[1]], quote(S4method))) {
+    sig <- vapply(as.list(fun[[3]])[-1], as.character, character(1))
+    list(type = "s4", name = as.character(fun[[2]]), signature = sig)
+  } else if (
+    identical(fun[[1]], quote(`::`)) || identical(fun[[1]], quote(`:::`))
+  ) {
+    list(type = "fun", name = as.character(fun[[3]]))
+  } else {
+    return(NULL)
+  }
+  if (replacement) {
+    out$name <- paste0(out$name, "<-")
+  }
+  out
+}
+
+escape_html <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  gsub(">", "&gt;", x, fixed = TRUE)
+}
+
+short_name <- function(u) {
+  name <- escape_html(u$name)
+  if (make.names(u$name) != u$name) {
+    name <- paste0("`", name, "`")
+  }
+  switch(
+    u$type,
+    data = name,
+    fun = if (is_infix(u$name)) name else paste0(name, "()"),
+    paste0(
+      name,
+      "(",
+      paste0("<i>&lt;", escape_html(u$signature), "&gt;</i>", collapse = ","),
+      ")"
+    )
+  )
+}
+
+# `usage` is the (possibly empty) list of \usage sections of one Rd file.
+usage_names <- function(usage) {
+  if (length(usage) == 0) {
+    return(character())
+  }
+  code <- paste(vapply(usage, usage_code, character(1)), collapse = "\n")
+  exprs <- tryCatch(
+    as.list(parse(text = code, keep.source = FALSE)),
+    error = function(e) {
+      cli::cli_warn("Failed to parse usage: {.code {code}}")
+      list()
+    }
+  )
+  funs <- Filter(Negate(is.null), lapply(exprs, usage_type))
+  if (length(funs) == 0) {
+    return(character())
+  }
+
+  # Drop methods for generics documented in the same topic.
+  name <- vapply(funs, `[[`, character(1), "name")
+  type <- vapply(funs, `[[`, character(1), "type")
+  self_meth <- name %in% name[type == "fun"] & type %in% c("s3", "s4")
+  unique(vapply(funs[!self_meth], short_name, character(1)))
 }
 
 # Builds the environment `contents:` entries are evaluated in: every
@@ -199,10 +358,14 @@ build_reference_qmd <- function(path, config = list()) {
         idx,
         function(i) {
           topic <- topics[[i]]
-          sprintf(
-            '<dt><code><a href="man/%s.qmd">%s()</a></code></dt>\n<dd>%s</dd>',
+          links <- sprintf(
+            '<code><a href="man/%s.qmd">%s</a></code>',
             topic$basename,
-            topic$alias[[1]],
+            topic$names
+          )
+          sprintf(
+            "<dt>%s</dt>\n<dd>%s</dd>",
+            paste(links, collapse = " "),
             topic$title
           )
         },
