@@ -124,8 +124,8 @@ longer. To build without tooltips, use `build_site(tooltips = FALSE)`.
 
 ## Matching the pkgdown look
 
-`altdown.scss` is based on pkgdown's `pkgdown.scss`, adapted to Quarto's HTML,
-and layered on top of Quarto's own themes:
+`altdown.scss` is styled after pkgdown's `pkgdown.scss`, written for Quarto's
+HTML, and layered on top of Quarto's own themes:
 
 ```yaml
 theme:
