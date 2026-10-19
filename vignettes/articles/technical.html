@@ -82,9 +82,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-ce80eb38b4ff0a069bed34489cac8baa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-14b6e9e50bb12fbffe2adc5b09422565.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-ce80eb38b4ff0a069bed34489cac8baa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-cbb99149e1c34264912d7b856a3c82be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-333bcda2ad92058c3786c51f858e072d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-cbb99149e1c34264912d7b856a3c82be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -508,10 +508,11 @@ a.altdown-tip-ref{cursor:help;}
 </section>
 <section id="matching-the-pkgdown-look" class="level2">
 <h2 class="anchored" data-anchor-id="matching-the-pkgdown-look">Matching the pkgdown look</h2>
-<p><code>altdown.scss</code> is based on pkgdown’s <code>pkgdown.scss</code>, adapted to Quarto’s HTML, and layered on top of Quarto’s own themes:</p>
+<p><code>altdown.scss</code> is styled after pkgdown’s <code>pkgdown.scss</code>, written for Quarto’s HTML, and layered on top of Quarto’s own themes:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">light</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">default</span><span class="kw">,</span><span class="at"> altdown.scss</span><span class="kw">]</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dark</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">darkly</span><span class="kw">,</span><span class="at"> altdown.scss</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>darkly</code> normally uses the Lato web font and larger headings, so text would reflow when toggling between light and dark. <code>altdown.scss</code> therefore sets Bootstrap’s system font stack and heading sizes for both themes.</p>
 <p>Two things need JavaScript:</p>
 <ul>
 <li><strong>Dark mode by default.</strong> <code>altdown-header.html</code> starts new visitors on the dark theme if their system prefers it.</li>
