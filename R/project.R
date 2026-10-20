@@ -149,11 +149,9 @@ render_project <- function(path, envvars, quiet = TRUE) {
 
 # ---- the package for the pages' code ------------------------------------------
 #
-# Quarto runs each page's code in a new R process, where `library(pkg)` loads
-# the package from the library. So the package being documented is either
-# installed into a temporary library put first on that process's library
-# path, or, with `devel = TRUE`, loaded from source with pkgload::load_all()
-# by an R profile that process runs at startup.
+# Quarto runs each page's code in a new R process. The package is either
+# installed into a temporary library first on its library path, or, with
+# `devel = TRUE`, loaded with pkgload::load_all() by an R profile.
 
 install_envvars <- function(path, scratch) {
   lib <- file.path(scratch, "library")
@@ -247,10 +245,8 @@ site_url <- function(path) {
   if (length(urls) == 0) NA_character_ else sub("/+$", "", urls[[1]])
 }
 
-# downlit, which pkgdown, quartodown and Quarto (`code-link`) use to link
-# function calls and `vignette()` calls to their docs, finds another
-# package's reference pages and vignettes through the pkgdown.yml at its
-# site's root: `urls` and, for each vignette, its path under `urls$article`.
+# downlit finds a package's reference pages and vignettes through the
+# pkgdown.yml at its site's root.
 write_pkgdown_yml <- function(path) {
   url <- site_url(path)
   if (is.na(url)) {

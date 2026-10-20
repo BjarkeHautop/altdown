@@ -41,8 +41,7 @@ author_roles_text <- function(x) {
 
 # ---- sidebar section builders (mirrors pkgdown's data_home_sidebar_*()) ---
 
-# Wraps a heading + bullet list, matching pkgdown's `sidebar_section()`
-# (R/build-home-index.R): a section with no bullets simply isn't rendered.
+# A heading and bullet list, or nothing without bullets, as in pkgdown.
 sidebar_section <- function(heading, bullets) {
   if (length(bullets) == 0) {
     return(character())
@@ -108,8 +107,6 @@ data_sidebar_links <- function(path) {
   sidebar_section("Links", links)
 }
 
-# Badges live between `<!-- badges: start -->`/`<!-- badges: end -->` in
-# README.md (the usethis/pkgdown convention).
 data_sidebar_devstatus <- function(badges) {
   bullets <- if (length(badges) == 0) {
     character()
@@ -119,9 +116,7 @@ data_sidebar_devstatus <- function(badges) {
   sidebar_section("Dev status", bullets)
 }
 
-# License abbreviation -> link table shipped with every R installation
-# (`R.home("share")/licenses/license.db`). Same thing pkgdown reads in
-# `licenses_db()` (R/build-home-license.R).
+# R's license database, as pkgdown reads it.
 autolink_license <- function(license_field, has_license_file) {
   db_path <- file.path(R.home("share"), "licenses", "license.db")
   db <- as.data.frame(read.dcf(db_path), stringsAsFactors = FALSE)

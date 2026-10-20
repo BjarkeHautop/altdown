@@ -1,10 +1,6 @@
 <!--
-Quarto's own dark-mode toggle always defaults new visitors to whichever theme
-is listed first (light), ignoring the OS/browser `prefers-color-scheme`
-setting - there's no config for this, so seed its localStorage sentinel
-ourselves before its own before-body script reads it. Runs in <head>, ahead of
-any painted content, so there's no light-then-dark flash. Only acts when the
-visitor has never toggled here before - an explicit past choice always wins.
+Quarto ignores `prefers-color-scheme`, so pick dark mode for first-time
+visitors who prefer it, before Quarto reads the stored choice.
 -->
 <script>
 (function () {
@@ -16,8 +12,7 @@ visitor has never toggled here before - an explicit past choice always wins.
       window.localStorage.setItem("quarto-color-scheme", "alternate");
     }
   } catch (e) {
-    // localStorage unavailable (e.g. file:// preview, blocked
-    // storage) - fall back to Quarto's own light default.
+    // No localStorage: keep Quarto's light default.
   }
 })();
 </script>

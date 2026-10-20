@@ -1,11 +1,8 @@
 # ---- code linking -------------------------------------------------------------
 #
-# Links function calls in R code blocks, and inline code like `mean()`, to
-# their documentation with downlit, on every page in docs/. This replaces
-# Quarto's own `code-link`, which runs downlit on knitr pages only and
-# re-highlights every R code block, dropping the markers of annotated ones.
-# Annotated blocks keep Quarto's highlighting; their calls and infix operators
-# are linked token by token instead (link_annotated()).
+# Replaces Quarto's `code-link`, which only covers knitr pages and drops the
+# markers of annotated code blocks. Those are linked token by token instead
+# (link_annotated()).
 
 # Links code on every docs/**/*.html file.
 link_code <- function(path = ".") {
@@ -42,10 +39,8 @@ link_code_file <- function(file) {
   xml2::write_html(html, file, format = FALSE)
 }
 
-# Links the calls and infix operators in an annotated block without
-# re-highlighting it: each Pandoc `<span class="fu">` (with a preceding
-# `pkg::` if there is one), and each `<span class="sc">` holding a `%op%`, is
-# resolved with downlit and its text wrapped in a link, as downlit would.
+# Links an annotated block's `fu` spans (with any `pkg::`) and `%op%` `sc`
+# spans without re-highlighting it.
 link_annotated <- function(pre) {
   # Packages attached in the block itself count too.
   code <- xml2::xml_text(pre)

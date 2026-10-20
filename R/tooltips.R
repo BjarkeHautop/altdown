@@ -1,24 +1,10 @@
 # ---- hover tooltips -----------------------------------------------------------
 #
-# Rewrites the rendered HTML in docs/ so references to the package's own
-# documented topics link to its reference page and get a hover tooltip with the
-# topic's signature and a one-line summary.
-#
-# downlit can't resolve the package's own (local, unpublished) functions,
-# nor a name it can't statically dispatch (e.g. an S3 method
-# called by name), so any existing href on a matched reference is replaced.
-#
-# Two reference shapes are matched, each optionally already wrapped in a
-# downlit link:
-#  1. A called function inside a fenced code block: Pandoc tags it
-#     `<span class="fu">name</span>` (or "va" for a referenced-but-not-
-#     called value, e.g. an R6 class name). An infix `%op%` is tagged "op"
-#     by downlit, or "sc" in an annotated block; only `%op%`s are matched
-#     there, as other operators are never the package's own topics.
-#  2. Inline code in prose (`` `foo()` ``): `<code>name()</code>`. Linked
-#     inline code written as a Markdown link (`` [`foo()`](url) ``) is
-#     `<a href="url"><code>foo()</code></a>` instead, and is rewritten to the
-#     same shape as the others, so its link isn't nested in another.
+# Links references to the package's own topics in docs/ to their reference
+# page, with a tooltip showing the signature and a one-line summary. Any
+# existing downlit href is replaced, as downlit can't resolve the package's
+# own, unpublished topics. Matched are `fu`/`va` spans and `%op%` `op`/`sc`
+# spans in code blocks, and inline `<code>`, linked or not.
 
 tooltip_link_re <- paste0(
   # One group number each for the class and the name in either kind of span.
@@ -78,10 +64,7 @@ add_tooltips <- function(path = ".", quiet = FALSE) {
       tooltip_payload_html(result$tips),
       tooltip_script_block()
     )
-    # A plain `sub("</body>", ...)` would match the first literal
-    # occurrence anywhere in the raw HTML text, including one inside a
-    # <script> block's own source (e.g. a JS comment mentioning "</body>").
-    # The real closing tag is always the last one, right before </html>.
+    # The last </body>, as a script may contain the string too.
     if (grepl("</body>\\s*</html>\\s*$", new_html, perl = TRUE)) {
       new_html <- sub(
         "</body>(\\s*</html>\\s*)$",
@@ -116,12 +99,9 @@ reference_href_prefix <- function(file, docs_dir) {
   paste0(as.character(rel), "/")
 }
 
-# One pass over an HTML document: every `tooltip_link_re` match that
-# resolves in `index` is linked to `href_prefix`/<topic>.html and tagged
-# with `data-quartodown-tip="<id>"`; everything else passes through unchanged.
-# `tips` collects one entry per unique resolved name (id -> {usage, brief,
-# topic, name}), the page's hidden tooltip payload. `pkg` is the package's
-# own name, so an inline `pkg::foo()` resolves like `foo()`.
+# Links every `tooltip_link_re` match found in `index` and tags it with a tip
+# id. `tips` has one entry per linked name, for tooltip_payload_html(). `pkg`
+# is the package's name, so `pkg::foo()` resolves like `foo()`.
 inject_tooltips_html <- function(
   html,
   index,
@@ -154,10 +134,7 @@ inject_tooltips_html <- function(
     is_block <- cap_starts[i, 1] != 0L # span vs. inline <code>
     name_html <- capture(i, if (is_block) 2L else 3L)
     name <- html_unescape(name_html)
-    # strip a trailing call, e.g. "foo(1, 2)" -> "foo", a leading help
-    # operator, e.g. "?foo" -> "foo", the package's own namespace, e.g.
-    # "pkg::foo" -> "foo", and a wrapping backtick pair from a literal
-    # `` `name<-`() `` in prose
+    # "foo(1, 2)", "?foo", "pkg::foo" and "`foo`" all look up "foo".
     lookup <- sub("\\(.*$", "", name, perl = TRUE)
     lookup <- sub("^\\?", "", lookup)
     if (!is.null(pkg)) {
@@ -203,14 +180,9 @@ inject_tooltips_html <- function(
 
 # ---- topic index --------------------------------------------------------------
 #
-# For each documented alias in man/*.Rd: its usage, a one-line summary and
-# the topic it's documented on. When a page documents several aliases (e.g.
-# an S3 generic and its methods), its \usage{} block is split on blank lines
-# and each alias is matched to the block whose call starts with its name. The
-# page's own \name (e.g. a shared topic like "graph-queries") gets the whole
-# \usage{}; any other alias with no block of its own, such as lubridate's
-# "durations" or a package alias, isn't a call, so its tooltip shows just its
-# name.
+# For each documented alias: its usage, a one-line summary and its topic.
+# Each alias gets the \usage{} block that calls it; the topic's \name gets the
+# whole \usage{}, and any other alias none.
 
 build_topic_index <- function(path = ".", quiet = FALSE) {
   man_dir <- file.path(path, "man")
@@ -229,8 +201,7 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
       next
     }
     topic <- fs::path_ext_remove(fs::path_file(rd_file))
-    # Relative to the working directory, so the {.file} hyperlink in the
-    # warning below resolves to the actual file.
+    # Relative, so the {.file} link in the warning below resolves.
     rd_name <- fs::path_rel(rd_file)
 
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
@@ -293,11 +264,8 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
   index
 }
 
-# Split a \usage{} node into one block per signature, on blank-line
-# separators, each named by the alias it documents (see rd_usage_alias()). A
-# \method{generic}{class} macro is reassembled as "generic.class", matching
-# the S3 method's alias spelling (e.g. "print.foo"), and an
-# \S4method{generic}{signature} macro as "generic".
+# A \usage{} node split on blank lines into one block per signature, named by
+# the alias it documents (see rd_usage_alias()).
 rd_usage_blocks <- function(usage_node) {
   blocks <- character(0)
   current <- character(0)
@@ -371,9 +339,7 @@ rd_usage_leading_name <- function(block) {
   sub("^`(.*)`$", "\\1", name)
 }
 
-# Plain-text content of a top-level Rd section (e.g. "\\description"),
-# stripped of markup except code, which is kept as `backticks` so the
-# tooltip can render it as <code>. NULL when the section is absent or empty.
+# The text of a top-level Rd section, with code kept in `backticks`, or NULL.
 rd_section_text <- function(rd, tags, section) {
   hit <- rd[tags == section]
   if (length(hit) == 0) {
@@ -385,9 +351,7 @@ rd_section_text <- function(rd, tags, section) {
 
 rd_flatten <- function(x) {
   tag <- attr(x, "Rd_tag")
-  # Images, raw output and unevaluated code have no text. A lifecycle badge,
-  # `\ifelse{html}{\href{...}{\figure{...}}}{\strong{[Experimental]}}`, so
-  # leaves nothing behind.
+  # No text from images (such as lifecycle badges), raw output or \Sexpr.
   if (!is.null(tag) && tag %in% c("COMMENT", "\\figure", "\\out", "\\Sexpr")) {
     return("")
   }
@@ -415,9 +379,7 @@ rd_flatten <- function(x) {
   }
 }
 
-# First sentence of a flattened Rd description, capped so a runaway
-# paragraph can't blow up a tooltip. `clipped` is TRUE whenever the result
-# had to be cut at `max_chars`, whether or not a sentence boundary was found.
+# The first sentence of `text`, cut at `max_chars` (then `clipped` is TRUE).
 first_sentence <- function(text, max_chars = 200) {
   if (is.null(text)) {
     return(list(text = NULL, clipped = FALSE))
@@ -454,10 +416,8 @@ html_unescape <- function(text) {
 
 # ---- tooltip assets -----------------------------------------------------------
 #
-# One `position: fixed` tooltip div shared by the whole page, positioned by
-# a few lines of vanilla JS. `position: fixed` (rather than a pure-CSS
-# `:hover` sibling) avoids Quarto's code-block wrapper clipping it via
-# `overflow: auto`.
+# One `position: fixed` tooltip shared by the page, so code blocks'
+# `overflow: auto` can't clip it.
 
 tooltip_css_block <- function() {
   paste0(
@@ -475,7 +435,6 @@ tooltip_css_block <- function() {
     ".quartodown-tip-float .quartodown-tip-sig{display:block;white-space:pre-wrap;",
     "font-family:ui-monospace,SFMono-Regular,Consolas,monospace;",
     "font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;",
-    # undo Bootstrap's code{} background so this doesn't look boxed in dark mode
     "background-color:transparent;padding:0;border-radius:0;}\n",
     ".quartodown-tip-float .quartodown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}\n",
     "a.quartodown-tip-ref{cursor:help;}\n",
@@ -492,7 +451,6 @@ tooltip_payload_html <- function(tips) {
       tip <- tips[[id]]
       sig <- if (!is.null(tip$usage)) tip$usage else tip$name
       brief_html <- if (!is.null(tip$brief)) {
-        # `code` in the brief (kept from Rd \code{}) becomes <code>
         brief <- gsub("`([^`]+)`", "<code>\\1</code>", html_escape(tip$brief))
         paste0("<span class=\"quartodown-tip-brief\">", brief, "</span>")
       } else {

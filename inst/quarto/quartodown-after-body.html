@@ -1,25 +1,14 @@
-<!--
-A fixed CSS padding can't align the navbar title with the body text on every
-page: Quarto lays pages out differently depending on whether they have margin
-content (like the home page's Links/License column) or not, so the body's left
-edge lands at a different pixel offset per page type. Measure it for real
-instead, on every page, after layout settles.
--->
 <script>
 (function () {
   function contentLeft(main) {
-    // On pages with margin content (e.g. the home page's
-    // Links/License column), <main> itself becomes a "page-full"
-    // grid spanning the whole viewport, so its own box tells us
-    // nothing about where the visible text starts — look at the
-    // title instead. On every other page, main's own edge already
-    // sits flush with the text.
+    // With margin content, <main> is a full-width grid; use the title.
     if (main.classList.contains("page-full")) {
       var heading = main.querySelector("h1");
       if (heading) return heading.getBoundingClientRect().left;
     }
     return main.getBoundingClientRect().left;
   }
+  // Where the body text starts depends on the page layout, so measure it.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
@@ -29,11 +18,7 @@ instead, on every page, after layout settles.
       navContainer.getBoundingClientRect().left;
     navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
   }
-  // The navbar title is emitted as one plain-text node, "<pkg name>
-  // <version>" (see `website.title` in quarto_config()) -
-  // Quarto gives us no way to style just the version at the YAML
-  // level. Split it out into its own `<small>` here so
-  // quartodown.scss can shrink it, pkgdown style.
+  // Wrap the version in the "<pkg> <version>" title so it can be styled.
   function shrinkNavbarVersion() {
     var title = document.querySelector(".navbar-title");
     if (!title || title.querySelector(".navbar-version")) return;
@@ -47,17 +32,9 @@ instead, on every page, after layout settles.
     title.appendChild(document.createTextNode(" "));
     title.appendChild(version);
   }
-  // This script is injected right before </body>, so everything it
-  // reads is already in the DOM — no need to wait for "load" (which
-  // fires only once every image/font/subresource finishes, causing
-  // a visible flash where the navbar sits unaligned for a moment).
-  // Run once immediately, then keep "load"/"resize" as safety nets
-  // in case something later shifts the layout (e.g. a web font
-  // swap, though this theme doesn't use one).
-  // Code output is printed in the code's block as `#>` lines. Quarto's copy
-  // button (clipboard.js) copies the block's whole text, so drop those lines
-  // from what it copies, as pkgdown does. clipboard.js copies synchronously
-  // in its click handler, so a copy event during a copy-button click is its.
+  // Leave `#>` output lines out of what the copy button copies, as pkgdown
+  // does. clipboard.js copies synchronously in its click handler, so a copy
+  // event during a copy-button click is its.
   function stripOutputOnCopy() {
     var fromButton = false;
     window.addEventListener("click", function (e) {

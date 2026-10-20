@@ -1,23 +1,11 @@
 # ---- reference/index.qmd generation ------------------------------------------
 #
-# The `reference:` field of `_quartodown.yml` groups and orders the
-# function index, in the same shape as pkgdown's `_pkgdown.yml` `reference:`
-# field. This reads it plus each man/*.Rd's
-# \title{}/\alias{}/\concept{}/\keyword{} to write the index page before
-# every build.
-#
-# `contents:` entries support the same selectors pkgdown does: a plain alias
-# name, `starts_with()`/`ends_with()`/`contains()`/`matches()` matched
-# against every \alias{}, `has_concept()`/`has_keyword()` matched against
-# \concept{}/\keyword{} tags, `-` to exclude, and `c()` to combine several
-# selectors on one line. An internal topic is listed only when named, or
+# `_quartodown.yml`'s `reference:` groups the index as in pkgdown, with the
+# same `contents:` selectors. An internal topic is listed only when named, or
 # selected with `internal = TRUE`, and then gets a page too.
 
-# Reads every man/*.Rd into a topic record - basename (the name of its
-# reference/<basename>.qmd page, see write_man_pages()),
-# \title{}, and every \alias{}/\concept{}/\keyword{} tag - so `reference:`
-# entries can select a function by any of its aliases, and selector
-# functions have something to match against.
+# Every man/*.Rd as a topic: its file's basename, title, aliases, concepts
+# and keywords.
 rd_topics <- function(path) {
   rd_files <- fs::dir_ls(file.path(path, "man"), regexp = "\\.Rd$")
   macros <- rd_macros(path)
@@ -50,11 +38,9 @@ rd_topics <- function(path) {
 
 # ---- index names from \usage ------------------------------------------------
 #
-# A topic's index row lists every function in
-# its \usage section, side by side: `f()` for a function, `name` for data or
-# an infix operator, `generic(<class>)` for a method (dropped when the
-# generic is documented in the same topic). A topic without a usage, such as
-# a *-package topic, falls back to its aliases.
+# A topic's index row lists every function in its \usage: `f()`, `name` for
+# data or an infix operator, `generic(<class>)` for a method of a generic
+# documented elsewhere. Without a usage, it lists the aliases.
 
 # Turns the Rd markup of a \usage section into parseable R code, writing
 # \method{generic}{class} as S3method(`generic`, `class`).
@@ -206,10 +192,10 @@ usage_names <- function(usage) {
   unique(vapply(funs[!self_meth], short_name, character(1)))
 }
 
-# Builds the environment `contents:` entries are evaluated in: every
-# \alias{} and Rd file name bound to its topic's integer position, plus the
-# selector functions, mirroring pkgdown's `match_env()`. The selectors other
-# than has_keyword() skip internal topics unless `internal = TRUE`.
+# The environment `contents:` entries are evaluated in, as pkgdown's
+# `match_env()`: each alias and Rd file name bound to its topic's position,
+# plus the selectors. All but has_keyword() skip internal topics unless
+# `internal = TRUE`.
 match_env <- function(topics) {
   env <- new.env(parent = emptyenv())
   assign("-", function(x) -x, envir = env)
@@ -279,7 +265,6 @@ match_env <- function(topics) {
 }
 
 match_eval <- function(string, env) {
-  # Early return in case `string` is already a known alias verbatim.
   literal <- mget(string, envir = env, ifnotfound = list(NULL))[[1]]
   if (is.numeric(literal)) {
     return(as.integer(literal))

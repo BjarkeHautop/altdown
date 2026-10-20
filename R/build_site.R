@@ -213,11 +213,8 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
   settings
 }
 
-# Like utils::modifyList(), but a list of entries (an unnamed list, e.g. the
-# navbar's `left:` items) is appended to, where modifyList() would silently
-# ignore it. A plain value is replaced, as is a sequence of plain values,
-# which yaml reads as an atomic vector, indistinguishable from one value.
-# `~` (NULL) removes the setting.
+# Like utils::modifyList(), but unnamed lists (e.g. the navbar's `left:`
+# items) are appended to. Other values are replaced, and `~` (NULL) removes.
 merge_quarto_config <- function(x, val) {
   for (name in names(val)) {
     if (is.list(x[[name]]) && is.list(val[[name]])) {
@@ -317,16 +314,8 @@ build_website_readme <- function(lines, path = ".") {
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {
-    # Every direct child of `.page-columns` is its own grid item, and a
-    # float can't reach across grid items - so a logo floated right in the
-    # title (pkgdown-style) would stretch the heading instead of letting
-    # the text wrap beside it. Wrapping title and body in one div makes
-    # them a single grid item. None of the items get an explicit
-    # `grid-row`, so sparse auto-placement puts that div in row 1 and the
-    # sidebar, which comes next in the DOM and sits in a column to its
-    # right, in row 1 beside it. On small screens, where the grid collapses
-    # to one column, the same DOM order stacks the sidebar below the body,
-    # as in pkgdown.
+    # One grid item for title and body, so text can wrap around a logo
+    # floated right in the title.
     c("::::: {.quartodown-home}", title, "", body, ":::::", "", sidebar)
   }
 }
@@ -352,12 +341,9 @@ remove_marker_block <- function(lines, start_marker, end_marker) {
 
 # ---- light/dark images --------------------------------------------------------
 #
-# GitHub's way to give a README image a light and a dark version is a
-# `<picture>` with a `<source media="(prefers-color-scheme: dark)">`. On the
-# site that follows the OS setting rather than the site's own light/dark
-# toggle, and Quarto doesn't copy an image referenced only by `srcset`. So
-# each such `<picture>` becomes one `<img>` per scheme, with Quarto's
-# `.light-content` / `.dark-content` class to show it only in that theme.
+# A README `<picture>` with a `prefers-color-scheme` `<source>` would follow
+# the OS rather than the site's toggle, and Quarto doesn't copy `srcset`
+# images. Each becomes one `.light-content`/`.dark-content` `<img>` instead.
 
 theme_pictures_to_images <- function(lines) {
   if (!any(grepl("<picture", lines, fixed = TRUE))) {

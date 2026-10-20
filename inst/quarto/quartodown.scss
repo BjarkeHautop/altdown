@@ -1,6 +1,5 @@
 /*-- scss:defaults --*/
-// Use Bootstrap's system font stack and heading sizes in both light and dark
-// mode, rather than darkly's Lato and larger headings.
+// Bootstrap's system fonts and heading sizes in both themes, not darkly's.
 $font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 $h1-font-size: 2.5rem;
 $h2-font-size: 2rem;
@@ -8,48 +7,24 @@ $h3-font-size: 1.75rem;
 $web-font-path: false;
 
 /*-- scss:rules --*/
-// Styled after pkgdown's BS5/assets/pkgdown.scss, written against the DOM
-// that Quarto websites actually produce (Quarto uses different class names
-// for the navbar/sidebar/footer than pkgdown's own templates).
+// Styled after pkgdown's BS5/assets/pkgdown.scss, adapted to Quarto's DOM.
 
 /* navbar ==================================================================== */
 
-// pkgdown-style navbar colors, following the page's own light/dark theme
-// rather than Quarto's defaults.
-//
-// Quarto hardcodes `data-bs-theme="dark"` on `<nav>` unconditionally (see
-// `nav-before-body.ejs`), so `<nav>` always picks up bootstrap's *dark*
-// `--bs-navbar-*`/`--bs-emphasis-color-rgb` custom properties, regardless
-// of which light/dark stylesheet the page has active - patching just
-// `.navbar`'s background isn't enough. Since this file is compiled once per
-// theme variant (see `website.format.html.theme` in quarto_website.yml),
-// each compile already has its own `$body-bg`/`$body-color` baked in as
-// plain values (not runtime `var()` lookups) - deriving the navbar colors
-// from those directly, rather than from bootstrap's own light/dark navbar
-// variables, bypasses the hardcoded dark scoping entirely and needs no
-// light/dark branching of our own.
-//
-// `!important` is needed on every custom property below: bootstrap's own
-// `.navbar-dark, .navbar[data-bs-theme=dark]` rule (which is what actually
-// applies here, since `<nav>` carries that attribute) outranks a plain
-// `.navbar` selector on specificity alone, regardless of source order.
+// Quarto always puts `data-bs-theme="dark"` on `<nav>`, so it gets
+// Bootstrap's dark `--bs-navbar-*` values whichever theme is active. This
+// file is compiled once per theme, so derive the navbar colors from that
+// compile's `$body-bg`/`$body-color` instead. `!important` is needed to beat
+// Bootstrap's more specific `.navbar[data-bs-theme=dark]` rule.
 $quartodown-navbar-toggler-icon-bg: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$body-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>"));
 
-// pkgdown deliberately avoids a bold, single-color navbar bar (bootstrap's
-// own assumption): "we prefer a mildly coloured navbar that's just
-// different enough from the body to stand out" (pkgdown's own
-// BS5/assets/pkgdown.scss). It gets there at runtime with `color-mix()`
-// against `--bs-body-bg`/`--bs-primary`/`--bs-body-color`; since those
-// custom properties are exactly what's stuck in the hardcoded dark scope
-// here, we replicate the same two 95/5 mixes at Sass-compile time instead,
-// off the real `$body-bg`/`$primary`/`$body-color` for this variant.
+// pkgdown's mildly colored navbar: the same two 95/5 mixes it does with
+// `color-mix()` at runtime, done at compile time.
 $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 
 .navbar {
   background-color: $quartodown-navbar-bg !important;
-  // `darkly` (the dark theme variant) sets a taller `$navbar-padding-y`
-  // than `default` (0.5rem vs 1rem) - pin it so the navbar doesn't visibly
-  // grow/shrink when toggling between them.
+  // darkly's padding is larger; keep the height the same in both themes.
   --bs-navbar-padding-y: 0.5rem !important;
   --bs-navbar-color: #{rgba($body-color, 0.85)} !important;
   --bs-navbar-hover-color: #{$primary} !important;
@@ -61,27 +36,14 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
   --bs-navbar-toggler-icon-bg: #{$quartodown-navbar-toggler-icon-bg} !important;
 }
 
-// Bootstrap also redeclares `--bs-navbar-toggler-icon-bg` directly on
-// `[data-bs-theme=dark] .navbar-toggler-icon` itself (not just on
-// `.navbar`), and a declaration on the element itself always wins over one
-// inherited from an ancestor - `.navbar`'s `!important` above doesn't reach
-// past it.
+// Bootstrap also sets this on the icon itself, which beats the inherited value.
 .navbar-toggler-icon {
   --bs-navbar-toggler-icon-bg: #{$quartodown-navbar-toggler-icon-bg} !important;
 }
 
-// `.quarto-navigation-tool` (the GitHub icon's wrapper, and the light/
-// dark-mode toggle button) is styled by Quarto with a *literal* color, not
-// a `--bs-navbar-*` custom property, so none of the overrides above reach
-// it - it's baked at compile time from `$navbar-dark-color`, i.e. always
-// assumed to sit on a dark navbar. Same story for the toggle's on/off
-// icons: Quarto bakes two whole SVG `background-image`s (one per state)
-// with the fill color hardcoded in, rather than reading a CSS variable.
-// Quarto also dims every `.quarto-navigation-tool` to 0.7 opacity at a
-// shrunk 0.875rem, which reads as a faint afterthought next to the regular
-// nav-links. pkgdown's own lightswitch dodges that by rendering as a full
-// nav-link (same size, same hover treatment) rather than a bare icon -
-// bring the toggle up to that same weight here.
+// Quarto colors the navbar tools (GitHub icon, theme toggle) and the toggle's
+// SVG icons with `$navbar-dark-color` baked in, and dims them. Recolor them
+// and give them the size and hover of a regular nav-link, like pkgdown.
 .navbar .quarto-navigation-tool {
   color: $body-color !important;
   opacity: 1 !important;
@@ -97,9 +59,6 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 .navbar .quarto-color-scheme-toggle .bi::before {
   width: 1.25rem;
   height: 1.25rem;
-  // Quarto's own rule hardcodes `background-size: 1rem 1rem` - left as-is,
-  // the 16px icon would sit top-left (the default `background-position`)
-  // inside this now-larger box instead of filling it.
   background-size: 1.25rem 1.25rem;
 }
 
@@ -111,17 +70,8 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
   background-image: #{escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='#{$body-color}' class='bi bi-toggle-on' viewBox='0 0 16 16'><path d='M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/></svg>"))} !important;
 }
 
-// pkgdown's navbar content sits inside a fixed-width, centered Bootstrap
-// `.container`, so it never stretches edge-to-edge. Quarto uses
-// `.container-fluid` (full width) by default, which is why the search box
-// and GitHub icon otherwise end up pinned far off to the right. Cap and
-// center it to match the body content's width below.
-//
-// The title/brand's left alignment with the body text is handled
-// separately, in JS (see `include-after-body` in quarto_website.yml) —
-// a fixed CSS padding can't do it, since Quarto lays out the home page
-// (which has margin content) differently than other pages, putting the
-// body's left edge at a different pixel offset on each.
+// Cap the full-width navbar like pkgdown's `.container`. The title is aligned
+// with the body text in quartodown-after-body.html.
 .navbar-container.container-fluid {
   max-width: 1500px;
   margin-left: auto;
@@ -142,24 +92,15 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
   background: RGBA(var(--bs-primary-rgb), 0.1);
 }
 
-// underline the active top-level nav item, pkgdown/tinyplot style
 .navbar-nav .nav-link.active {
   border-bottom: 3px solid var(--bs-primary);
 }
 
-// Quarto places the search box (order: 999) after the whole collapsible
-// nav (order: 20, which holds both the left-hand links and the GitHub
-// icon), so search always renders after *everything*, including GitHub.
-// `display: contents` unwraps the collapse div so its children become
-// direct flex items of the navbar alongside search, which lets us
-// interleave them: title, links, search, then GitHub (pkgdown's order).
-// Scoped to the desktop breakpoint so the mobile collapse/hamburger still
-// works normally below it.
+// Quarto puts search after the whole collapsible nav, GitHub icon included.
+// Unwrap the collapse div so its children can be ordered like pkgdown's:
+// title, links, search, GitHub, theme toggle. Desktop only, so the mobile
+// hamburger still works.
 @media (min-width: 992px) {
-  // Bootstrap's own `.navbar-expand-lg .navbar-collapse{display:flex!important}`
-  // rule at this same breakpoint has higher specificity than a bare
-  // `.navbar-collapse`, so it wins even against `!important`. Match its
-  // selector (and add `!important` too) to actually override it.
   .navbar-expand-lg .navbar-collapse {
     display: contents !important;
   }
@@ -172,63 +113,39 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
     order: 1 !important;
   }
 
-  // Bootstrap's `.me-auto`/`.ms-auto` both carry an `auto` margin on the
-  // side that faces the other nav group, since normally they're the only
-  // two groups sharing the bar. With search wedged between them, that
-  // leaves *two* auto-margins in the same flex row, so the leftover space
-  // gets split into two gaps instead of one: a gap after the links, then
-  // another gap before GitHub. Dropping ms-auto's margin merges those into
-  // a single gap after the links, so search and GitHub end up flush next
-  // to each other at the far right, like pkgdown.
   #quarto-search {
     order: 2 !important;
   }
 
   .navbar-nav.ms-auto {
     order: 3 !important;
+    // One gap after the links, not a second one before GitHub.
     margin-left: 0 !important;
   }
 
-  // Quarto emits this div for the light/dark-mode toggle at `order: 900`,
-  // so it naturally lands after search/GitHub above - pkgdown style, the
-  // moon/sun icon sits at the far right.
   .quarto-navbar-tools {
     order: 4 !important;
   }
 }
 
-// Autocomplete.js renders a magnifying-glass icon inside the textbox by
-// default; pkgdown's search field has plain placeholder text instead.
+// No magnifying glass in the search box, like pkgdown.
 #quarto-search.type-textbox .aa-InputWrapperPrefix {
   display: none;
 }
 
-/* Tighten the main body container in landing page */
-// The home page's margin content (the pkgdown-style Links/License/Citation/
-// Developers sidebar, added by build_site()) turns `#quarto-document-content`
-// into a full-bleed `page-full` grid. Any other page with margin content
-// (e.g. `.column-margin`) does too, so match the home page by the
-// `.quartodown-home` div build_site() wraps it in.
+// Tighten the top of the home page.
 #quarto-document-content.page-full:has(.quartodown-home) {
   padding-top: 0 !important;
   margin-top: -10px !important;
 }
 
-// A logo floated right in the README title (`<img align="right">`) gets no
-// margin from the browser, so the wrapped text would run right up to it.
-// Give it pkgdown's breathing room.
+// Space around a logo floated right in the README title.
 .quartodown-home h1 img {
   margin-left: 2rem;
   margin-bottom: 1rem;
 }
 
-// The "On this page" jump-around nav belongs on Get started/reference/man
-// pages, pkgdown style, but not on the home page - only the home page has
-// its own bespoke pkgdown-style margin sidebar (Links/License/Citation/
-// Developers). `.quartodown-home` is inside `#quarto-document-content`, a
-// *sibling* of `#quarto-margin-sidebar` (both live under `#quarto-content`) -
-// `:has()` on their shared parent is what lets us reach across to the TOC
-// nav from here.
+// No table of contents on the home page, which has its own sidebar.
 #quarto-content:has(.quartodown-home) {
   #quarto-margin-sidebar nav#TOC,
   #quarto-toc-toggle {
@@ -260,36 +177,17 @@ pre code {
   word-wrap: normal;
 }
 
-// Bootstrap's own compiled `code{}` rule pairs a literal `#f8f9fa`
-// background with `color: var(--bs-code-color)`. `--bs-code-color` (like
-// `--bs-tertiary-bg`, `--bs-link-color`, etc.) is one of Bootstrap 5.3's
-// runtime dark-mode custom properties: its dark value only lives behind a
-// `[data-bs-theme=dark]` selector, which - per the navbar comment above -
-// Quarto never actually sets anywhere outside `<nav>` here, since this site
-// does dark mode by swapping the whole compiled stylesheet rather than
-// toggling that attribute. So even in the "dark" compile, `--bs-code-color`
-// still resolves to Bootstrap's plain `:root` default (`inherit`, i.e. the
-// correctly-dark body text color by inheritance) while the background stays
-// hardcoded light (it isn't a var() at all): white text in a near-white
-// box. `var(--bs-tertiary-bg)` doesn't fix this either, for the same
-// reason - it's gated the same way and also stays stuck on its light
-// value. Bake a variant-appropriate background at Sass-compile time
-// instead, the same way `$quartodown-navbar-bg` above works around the exact
-// same gap. Fenced code blocks (`pre.sourceCode`/`div.sourceCode`) already
-// get proper light/dark backgrounds from Quarto's own syntax-highlighting
-// CSS and aren't affected.
+// Bootstrap's inline code background is a light literal in both compiles
+// (the dark `--bs-*` values need `[data-bs-theme=dark]`, which only `<nav>`
+// has), giving light text on a light box in dark mode. Derive it per theme.
 code {
   overflow-wrap: break-word;
   background-color: mix($body-bg, $body-color, 92%);
 }
 
-// `tools::Rd2HTML()` emits verbatim code in a topic's Rd as plain
-// `<pre><code>`, as does code output. Quarto's own theme CSS un-styles those
-// on purpose, via `pre code:not(.sourceCode) { background-color: initial }`
-// (meant for raw `<pre>` blocks used as console/output text), which also strips the
-// background from these legitimate code blocks. Color the `<pre>`, not the
-// `<code>`, so the background covers the `<pre>`'s padding too, rather than
-// sitting inset inside it.
+// Plain `<pre><code>` (Rd verbatim blocks, code output) loses its background
+// to Quarto's `pre code:not(.sourceCode)` rule. Color the `<pre>` so the
+// background covers its padding.
 pre:has(> code:not(.sourceCode)) {
   background-color: mix($body-bg, $body-color, 92%);
 }
@@ -298,13 +196,9 @@ pre > code:not(.sourceCode) {
   background-color: transparent;
 }
 
-// Quarto's light and dark syntax-highlighting themes differ in more than color:
-// the dark one italicizes comments (and with `collapse: true`, code output's
-// `#>` lines are highlighted as comments too), bolds extensions, underlines
-// errors and gives region markers a near-white background, while the light one
-// italicizes comment vars, documentation and warnings instead. Pin these to
-// the light theme's styles so only colors change with the color scheme. The
-// extra class beats the themes' `code span.xx`.
+// The light and dark highlighting themes also differ in italics, bold,
+// underlines and backgrounds. Pin those to the light theme's so only colors
+// change with the color scheme.
 code.sourceCode {
   span.co,
   span.er,
@@ -325,12 +219,8 @@ code.sourceCode {
   }
 }
 
-// Quarto moves the copy button clear of an annotated block's markers with
-// `.code-annotated .code-copy-button`, but the button is a sibling of
-// `pre.code-annotated` (inside `.code-copy-outer-scaffold`), not a
-// descendant, so that rule never matches and the button covers marker 1.
-// Drop this once https://github.com/quarto-dev/quarto-cli/issues/13444 is
-// fixed.
+// Keep the copy button clear of annotation markers. Drop once
+// https://github.com/quarto-dev/quarto-cli/issues/13444 is fixed.
 .code-copy-outer-scaffold:has(pre.code-annotated) > .code-copy-button {
   margin-right: 1.25em;
   margin-top: 0;
@@ -356,17 +246,13 @@ table code {
   white-space: nowrap;
 }
 
-// The \arguments{} and \value{} item tables `tools::Rd2HTML()` emits: each
-// name at the top of its row, clear of its description.
+// \arguments{} and \value{} tables.
 table[role="presentation"] td:first-child {
   vertical-align: top;
   padding-right: 1rem;
 }
 
-/* reference index list (reference.qmd) ======================================
-   Mirrors pkgdown's own reference-index markup: a <dl> of <dt> (function
-   name, linked) / <dd> (one-line description) pairs per exported function,
-   rather than a plain two-column table. */
+/* reference index ========================================================== */
 
 dl.ref-index {
   margin-bottom: 0;
@@ -376,7 +262,6 @@ dl.ref-index dt {
   font-weight: normal;
 }
 
-// Don't allow breaking within a function name, pkgdown style.
 dl.ref-index dt code {
   word-wrap: normal;
 }
@@ -388,21 +273,13 @@ dl.ref-index dd {
 
 /* margin sidebar (home page Links/License/Citation/Developers) ============== */
 
-// Quarto styles `.column-margin` content in a muted gray-blue, shrunk to
-// .825rem, by default. Use the normal body text color and size instead
-// (headings still come out smaller than main content automatically, since
-// they're h3s here vs h1/h2 in the body — that alone matches pkgdown).
+// Normal body text color and size, not Quarto's muted, smaller margin text.
 .column-margin {
   color: var(--bs-body-color);
   font-size: 1rem;
 }
 
-// Below Quarto's own single-column breakpoint (see the `page-columns`
-// comment above), the sidebar stacks below the README body (see
-// `build_website_readme()` in R/build_site.R) as plain content with no
-// visual separation. pkgdown draws a grey box around its sidebar on mobile
-// (BS5/assets/pkgdown.scss's `.row>aside` rule, `media-breakpoint-down(md)`)
-// - replicate that here.
+// On mobile the sidebar stacks below the README; box it like pkgdown does.
 @media (max-width: 767.98px) {
   .column-margin {
     margin: 1.5rem 0 1rem;
@@ -412,28 +289,14 @@ dl.ref-index dd {
     border-radius: var(--bs-border-radius);
   }
 
-  // Quarto's own compiled CSS has a bare `h3,.h3,h4,.h4{margin-top:1.5rem}`
-  // rule that gives every heading on the page top margin, including the
-  // very first one ("Links") here, which has nothing above it to be
-  // spaced from. `h4:first-of-type` doesn't work here since each
-  // `<section>` has exactly one `<h4>`, making every heading "first of
-  // its type" relative to its own section - target the first `<section>`
-  // itself instead, which is a genuine sibling of the others.
   .column-margin section:first-of-type h4 {
     margin-top: 0;
   }
 
-  // Section-to-section spacing (e.g. "Report a bug" to "License")
-  // otherwise comes only from the preceding paragraph's margin-bottom -
-  // too tight for headings meant to divide sections. Set on the
-  // `<section>`s themselves (real siblings, unlike the `<h4>`s above).
   .column-margin section:not(:first-of-type) {
     margin-top: 1.25rem;
   }
 
-  // Extra breathing room between items within the same section (e.g.
-  // the two links under "Links"), beyond Bootstrap's default 1rem
-  // paragraph margin - smaller than the section-to-section gap above.
   .column-margin section p:not(:last-child) {
     margin-bottom: 0.75rem;
   }

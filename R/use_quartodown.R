@@ -122,9 +122,7 @@ use_quartodown <- function(path = ".") {
   )
 }
 
-# One \name{} per man/*.Rd, sorted, as a single "All functions" section,
-# leaving any grouping to the user. Internal topics are left out, since
-# they never appear on the reference page.
+# Every public topic, sorted, in a single "All functions" section.
 .starter_reference_yml <- function(path) {
   man_dir <- file.path(path, "man")
   rd_files <- if (dir.exists(man_dir)) {

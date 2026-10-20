@@ -1,6 +1,4 @@
-# Built straight from the source tree rather
-# than `utils::citation(pkg_name)`, which reads an installed copy of the
-# package that may be stale.
+# From the source tree, as an installed copy may be stale.
 pkg_citation_meta <- function(path) {
   desc <- desc::description$new(path)
   meta <- as.list(desc$get(desc$fields()))

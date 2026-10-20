@@ -1,17 +1,9 @@
 # ---- man/*.Rd -> reference/*.qmd ----------------------------------------------
 #
-# Each Rd file is parsed with the package's Rd macros (so Rdpack's
-# `\insertRef{}` works), rendered to HTML with `tools::Rd2HTML()` running
-# every `\Sexpr` stage as `R CMD build` + `INSTALL` would (so `\doi{}`
-# works), and the HTML is cut into its `<h3>` sections:
-#
-# * the title becomes the page title, each section a `##` heading, which
-#   Quarto puts in the page's table of contents;
-# * Usage becomes a fenced ```` ```r ```` block, so it's syntax-highlighted
-#   and gets a copy button;
-# * Examples are rebuilt from `tools::Rd2ex()`, see example_blocks();
-# * everything else stays HTML, except inline code and math, see
-#   rd_html_to_markdown().
+# Each Rd file is rendered with `tools::Rd2HTML()` and cut into its `<h3>`
+# sections, each a `##` heading. Usage becomes a fenced R block, examples are
+# rebuilt from `tools::Rd2ex()` (see example_blocks()) and the rest stays HTML
+# (see rd_html_to_markdown()).
 
 write_man_pages <- function(path, config = list()) {
   out_dir <- file.path(project_dir(path), "reference")
@@ -122,11 +114,8 @@ with_sexpr_stages <- function(rd, render) {
 
 # ---- links ------------------------------------------------------------------------
 #
-# Rd2HTML() drops the target of every `\link{}`, as there's no help system to
-# point to, so each is made an `\href{}` to the topic's page first: the
-# package's own reference page, or another package's documentation as downlit
-# finds it (its pkgdown site, or rdrr.io). A link to nothing it finds stays
-# plain text.
+# Rd2HTML() drops `\link{}` targets, so each is first made an `\href{}` to
+# the package's own reference page, or to wherever downlit finds the topic.
 
 # The page of each of `topics` (those with one, see has_page()), named by
 # alias and by Rd file name, which `\link[pkg:file]{}` can give: "foo" for
@@ -253,24 +242,13 @@ trim_blank_lines <- function(lines) {
 
 # ---- prose sections ---------------------------------------------------------------
 #
-# Section bodies stay Rd2HTML()'s HTML, which Pandoc reads as raw HTML with
-# Markdown in between, except for:
+# Section bodies stay HTML, which Pandoc reads with Markdown in between, except:
 #
-# * Inline `<code>...</code>`: Pandoc would parse the text inside as Markdown,
-#   so its smart-quotes extension turns `\code{f("a")}` into f(“a”), and a
-#   backslash right before `</code>`, as `\verb{\\}` gives, escapes the closing
-#   tag. It becomes a Markdown code span, which renders as `<code>` too, and
-#   linked inline code (see link_rd()) a Markdown link around one.
-# * `\eqn{}`/`\deqn{}` (`<code class="reqn">`) become `$...$`/`$$...$$`, so
-#   Quarto renders the math. Any other `$` is escaped so it isn't taken for
-#   math.
-# * `<p>` tags are dropped: Rd2HTML() separates paragraphs with blank lines
-#   anyway.
-#
-# `<pre>` blocks are left alone, as Pandoc doesn't parse inside them, except
-# that a language-tagged one (roxygen's ```` ```yaml ```` blocks, and the
-# usage and examples of R6 methods) becomes a fenced code block, so it's
-# highlighted and gets a copy button.
+# * Inline `<code>` becomes a Markdown code span, as Pandoc would otherwise
+#   smart-quote its text, and a trailing backslash would escape `</code>`.
+# * `\eqn{}`/`\deqn{}` become `$...$`/`$$...$$`; any other `$` is escaped.
+# * `<p>` tags are dropped, as paragraphs are separated by blank lines anyway.
+# * Language-tagged `<pre>` blocks become fenced code blocks.
 
 rd_html_token_pattern <- paste0(
   # One group number for the language and code of either kind of block.
@@ -369,15 +347,9 @@ code_span <- function(code) {
 
 # ---- Examples ---------------------------------------------------------------------
 #
-# Like pkgdown, examples run, with their output in the same block as the code,
-# each line prefixed with `#>`, except:
-#
-# * `\dontrun{}` code is shown but not run, as a plain code block. A page
-#   whose examples all are is rendered without starting an R session.
-# * `\dontshow{}` code is run but not shown.
-# * `@examplesIf` examples run only if the condition is TRUE when building.
-#
-# The package is attached first, in a hidden chunk.
+# Like pkgdown, examples run with `#>` output in the same block, except that
+# `\dontrun{}` code is shown but not run, `\dontshow{}` code is run but not
+# shown, and `@examplesIf` examples run only if the condition is TRUE.
 
 example_chunk_header <- "```{r, collapse=TRUE, comment=\"#>\"}"
 
