@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.10.19">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
-
 <title>Get started with quartodown – quartodown 0.0.0.9000</title>
 <style>
 /* Default styles provided by pandoc.
@@ -62,29 +60,15 @@ div.sourceCode
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
-
-
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script><script src="../site_libs/quarto-nav/headroom.min.js"></script><script src="../site_libs/clipboard/clipboard.min.js"></script><script src="../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../site_libs/quarto-search/fuse.min.js"></script><script src="../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-74d50107868953456cd08a36b72f1539.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-f06876e8cb1241d0f9c4a49d6371ec6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-74d50107868953456cd08a36b72f1539.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-dcf07ec0f83046975e9fcdb250eddc04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -110,16 +94,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<!--
-Quarto's own dark-mode toggle always defaults new visitors to whichever theme
-is listed first (light), ignoring the OS/browser `prefers-color-scheme`
-setting - there's no config for this, so seed its localStorage sentinel
-ourselves before its own before-body script reads it. Runs in <head>, ahead of
-any painted content, so there's no light-then-dark flash. Only acts when the
-visitor has never toggled here before - an explicit past choice always wins.
--->
-<script>
+}</script><!--
+Quarto ignores `prefers-color-scheme`, so pick dark mode for first-time
+visitors who prefer it, before Quarto reads the stored choice.
+--><script>
 (function () {
   try {
     if (
@@ -129,13 +107,10 @@ visitor has never toggled here before - an explicit past choice always wins.
       window.localStorage.setItem("quarto-color-scheme", "alternate");
     }
   } catch (e) {
-    // localStorage unavailable (e.g. file:// preview, blocked
-    // storage) - fall back to Quarto's own light default.
+    // No localStorage: keep Quarto's light default.
   }
 })();
 </script>
-
-
 <!-- quartodown-tooltips -->
 <style>
 .quartodown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
@@ -144,8 +119,8 @@ visitor has never toggled here before - an explicit past choice always wins.
 a.quartodown-tip-ref{cursor:help;}
 </style>
 </head>
-
-<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-fixed quarto-light">
+<script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -307,12 +282,8 @@ a.quartodown-tip-ref{cursor:help;}
     } else {
       toggleColorMode(false);
     }
-  </script>
-
-<div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
+  </script><div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">quartodown 0.0.0.9000</span>
@@ -324,7 +295,7 @@ a.quartodown-tip-ref{cursor:help;}
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link active" href="../vignettes/quartodown.html" aria-current="page"> 
 <span class="menu-text">Get started</span></a>
   </li>  
@@ -336,55 +307,50 @@ a.quartodown-tip-ref{cursor:help;}
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-articles" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Articles</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">
+<li>
+    <a class="dropdown-item" href="../vignettes/articles/showcase.html">
+ <span class="dropdown-text">Quarto features</span></a>
+  </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/articles/technical.html">
  <span class="dropdown-text">Technical details</span></a>
   </li>  
     </ul>
-  </li>
+</li>
   <li class="nav-item">
     <a class="nav-link" href="../NEWS.html"> 
 <span class="menu-text">Changelog</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item compact">
     <a class="nav-link" href="https://github.com/bjarkehautop/quartodown"> <i class="bi bi-github" role="img" aria-label="GitHub">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
-    </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
+<li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
   <li><a href="#build-the-site" id="toc-build-the-site" class="nav-link" data-scroll-target="#build-the-site">Build the site</a></li>
   <li><a href="#organize-the-reference-index" id="toc-organize-the-reference-index" class="nav-link" data-scroll-target="#organize-the-reference-index">Organize the reference index</a></li>
   <li><a href="#publish-on-github-pages" id="toc-publish-on-github-pages" class="nav-link" data-scroll-target="#publish-on-github-pages">Publish on GitHub Pages</a></li>
   <li><a href="#learn-more" id="toc-learn-more" class="nav-link" data-scroll-target="#learn-more">Learn more</a></li>
-  </ul>
-</nav>
-    </div>
+  </ul></nav>
+</div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">Get started with quartodown</h1>
 </div>
 
@@ -399,134 +365,72 @@ a.quartodown-tip-ref{cursor:help;}
   
 
 
-</header>
-
-
-<p>quartodown builds a website for an R package with <a href="https://quarto.org/">Quarto</a>. This guide sets up a package, builds its site, and publishes it on GitHub Pages.</p>
-<section id="set-up" class="level2">
-<h2 class="anchored" data-anchor-id="set-up">Set up</h2>
+</header><p>quartodown builds a website for an R package with <a href="https://quarto.org/">Quarto</a>. This guide sets up a package, builds its site, and publishes it on GitHub Pages.</p>
+<section id="set-up" class="level2"><h2 class="anchored" data-anchor-id="set-up">Set up</h2>
 <p>From the root of your package, run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>quartodown<span class="sc">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../reference/use_quartodown.html">use_quartodown</a></span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This writes <code>_quartodown.yml</code> at the package root, the one configuration file you edit, and adds the files the build generates to <code>.gitignore</code> and <code>.Rbuildignore</code>. The configuration file is optional: without it, the site is built with the defaults.</p>
-</section>
-<section id="build-the-site" class="level2">
-<h2 class="anchored" data-anchor-id="build-the-site">Build the site</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>quartodown<span class="sc">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site</a></span>()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>quartodown<span class="sc">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../reference/preview_site.html">preview_site</a></span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site()</a></code> builds the site into <code>docs/</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../reference/preview_site.html">preview_site()</a></code> opens it in your browser.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../reference/use_quartodown.html">use_quartodown</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-<div class="callout-title-container flex-fill">
-Tip
+<p>This writes <code>_quartodown.yml</code> at the package root, the configuration file you can edit, and adds the files the build generates to <code>.gitignore</code> and <code>.Rbuildignore</code>.</p>
+</section><section id="build-the-site" class="level2"><h2 class="anchored" data-anchor-id="build-the-site">Build the site</h2>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../reference/preview_site.html">preview_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Examples in the man pages and code in the vignettes run against your package’s current source: <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site()</a></code> installs it into a temporary library first. To skip the install while iterating, use <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site(devel = TRUE)</a></code>, which loads it with <code>pkgload::load_all()</code> instead.</p>
-</div>
-</div>
-<p>The site is built from what’s already in your package:</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site()</a></code> builds the site into <code>docs/</code>, and <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../reference/preview_site.html">preview_site()</a></code> opens it in your browser. Examples and vignettes run against your package’s current source. While iterating, <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">build_site(devel = TRUE)</a></code> is faster because it loads the package with <code><a href="https://pkgload.r-lib.org/reference/load_all.html">pkgload::load_all()</a></code> instead of installing it.</p>
+<p>The following is added to your site:</p>
 <ul>
-<li><strong>Home page</strong>: <code>README.md</code>, with a sidebar of links, the license, citation and developers taken from <code>DESCRIPTION</code>. Badges between <code>&lt;!-- badges: start --&gt;</code> and <code>&lt;!-- badges: end --&gt;</code> move into the sidebar.</li>
-<li><strong>Reference</strong>: one page per <code>man/*.Rd</code> file, and an index of them.</li>
-<li><strong>Get started</strong>: the vignette named after the package, like this one.</li>
-<li><strong>Articles</strong>: every other vignette, including those in <code>vignettes/articles/</code>.</li>
-<li><strong>Changelog</strong>: <code>NEWS.md</code>, with issues (<code>#123</code>) and GitHub users (<code>@user</code>) linked.</li>
-</ul>
-</section>
-<section id="organize-the-reference-index" class="level2">
-<h2 class="anchored" data-anchor-id="organize-the-reference-index">Organize the reference index</h2>
-<p>By default the reference index lists every function in one section. To group them, edit the <code>reference:</code> field in <code>_quartodown.yml</code>. It has the same shape as pkgdown’s:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reference</span><span class="kw">:</span></span>
+<li>
+<strong>Home page</strong>: your <code>README.md</code>. Next to it, a sidebar links to the source code, the bug tracker and CRAN (if the package is there), and shows the license, citation and authors from <code>DESCRIPTION</code>. Any badges in your README (between <code>&lt;!-- badges: start --&gt;</code> and <code>&lt;!-- badges: end --&gt;</code>) are moved into the sidebar.</li>
+<li>
+<strong>Reference</strong>: a page for each help topic in <code>man/</code>, plus an index page listing them all.</li>
+<li>
+<strong>Get started</strong>: the vignette with the same name as your package, like this one.</li>
+<li>
+<strong>Articles</strong>: all your other vignettes, including any in <code>vignettes/articles/</code>.</li>
+<li>
+<strong>Changelog</strong>: your <code>NEWS.md</code>. Issue numbers like <code>#123</code> and GitHub usernames like <code>@user</code> become links.</li>
+</ul></section><section id="organize-the-reference-index" class="level2"><h2 class="anchored" data-anchor-id="organize-the-reference-index">Organize the reference index</h2>
+<p>By default the reference index lists every function in one section. To group them, edit the <code>reference:</code> field in <code>_quartodown.yml</code>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reference</span><span class="kw">:</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">title</span><span class="kw">:</span><span class="at"> Setting up</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">contents</span><span class="kw">:</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> use_quartodown</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">title</span><span class="kw">:</span><span class="at"> Building</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">contents</span><span class="kw">:</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> starts_with("build_")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>?build_site</code> lists the other fields: <code>articles:</code> sets the order of the “Articles” menu, and <code>quarto:</code> changes the Quarto configuration, e.g.&nbsp;to add navbar links.</p>
-</section>
-<section id="publish-on-github-pages" class="level2">
-<h2 class="anchored" data-anchor-id="publish-on-github-pages">Publish on GitHub Pages</h2>
-<p>This GitHub Actions workflow builds the site and deploys it to the <code>gh-pages</code> branch on every push. Save it as <code>.github/workflows/quartodown.yaml</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">push</span><span class="kw">:</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">main</span><span class="kw">,</span><span class="at"> master</span><span class="kw">]</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pull_request</span><span class="kw">:</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">release</span><span class="kw">:</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">types</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">published</span><span class="kw">]</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">workflow_dispatch</span><span class="kw">:</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> quartodown</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">quartodown</span><span class="kw">:</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">concurrency</span><span class="kw">:</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">group</span><span class="kw">:</span><span class="at"> quartodown-${{ github.event_name != 'pull_request' || github.run_id }}</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">env</span><span class="kw">:</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">GITHUB_PAT</span><span class="kw">:</span><span class="at"> ${{ secrets.GITHUB_TOKEN }}</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">permissions</span><span class="kw">:</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> write</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v4</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> quarto-dev/quarto-actions/setup@v2</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> r-lib/actions/setup-r@v2</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">use-public-rspm</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> r-lib/actions/setup-r-dependencies@v2</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">extra-packages</span><span class="kw">:</span><span class="at"> any::knitr, any::rmarkdown, github::BjarkeHautop/quartodown, local::.</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">needs</span><span class="kw">:</span><span class="at"> website</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build site</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">run</span><span class="kw">:</span><span class="at"> quartodown::build_site()</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">shell</span><span class="kw">:</span><span class="at"> Rscript {0}</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Deploy to GitHub Pages</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">if</span><span class="kw">:</span><span class="at"> github.event_name != 'pull_request'</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> JamesIves/github-pages-deploy-action@v4</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">clean</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">branch</span><span class="kw">:</span><span class="at"> gh-pages</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">folder</span><span class="kw">:</span><span class="at"> docs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>local::.</code> installs your package’s dependencies, which its examples and vignettes need. Then, on GitHub, set the repository to serve Pages from the <code>gh-pages</code> branch (<em>Settings</em> → <em>Pages</em>).</p>
-</section>
-<section id="learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="learn-more">Learn more</h2>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> starts_with("build_")</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>See <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../reference/build_site.html">?build_site</a></code> for the other fields.</p>
+</section><section id="publish-on-github-pages" class="level2"><h2 class="anchored" data-anchor-id="publish-on-github-pages">Publish on GitHub Pages</h2>
+<p>To build the site and deploy it to the <code>gh-pages</code> branch on every push, add a GitHub Actions workflow:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t4" href="../reference/use_quartodown_action.html">use_quartodown_action</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>This writes <code>.github/workflows/quartodown.yaml</code>. Commit and push it. Once its first run has created the <code>gh-pages</code> branch, go to the <em>Pages</em> section of your repository’s settings on GitHub and choose to deploy from that branch.</p>
+</section><section id="learn-more" class="level2"><h2 class="anchored" data-anchor-id="learn-more">Learn more</h2>
+<p><a href="https://bjarkehautop.github.io/quartodown/vignettes/articles/showcase.html">Quarto features</a> shows Quarto’s authoring features, such as callouts, tabsets and footnotes, on a quartodown site.</p>
 <p><a href="https://bjarkehautop.github.io/quartodown/vignettes/articles/technical.html">Technical details</a> explains how a build works and how quartodown’s theme is put together.</p>
 
 
-</section>
-
-</main> <!-- /main -->
-<!--
-A fixed CSS padding can't align the navbar title with the body text on every
-page: Quarto lays pages out differently depending on whether they have margin
-content (like the home page's Links/License column) or not, so the body's left
-edge lands at a different pixel offset per page type. Measure it for real
-instead, on every page, after layout settles.
--->
-<script>
+</section></main><!-- /main --><script>
 (function () {
   function contentLeft(main) {
-    // On pages with margin content (e.g. the home page's
-    // Links/License column), <main> itself becomes a "page-full"
-    // grid spanning the whole viewport, so its own box tells us
-    // nothing about where the visible text starts — look at the
-    // title instead. On every other page, main's own edge already
-    // sits flush with the text.
+    // With margin content, <main> is a full-width grid; use the title.
     if (main.classList.contains("page-full")) {
       var heading = main.querySelector("h1");
       if (heading) return heading.getBoundingClientRect().left;
     }
     return main.getBoundingClientRect().left;
   }
+  // Where the body text starts depends on the page layout, so measure it.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
@@ -536,11 +440,7 @@ instead, on every page, after layout settles.
       navContainer.getBoundingClientRect().left;
     navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
   }
-  // The navbar title is emitted as one plain-text node, "<pkg name>
-  // <version>" (see `website.title` in quarto_config()) -
-  // Quarto gives us no way to style just the version at the YAML
-  // level. Split it out into its own `<small>` here so
-  // quartodown.scss can shrink it, pkgdown style.
+  // Wrap the version in the "<pkg> <version>" title so it can be styled.
   function shrinkNavbarVersion() {
     var title = document.querySelector(".navbar-title");
     if (!title || title.querySelector(".navbar-version")) return;
@@ -554,20 +454,37 @@ instead, on every page, after layout settles.
     title.appendChild(document.createTextNode(" "));
     title.appendChild(version);
   }
-  // This script is injected right before </body>, so everything it
-  // reads is already in the DOM — no need to wait for "load" (which
-  // fires only once every image/font/subresource finishes, causing
-  // a visible flash where the navbar sits unaligned for a moment).
-  // Run once immediately, then keep "load"/"resize" as safety nets
-  // in case something later shifts the layout (e.g. a web font
-  // swap, though this theme doesn't use one).
+  // Leave `#>` output lines out of what the copy button copies, as pkgdown
+  // does. clipboard.js copies synchronously in its click handler, so a copy
+  // event during a copy-button click is its.
+  function stripOutputOnCopy() {
+    var fromButton = false;
+    window.addEventListener("click", function (e) {
+      if (!e.target.closest || !e.target.closest(".code-copy-button")) return;
+      fromButton = true;
+      setTimeout(function () { fromButton = false; }, 0);
+    }, true);
+    document.addEventListener("copy", function (e) {
+      if (!fromButton || !e.clipboardData) return;
+      // clipboard.js copies from a hidden <textarea>, whose selection
+      // window.getSelection() doesn't report in every browser.
+      var text = e.target instanceof HTMLTextAreaElement ?
+        e.target.value : String(window.getSelection());
+      var code = text.split("\n").filter(function (line) {
+        return !/^#>/.test(line);
+      }).join("\n");
+      if (code === text) return;
+      e.clipboardData.setData("text/plain", code);
+      e.preventDefault();
+    }, true);
+  }
+  stripOutputOnCopy();
   shrinkNavbarVersion();
   alignNavbarToContent();
   window.addEventListener("load", alignNavbarToContent);
   window.addEventListener("resize", alignNavbarToContent);
 })();
-</script>
-<script id="quarto-html-after-body" type="application/javascript">
+</script><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -981,30 +898,25 @@ instead, on every page, after layout settles.
   });
   </script>
 </div> <!-- /content -->
-<footer class="footer">
-  <div class="nav-footer">
+<footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">
 <p>Developed by Bjarke Hautop Kristensen.</p>
 </div>   
     <div class="nav-footer-center">
-      &nbsp;
+       
     </div>
     <div class="nav-footer-right">
 <p>Site built with <a href="https://github.com/BjarkeHautop/quartodown">quartodown</a> and <a href="https://quarto.org/">Quarto</a>.</p>
 </div>
   </div>
 </footer>
-
-
-
-
 <div class="quartodown-tip-payload" hidden><div data-for="t1"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown.yml</code>, the configuration file <code>build_site()</code> reads, at the package root.</span></div><div data-for="t2"><code class="quartodown-tip-sig">build_site(
   path = &quot;.&quot;,
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
   devel = FALSE
-)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with https://quarto.org/Quarto.</span></div><div data-for="t3"><code class="quartodown-tip-sig">preview_site(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Serves <code>docs/</code>, as built by <code>build_site()</code>, in a web browser, and reloads the page when the site is rebuilt.</span></div></div>
+)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t3"><code class="quartodown-tip-sig">preview_site(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Serves <code>docs/</code>, as built by <code>build_site()</code>, in a web browser, and reloads the page when the site is rebuilt.</span></div><div data-for="t4"><code class="quartodown-tip-sig">use_quartodown_action(path = &quot;.&quot;, overwrite = FALSE)</code><span class="quartodown-tip-brief">Writes <code>.github/workflows/quartodown.yaml</code>, a GitHub Actions workflow that builds the site and deploys it to the <code>gh-pages</code> branch.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;
@@ -1048,4 +960,5 @@ instead, on every page, after layout settles.
   float.addEventListener('mouseleave', scheduleHide);
 })();
 </script>
-</body></html>
+</body>
+</html>

@@ -3,4 +3,5 @@ urls:
   article: https://bjarkehautop.github.io/quartodown/vignettes
 articles:
   quartodown: quartodown.html
+  showcase: articles/showcase.html
   technical: articles/technical.html
