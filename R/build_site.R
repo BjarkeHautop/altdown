@@ -5,8 +5,9 @@
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
 #' package sources and `_quartodown.yml`, then renders it:
 #'
-#' * a reference page per `man/*.Rd` file, with its examples run, except
-#'   `\keyword{internal}` ones not listed under `reference:`;
+#' * the function reference: a grouped index, and a page per `man/*.Rd` file
+#'   with its examples run, except `\keyword{internal}` ones not listed under
+#'   `reference:`;
 #' * the vignettes, including those in `vignettes/articles/`;
 #' * `NEWS.md` as the changelog, with issues (`#123`) and GitHub users
 #'   (`@user`) linked;
@@ -14,12 +15,8 @@
 #'   `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`);
 #' * the navbar, with a "Get started" link, the function reference, an
 #'   "Articles" menu and the changelog;
-#' * the home page, built from `README.md` plus a sidebar
-#'   (links, license, citation, developers and the README's badges). An image
-#'   with light and dark versions, given as a `<picture>` with a
-#'   `<source media="(prefers-color-scheme: dark)">` as on GitHub, follows the
-#'   site's light/dark toggle;
-#' * the grouped function reference index;
+#' * the home page, built from `README.md` plus a sidebar (links, license,
+#'   citation, developers and badges);
 #' * code output printed in the code's block, each line prefixed with `#>`,
 #'   as in pkgdown (the copy button leaves those lines out);
 #' * function calls in R code, and inline code like `mean()`, linked to their
@@ -35,9 +32,9 @@
 #'   a selector: `starts_with()`, `ends_with()`, `contains()`, `matches()`,
 #'   `has_concept()`, `has_keyword()`, `-` to exclude, and `c()` to combine.
 #'   Without it, every topic is listed in one section. Internal topics
-#'   (`\keyword{internal}`, e.g. roxygen's `reexports`) needn't be listed, but
-#'   are, with a page, when named or selected with `internal = TRUE` (e.g.
-#'   `starts_with("dev_", internal = TRUE)`).
+#'   (`\keyword{internal}`) are left out unless named or selected with
+#'   `internal = TRUE`, e.g. `starts_with("dev_", internal = TRUE)`; then they
+#'   get a page too.
 #' * `articles`: the order of the "Articles" navbar menu, as vignette paths
 #'   relative to `vignettes/` without extension (e.g. `articles/details`).
 #'   Without it, every vignette other than the "Get started" one is listed,

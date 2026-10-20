@@ -45,24 +45,19 @@
 #' unlink(pkg, recursive = TRUE)
 use_quartodown <- function(path = ".") {
   if (!file.exists(file.path(path, "DESCRIPTION"))) {
-    stop(
-      sprintf(
-        "No DESCRIPTION file found at '%s' - is this a package root?",
-        path
-      ),
-      call. = FALSE
+    cli::cli_abort(
+      "No {.file DESCRIPTION} found at {.path {path}}. Is this a package root?"
     )
   }
 
   config_dest <- file.path(path, config_file)
   if (file.exists(config_dest)) {
-    message(sprintf("Skipping '%s': already exists.", config_dest))
+    cli::cli_alert_info("Skipping {.path {config_dest}}: already exists.")
   } else {
     writeLines(.starter_config_yml(path), config_dest)
-    message(sprintf(
-      "Wrote '%s' (edit this to group your functions).",
-      config_dest
-    ))
+    cli::cli_alert_success(
+      "Wrote {.path {config_dest}} (edit this to group your functions)."
+    )
   }
 
   .add_ignore_lines(
@@ -76,12 +71,13 @@ use_quartodown <- function(path = ".") {
     c("^docs$", "^_quarto$", "^_quartodown\\.yml$")
   )
 
-  message(
-    "\nNext steps:\n",
-    "  1. Edit _quartodown.yml to group your functions the way you want.\n",
-    "  2. Run: quartodown::build_site()\n",
-    "  3. Preview site: quartodown::preview_site()"
-  )
+  cli::cli_text("")
+  cli::cli_text("Next steps:")
+  cli::cli_ol(c(
+    "Edit {.file _quartodown.yml} to group your functions the way you want.",
+    "Build the site with {.run quartodown::build_site()}.",
+    "Preview it with {.run quartodown::preview_site()}."
+  ))
 
   invisible(config_dest)
 }
@@ -102,11 +98,7 @@ use_quartodown <- function(path = ".") {
   }
 
   writeLines(c(existing, missing), dest)
-  message(sprintf(
-    "Added %s to '%s'.",
-    paste(sprintf("'%s'", missing), collapse = ", "),
-    dest
-  ))
+  cli::cli_alert_success("Added {.code {missing}} to {.path {dest}}.")
   invisible()
 }
 

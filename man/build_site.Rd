@@ -43,8 +43,9 @@ Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Qua
 \code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
 package sources and \verb{_quartodown.yml}, then renders it:
 \itemize{
-\item a reference page per \verb{man/*.Rd} file, with its examples run, except
-\verb{\\keyword\{internal\}} ones not listed under \verb{reference:};
+\item the function reference: a grouped index, and a page per \verb{man/*.Rd} file
+with its examples run, except \verb{\\keyword\{internal\}} ones not listed under
+\verb{reference:};
 \item the vignettes, including those in \verb{vignettes/articles/};
 \item \code{NEWS.md} as the changelog, with issues (\verb{#123}) and GitHub users
 (\verb{@user}) linked;
@@ -52,12 +53,8 @@ package sources and \verb{_quartodown.yml}, then renders it:
 \code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/});
 \item the navbar, with a "Get started" link, the function reference, an
 "Articles" menu and the changelog;
-\item the home page, built from \code{README.md} plus a sidebar
-(links, license, citation, developers and the README's badges). An image
-with light and dark versions, given as a \verb{<picture>} with a
-\verb{<source media="(prefers-color-scheme: dark)">} as on GitHub, follows the
-site's light/dark toggle;
-\item the grouped function reference index;
+\item the home page, built from \code{README.md} plus a sidebar (links, license,
+citation, developers and badges);
 \item code output printed in the code's block, each line prefixed with \verb{#>},
 as in pkgdown (the copy button leaves those lines out);
 \item function calls in R code, and inline code like \code{mean()}, linked to their
@@ -75,9 +72,9 @@ pkgdown's \verb{reference:} field. \code{contents} entries can be a topic alias 
 a selector: \code{starts_with()}, \code{ends_with()}, \code{contains()}, \code{matches()},
 \code{has_concept()}, \code{has_keyword()}, \code{-} to exclude, and \code{c()} to combine.
 Without it, every topic is listed in one section. Internal topics
-(\verb{\\keyword\{internal\}}, e.g. roxygen's \code{reexports}) needn't be listed, but
-are, with a page, when named or selected with \code{internal = TRUE} (e.g.
-\code{starts_with("dev_", internal = TRUE)}).
+(\verb{\\keyword\{internal\}}) are left out unless named or selected with
+\code{internal = TRUE}, e.g. \code{starts_with("dev_", internal = TRUE)}; then they
+get a page too.
 \item \code{articles}: the order of the "Articles" navbar menu, as vignette paths
 relative to \verb{vignettes/} without extension (e.g. \code{articles/details}).
 Without it, every vignette other than the "Get started" one is listed,

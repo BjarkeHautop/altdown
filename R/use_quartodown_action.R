@@ -28,21 +28,16 @@
 #' unlink(pkg, recursive = TRUE)
 use_quartodown_action <- function(path = ".", overwrite = FALSE) {
   if (!file.exists(file.path(path, "DESCRIPTION"))) {
-    stop(
-      sprintf(
-        "No DESCRIPTION file found at '%s' - is this a package root?",
-        path
-      ),
-      call. = FALSE
+    cli::cli_abort(
+      "No {.file DESCRIPTION} found at {.path {path}}. Is this a package root?"
     )
   }
 
   dest <- file.path(path, ".github", "workflows", "quartodown.yaml")
   if (file.exists(dest) && !overwrite) {
-    message(sprintf(
-      "Skipping '%s': already exists. Use `overwrite = TRUE` to replace it.",
-      dest
-    ))
+    cli::cli_alert_info(
+      "Skipping {.path {dest}}: already exists. Use {.code overwrite = TRUE} to replace it."
+    )
   } else {
     dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
     src <- system.file(
@@ -52,18 +47,17 @@ use_quartodown_action <- function(path = ".", overwrite = FALSE) {
       mustWork = TRUE
     )
     file.copy(src, dest, overwrite = TRUE)
-    message(sprintf("Wrote '%s'.", dest))
+    cli::cli_alert_success("Wrote {.path {dest}}.")
   }
 
   .add_ignore_lines(path, ".Rbuildignore", "^\\.github$")
 
-  message(
-    "\nNext steps:\n",
-    "  1. Commit and push the workflow.\n",
-    "  2. Once its first run has created the gh-pages branch, go to the\n",
-    "     Pages section of the repository's settings on GitHub and choose\n",
-    "     to deploy from that branch."
-  )
+  cli::cli_text("")
+  cli::cli_text("Next steps:")
+  cli::cli_ol(c(
+    "Commit and push the workflow.",
+    "Once its first run has created the {.code gh-pages} branch, go to the Pages section of the repository's settings on GitHub and choose to deploy from that branch."
+  ))
 
   invisible(dest)
 }
