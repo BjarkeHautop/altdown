@@ -123,7 +123,7 @@ test_that("build_topic_index() skips internal topics, which get no page", {
   expect_length(build_topic_index(dir), 0)
 })
 
-test_that("an alias with no matching \\usage{} block falls back to the whole block and warns", {
+test_that("an alias with no \\usage{} block of its own gets no signature", {
   dir <- withr::local_tempdir()
   write_rd(
     dir,
@@ -142,9 +142,10 @@ test_that("an alias with no matching \\usage{} block falls back to the whole blo
     )
   )
 
-  expect_warning(index <- build_topic_index(dir), "foo")
-  expect_equal(index[["foo"]]$usage, "print.foo(x, ...)")
-  expect_no_warning(build_topic_index(dir, quiet = TRUE))
+  expect_no_warning(index <- build_topic_index(dir))
+  expect_null(index[["foo"]]$usage)
+  expect_equal(index[["foo"]]$brief, "Prints a foo object.")
+  expect_equal(index[["print.foo"]]$usage, "print.foo(x, ...)")
 })
 
 test_that("a shared topic's own name doesn't need a \\usage{} block", {
@@ -199,6 +200,68 @@ test_that("an infix operator alias matches its \\usage{} block", {
   expect_no_warning(index <- build_topic_index(dir))
   expect_equal(index[["%+-%"]]$usage, "lhs %+-% rhs")
   expect_equal(index[["%-+%"]]$usage, "lhs %-+% rhs")
+})
+
+test_that("replacement functions and S4 methods match their \\usage{} blocks", {
+  dir <- withr::local_tempdir()
+  write_rd(
+    dir,
+    "units",
+    c(
+      "\\name{units}",
+      "\\alias{units}",
+      "\\alias{units<-}",
+      "\\alias{units<-.foo}",
+      "\\alias{units,Foo-method}",
+      "\\alias{units<-,Foo,character-method}",
+      "\\title{Units}",
+      "\\usage{",
+      "units(x)",
+      "",
+      "units(x) <- value",
+      "",
+      "\\method{units}{foo}(x) <- value",
+      "",
+      "\\S4method{units}{Foo}(x)",
+      "",
+      "\\S4method{units}{Foo,character}(x) <- value",
+      "}",
+      "\\description{",
+      "Gets or sets units.",
+      "}"
+    )
+  )
+
+  expect_no_warning(index <- build_topic_index(dir))
+  expect_equal(index[["units"]]$usage, "units(x)")
+  expect_equal(index[["units<-"]]$usage, "units(x) <- value")
+  expect_equal(index[["units<-.foo"]]$usage, "units.foo(x) <- value")
+  expect_equal(index[["units,Foo-method"]]$usage, "units(x)")
+  expect_equal(
+    index[["units<-,Foo,character-method"]]$usage,
+    "units(x) <- value"
+  )
+})
+
+test_that("a lifecycle badge is left out of the brief", {
+  dir <- withr::local_tempdir()
+  write_rd(
+    dir,
+    "foo",
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\usage{foo()}",
+      "\\description{",
+      "\\ifelse{html}{\\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\\strong{[Experimental]}}",
+      "",
+      "Does \\href{https://example.com}{a thing}.\\if{latex}{ In LaTeX.}",
+      "}"
+    )
+  )
+
+  expect_equal(build_topic_index(dir)$foo$brief, "Does a thing.")
 })
 
 test_that("build_topic_index() errors without a man/ directory", {
@@ -300,6 +363,42 @@ test_that("an unlinked fu span is linked and tagged too", {
   )
 })
 
+test_that("an own %op% operator in a code block is linked and tagged", {
+  index <- list(
+    `%+deg%` = list(
+      usage = "x %+deg% n",
+      brief = "Adds degrees.",
+      topic = "deg"
+    )
+  )
+  html <- paste0(
+    # downlit's class, then Quarto's in an annotated block.
+    "<span class=\"op\">%+deg%</span> <span class=\"sc\">%+deg%</span> ",
+    "<span class=\"op\"><a href=\"https://rdrr.io/r/base/match.html\">%in%</a></span> ",
+    "<span class=\"op\">(</span>"
+  )
+
+  result <- inject_tooltips_html(html, index)
+
+  expect_equal(result$n, 2L)
+  link <- paste0(
+    "<a class=\"quartodown-tip-ref\" data-quartodown-tip=\"t1\" ",
+    "href=\"reference/deg.html\">%+deg%</a>"
+  )
+  expect_match(
+    result$html,
+    paste0("<span class=\"op\">", link, "</span>"),
+    fixed = TRUE
+  )
+  expect_match(
+    result$html,
+    paste0("<span class=\"sc\">", link, "</span>"),
+    fixed = TRUE
+  )
+  expect_match(result$html, "match.html\">%in%</a></span>", fixed = TRUE)
+  expect_match(result$html, "<span class=\"op\">(</span>", fixed = TRUE)
+})
+
 test_that("a va-class span (e.g. an R6 class name used as a value) is tagged too", {
   index <- list(
     Counter = list(usage = NULL, brief = "An R6 counter.", topic = "Counter")
@@ -392,6 +491,18 @@ test_that("a help-operator reference like ?foo or ?pkg::foo resolves", {
     'href="reference/foo.html">?p::foo</a></code>',
     fixed = TRUE
   )
+})
+
+test_that("inline code in a Markdown link is relinked, not nested in another link", {
+  html <- '<a href="https://example.com"><code>foo()</code></a>'
+  result <- inject_tooltips_html(html, foo_index)
+  expect_identical(
+    result$html,
+    '<code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="reference/foo.html">foo()</a></code>'
+  )
+  # A link around code that isn't the package's own stays as it is.
+  other <- '<a href="https://example.com"><code>bar()</code></a>'
+  expect_identical(inject_tooltips_html(other, foo_index)$html, other)
 })
 
 test_that("references to names not in the index are left untouched", {

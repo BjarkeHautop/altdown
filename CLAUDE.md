@@ -47,8 +47,12 @@ quartodown::preview_site()
    (pkgdown's layout), plus:
    - `reference/<topic>.qmd` ([R/rd2qmd.R](R/rd2qmd.R)): each Rd parsed with the
      package's Rd macros ([R/rd-macros.R](R/rd-macros.R)), rendered with
-     `tools::Rd2HTML()` running build/install/render `\Sexpr` stages, then cut
-     into sections (YAML `title:`, `##` headings). Usage → fenced
+     `tools::Rd2HTML()` running build/install/render `\Sexpr` stages (with the
+     package's temp library on `.libPaths()`, so it is installed first, before
+     stage 1), then cut into sections (YAML `title:`, `##` headings). `\link`s
+     are first rewritten to `\href`s (own topic page, else
+     `downlit::href_topic()`), since Rd2HTML drops link targets; roxygen's R6
+     `../../pkg/html/` hrefs likewise. Usage and R6 method usage → fenced
      ```` ```r ````; prose stays HTML except inline `<code>` → Markdown code
      spans, `reqn` → `$`/`$$` math, `$` escaped, language-tagged `<pre>` →
      fenced blocks. Examples are rebuilt from `tools::Rd2ex()` markers into run
@@ -64,7 +68,9 @@ quartodown::preview_site()
      `<img>`s.
    - `reference/index.qmd` ([R/reference.R](R/reference.R)): pkgdown-compatible
      `reference:` grouping with selectors (`starts_with()`, `has_concept()`,
-     `-`, …) evaluated against Rd topics.
+     `-`, …) evaluated against Rd topics. `\keyword{internal}` topics are listed
+     (and get a page, see `has_page()`) only when named or selected with
+     `internal = TRUE`.
    - `authors.qmd` ([R/authors.R](R/authors.R)).
    - Theme files copied verbatim from [inst/quarto/](inst/quarto/)
      (`quartodown.scss`, header/after-body HTML).
@@ -79,13 +85,13 @@ quartodown::preview_site()
 3. **After rendering** — `link_code()` ([R/code-link.R](R/code-link.R)) runs
    downlit over every `docs/**/*.html` (replacing Quarto's `code-link`, which
    would wipe code annotations). `pre.code-annotated` blocks are hidden from
-   downlit and their `span.fu` tokens linked one by one with
-   `downlit::autolink_url()` instead. Then `add_tooltips()`
+   downlit and their `span.fu` tokens (and `span.sc` `%op%`s) linked one by one
+   with `downlit::autolink_url()` instead. Then `add_tooltips()`
    ([R/tooltips.R](R/tooltips.R)) regex-rewrites every `docs/**/*.html`, linking
-   references to the package's own topics (`<span class="fu|va">` in code blocks
-   and `<code>name()</code>` inline) to their reference page with a hover
-   tooltip. Pages are marked with `<!-- quartodown-tooltips -->` so reruns skip
-   them.
+   references to the package's own topics (`<span class="fu|va">` in code
+   blocks, and `op`/`sc` spans holding a `%op%`, and `<code>name()</code>`
+   inline) to their reference page with a hover tooltip. Pages are marked with
+   `<!-- quartodown-tooltips -->` so reruns skip them.
 
 ### Navbar / articles
 

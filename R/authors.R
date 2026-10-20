@@ -29,12 +29,13 @@ pkg_citation <- function(path) {
 citation_source_note <- function(path) {
   rel <- if (has_pkg_citation_file(path)) "inst/CITATION" else "DESCRIPTION"
   gh_url <- pkg_github_url(path)
-  href <- if (is.na(gh_url)) rel else sprintf("%s/blob/HEAD/%s", gh_url, rel)
-  sprintf(
-    '<p><small class="dont-index">Source: <a href="%s"><code>%s</code></a></small></p>',
-    href,
-    rel
-  )
+  # The file isn't part of the site, so there's only a link to the repository.
+  source <- if (is.na(gh_url)) {
+    sprintf("<code>%s</code>", rel)
+  } else {
+    sprintf('<a href="%s/blob/HEAD/%s"><code>%s</code></a>', gh_url, rel, rel)
+  }
+  sprintf('<p><small class="dont-index">Source: %s</small></p>', source)
 }
 
 build_authors_qmd <- function(path) {

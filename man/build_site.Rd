@@ -43,8 +43,8 @@ Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Qua
 \code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
 package sources and \verb{_quartodown.yml}, then renders it:
 \itemize{
-\item a reference page per \verb{man/*.Rd} file, except \verb{\\keyword\{internal\}} ones,
-with its examples run;
+\item a reference page per \verb{man/*.Rd} file, with its examples run, except
+\verb{\\keyword\{internal\}} ones not listed under \verb{reference:};
 \item the vignettes, including those in \verb{vignettes/articles/};
 \item \code{NEWS.md} as the changelog, with issues (\verb{#123}) and GitHub users
 (\verb{@user}) linked;
@@ -74,7 +74,10 @@ creates one. It can contain:
 pkgdown's \verb{reference:} field. \code{contents} entries can be a topic alias or
 a selector: \code{starts_with()}, \code{ends_with()}, \code{contains()}, \code{matches()},
 \code{has_concept()}, \code{has_keyword()}, \code{-} to exclude, and \code{c()} to combine.
-Without it, every topic is listed in one section.
+Without it, every topic is listed in one section. Internal topics
+(\verb{\\keyword\{internal\}}, e.g. roxygen's \code{reexports}) needn't be listed, but
+are, with a page, when named or selected with \code{internal = TRUE} (e.g.
+\code{starts_with("dev_", internal = TRUE)}).
 \item \code{articles}: the order of the "Articles" navbar menu, as vignette paths
 relative to \verb{vignettes/} without extension (e.g. \code{articles/details}).
 Without it, every vignette other than the "Get started" one is listed,

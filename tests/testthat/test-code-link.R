@@ -46,6 +46,28 @@ test_that("annotated blocks keep their markup and get calls linked", {
   )
 })
 
+test_that("annotated blocks get %op% operators linked, other operators not", {
+  file <- annotated_page(paste0(
+    "x <span class=\"sc\">%in%</span> y ",
+    "<span class=\"sc\">%not_an_op_anywhere%</span> ",
+    "<span class=\"sc\">+</span> <span class=\"dv\">1</span>"
+  ))
+  link_code_file(file)
+  html <- paste(readLines(file), collapse = "\n")
+
+  expect_match(
+    html,
+    "<span class=\"sc\"><a href=\"https://rdrr.io/r/base/match.html\">%in%</a></span>",
+    fixed = TRUE
+  )
+  expect_match(
+    html,
+    "<span class=\"sc\">%not_an_op_anywhere%</span>",
+    fixed = TRUE
+  )
+  expect_match(html, "<span class=\"sc\">+</span>", fixed = TRUE)
+})
+
 test_that("library() calls in an annotated block attach packages", {
   skip_if_not_installed("pkgload")
   file <- annotated_page(paste0(

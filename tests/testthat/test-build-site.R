@@ -389,8 +389,9 @@ test_that("build_authors_qmd() writes an Authors and Citation page with all auth
   expect_true(any(grepl("Jane Doe", lines, fixed = TRUE)))
   expect_true(any(grepl("John Smith", lines, fixed = TRUE)))
   expect_true(any(grepl("^## Citation \\{#citation\\}$", lines)))
+  # Without a repository to link to, as DESCRIPTION isn't part of the site.
   expect_true(any(grepl(
-    "Source: <a href=\"DESCRIPTION\"><code>DESCRIPTION</code></a>",
+    "Source: <code>DESCRIPTION</code></small>",
     lines,
     fixed = TRUE
   )))
@@ -474,31 +475,86 @@ test_that("build_reference_qmd() supports starts_with()/-exclude/has_concept()/h
 
   expect_true(any(grepl("str_foo()", lines, fixed = TRUE)))
   expect_true(any(grepl("str_bar()", lines, fixed = TRUE)))
+  # has_keyword() selects internal topics.
+  expect_true("## Internal" %in% lines)
+  expect_true(any(grepl("num_add()", lines, fixed = TRUE)))
 })
 
-test_that("build_reference_qmd() leaves out internal topics, which get no page", {
+test_that("build_reference_qmd() lists internal topics only when named or selected", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")
   write_rd(dir, "examplepkg-package", usage = NULL, keyword = "internal")
+  write_rd(
+    dir,
+    "reexports",
+    alias = "\\%>\\%",
+    usage = NULL,
+    keyword = "internal"
+  )
+  index_lines <- function() {
+    readLines(file.path(dir, "_quarto", "reference", "index.qmd"))
+  }
 
+  # Unlisted internal topics don't warn.
   expect_no_warning(build_reference_qmd(dir))
-  lines <- readLines(file.path(dir, "_quarto", "reference", "index.qmd"))
-  expect_true(any(grepl("foo()", lines, fixed = TRUE)))
-  expect_false(any(grepl("examplepkg-package", lines, fixed = TRUE)))
+  expect_true(any(grepl("foo()", index_lines(), fixed = TRUE)))
+  expect_false(any(grepl("examplepkg-package|reexports", index_lines())))
+
+  # A selector skips them unless `internal = TRUE`.
+  config <- reference_config(c(
+    "reference:",
+    "  - title: Main",
+    "    contents:",
+    '      - matches(".")',
+    "  - title: Internal",
+    "    contents:",
+    '      - starts_with("examplepkg")'
+  ))
+  expect_no_warning(build_reference_qmd(dir, config))
+  expect_false("## Internal" %in% index_lines())
+  expect_false(any(grepl("examplepkg-package|reexports", index_lines())))
 
   config <- reference_config(c(
     "reference:",
     "  - title: Main",
     "    contents:",
     "      - foo",
-    "  - title: Internal",
+    '      - starts_with("examplepkg", internal = TRUE)',
+    "  - title: Re-exported",
     "    contents:",
-    "      - examplepkg-package"
+    "      - reexports"
   ))
-  expect_no_warning(build_reference_qmd(dir, config))
+  build_reference_qmd(dir, config)
+  expect_true("## Re-exported" %in% index_lines())
+  expect_true(any(grepl(
+    '<a href="examplepkg-package.qmd">examplepkg-package</a>',
+    index_lines(),
+    fixed = TRUE
+  )))
+  expect_true(any(grepl(
+    '<a href="reexports.qmd">',
+    index_lines(),
+    fixed = TRUE
+  )))
+})
+
+test_that("a `reference:` list starting with an exclusion leaves internal topics out", {
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo")
+  write_rd(dir, "bar")
+  write_rd(dir, "hidden", keyword = "internal")
+
+  config <- reference_config(c(
+    "reference:",
+    "  - title: All",
+    "    contents:",
+    "      - -bar"
+  ))
+  # bar is unlisted, hidden isn't (being internal).
+  expect_warning(build_reference_qmd(dir, config), "\"bar\", which is not")
   lines <- readLines(file.path(dir, "_quarto", "reference", "index.qmd"))
-  expect_false("## Internal" %in% lines)
-  expect_false(any(grepl("examplepkg-package", lines, fixed = TRUE)))
+  expect_true(any(grepl("foo()", lines, fixed = TRUE)))
+  expect_false(any(grepl("bar()|hidden", lines)))
 })
 
 test_that("build_reference_qmd() renders pkgdown's title-only and subtitle blocks", {
@@ -600,8 +656,12 @@ test_that("usage_names() formats data, infix, replacement and method usages", {
   }
 
   expect_identical(usage_names(rd_usage("mtcars")), "mtcars")
-  expect_identical(usage_names(rd_usage("x \\%in\\% table")), "`%in%`")
-  expect_identical(usage_names(rd_usage("names(x) <- value")), "`names&lt;-`()")
+  # Backticks as entities, which Pandoc doesn't take for a code span.
+  expect_identical(usage_names(rd_usage("x \\%in\\% table")), "&#96;%in%&#96;")
+  expect_identical(
+    usage_names(rd_usage("names(x) <- value")),
+    "&#96;names&lt;-&#96;()"
+  )
   expect_identical(
     usage_names(rd_usage("\\method{print}{foo}(x, \\dots)")),
     "print(<i>&lt;foo&gt;</i>)"

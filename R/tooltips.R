@@ -12,13 +12,22 @@
 # downlit link:
 #  1. A called function inside a fenced code block: Pandoc tags it
 #     `<span class="fu">name</span>` (or "va" for a referenced-but-not-
-#     called value, e.g. an R6 class name).
-#  2. Inline code in prose (`` `foo()` ``): `<code>name()</code>`.
+#     called value, e.g. an R6 class name). An infix `%op%` is tagged "op"
+#     by downlit, or "sc" in an annotated block; only `%op%`s are matched
+#     there, as other operators are never the package's own topics.
+#  2. Inline code in prose (`` `foo()` ``): `<code>name()</code>`. Linked
+#     inline code written as a Markdown link (`` [`foo()`](url) ``) is
+#     `<a href="url"><code>foo()</code></a>` instead, and is rewritten to the
+#     same shape as the others, so its link isn't nested in another.
 
 tooltip_link_re <- paste0(
-  "<span class=\"(fu|va)\">(?:<a href=\"[^\"]*\">)?([^<]*?)(?:</a>)?</span>",
+  # One group number each for the class and the name in either kind of span.
+  "(?|<span class=\"(fu|va)\">(?:<a href=\"[^\"]*\">)?([^<]*?)(?:</a>)?</span>",
+  "|<span class=\"(op|sc)\">(?:<a href=\"[^\"]*\">)?(%[^%<]+%)(?:</a>)?</span>)",
   "|",
-  "<code>(?:<a href=\"[^\"]*\">)?([^<]*?)(?:</a>)?</code>"
+  # One group number for the name in either shape of inline code.
+  "(?|<code>(?:<a href=\"[^\"]*\">)?([^<]*?)(?:</a>)?</code>",
+  "|<a href=\"[^\"]*\"><code>([^<]*?)</code></a>)"
 )
 
 # Marks a processed page so a rerun of add_tooltips() skips it.
@@ -142,7 +151,7 @@ inject_tooltips_html <- function(
   for (i in seq_along(starts)) {
     s <- starts[i]
     l <- lens[i]
-    is_block <- cap_starts[i, 1] != 0L # span (fu/va) vs. inline <code>
+    is_block <- cap_starts[i, 1] != 0L # span vs. inline <code>
     name_html <- capture(i, if (is_block) 2L else 3L)
     name <- html_unescape(name_html)
     # strip a trailing call, e.g. "foo(1, 2)" -> "foo", a leading help
@@ -197,8 +206,11 @@ inject_tooltips_html <- function(
 # For each documented alias in man/*.Rd: its usage, a one-line summary and
 # the topic it's documented on. When a page documents several aliases (e.g.
 # an S3 generic and its methods), its \usage{} block is split on blank lines
-# and each alias is matched to the block whose call starts with its name; an
-# alias with no matching block falls back to the whole \usage{} text.
+# and each alias is matched to the block whose call starts with its name. The
+# page's own \name (e.g. a shared topic like "graph-queries") gets the whole
+# \usage{}; any other alias with no block of its own, such as lubridate's
+# "durations" or a package alias, isn't a call, so its tooltip shows just its
+# name.
 
 build_topic_index <- function(path = ".", quiet = FALSE) {
   man_dir <- file.path(path, "man")
@@ -218,7 +230,7 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
     }
     topic <- fs::path_ext_remove(fs::path_file(rd_file))
     # Relative to the working directory, so the {.file} hyperlink in the
-    # warnings below resolves to the actual file.
+    # warning below resolves to the actual file.
     rd_name <- fs::path_rel(rd_file)
 
     tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
@@ -248,29 +260,14 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
     } else {
       paste(usage_blocks, collapse = "\n\n")
     }
-    usage_by_name <- usage_blocks
-    names(usage_by_name) <- vapply(
-      usage_blocks,
-      rd_usage_leading_name,
-      character(1)
-    )
 
     sentence <- first_sentence(rd_section_text(rd, tags, "\\description"))
 
-    # The alias matching the page's own \name (e.g. a shared topic like
-    # "graph-queries") names the page, not a function, so it has no usage.
     rd_name_field <- rd[tags == "\\name"]
     page_name <- if (length(rd_name_field) == 0) {
       character(0)
     } else {
       as.character(rd_name_field[[1]][[1]])
-    }
-    unmatched <- setdiff(aliases, c(names(usage_by_name), page_name))
-    if (!quiet && length(aliases) > 1 && length(unmatched) > 0) {
-      cli::cli_warn(c(
-        "{.file {rd_name}} documents {length(aliases)} aliases but no \\usage{{}} line matches {.val {unmatched}}.",
-        "i" = "Their tooltips show the full shared \\usage{{}} block instead."
-      ))
     }
     if (!quiet && sentence$clipped) {
       cli::cli_warn(c(
@@ -280,8 +277,12 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
     }
 
     for (alias in aliases) {
-      match_idx <- match(alias, names(usage_by_name))
-      usage <- if (is.na(match_idx)) usage_whole else usage_by_name[[match_idx]]
+      match_idx <- match(alias, names(usage_blocks))
+      usage <- if (!is.na(match_idx)) {
+        usage_blocks[[match_idx]]
+      } else if (alias %in% page_name) {
+        usage_whole
+      }
       index[[alias]] <- list(
         usage = usage,
         brief = sentence$text,
@@ -293,27 +294,40 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
 }
 
 # Split a \usage{} node into one block per signature, on blank-line
-# separators. A \method{generic}{class} macro is reassembled as
-# "generic.class", matching the S3 method's alias spelling (e.g. "print.foo").
+# separators, each named by the alias it documents (see rd_usage_alias()). A
+# \method{generic}{class} macro is reassembled as "generic.class", matching
+# the S3 method's alias spelling (e.g. "print.foo"), and an
+# \S4method{generic}{signature} macro as "generic".
 rd_usage_blocks <- function(usage_node) {
   blocks <- character(0)
   current <- character(0)
+  method <- NULL
 
   flush <- function() {
     if (length(current) > 0) {
       text <- trimws(paste(current, collapse = ""))
-      if (nchar(text) > 0) blocks[[length(blocks) + 1L]] <<- text
+      if (nchar(text) > 0) {
+        alias <- rd_usage_alias(text, method)
+        blocks <<- c(blocks, structure(text, names = alias))
+      }
     }
     current <<- character(0)
+    method <<- NULL
   }
 
   for (child in usage_node) {
-    if (identical(attr(child, "Rd_tag"), "\\method")) {
-      current[[length(current) + 1L]] <- paste0(
-        paste(unlist(child[[1]]), collapse = ""),
-        ".",
-        paste(unlist(child[[2]]), collapse = "")
+    tag <- attr(child, "Rd_tag")
+    if (!is.null(tag) && tag %in% c("\\method", "\\S3method", "\\S4method")) {
+      method <- list(
+        s4 = tag == "\\S4method",
+        generic = paste(unlist(child[[1]]), collapse = ""),
+        signature = gsub("\\s", "", paste(unlist(child[[2]]), collapse = ""))
       )
+      current[[length(current) + 1L]] <- if (method$s4) {
+        method$generic
+      } else {
+        paste0(method$generic, ".", method$signature)
+      }
     } else {
       piece <- paste(unlist(child), collapse = "")
       if (nchar(trimws(piece)) == 0) {
@@ -328,8 +342,26 @@ rd_usage_blocks <- function(usage_node) {
   blocks
 }
 
-# The alias a \usage{} block documents: the identifier before its first "(",
-# or the operator of an infix call such as "lhs %op% rhs".
+# The alias the \usage{} block `block` documents. For a method, `method` is
+# its macro's generic and class or signature, and the alias is spelled as
+# roxygen does: "generic.class" or "generic,signature-method", with "<-"
+# after the generic for a replacement method.
+rd_usage_alias <- function(block, method = NULL) {
+  replacement <- grepl("(?s)\\)\\s*<-\\s*\\S+$", block, perl = TRUE)
+  if (is.null(method)) {
+    name <- rd_usage_leading_name(block)
+    return(if (replacement) paste0(name, "<-") else name)
+  }
+  generic <- if (replacement) paste0(method$generic, "<-") else method$generic
+  if (method$s4) {
+    paste0(generic, ",", method$signature, "-method")
+  } else {
+    paste0(generic, ".", method$signature)
+  }
+}
+
+# The identifier before the first "(" of a \usage{} block, or the operator of
+# an infix call such as "lhs %op% rhs".
 rd_usage_leading_name <- function(block) {
   infix <- regmatches(block, regexec("^\\S+\\s+(%[^%]+%)\\s+\\S+$", block))[[1]]
   if (length(infix) == 2) {
@@ -353,8 +385,24 @@ rd_section_text <- function(rd, tags, section) {
 
 rd_flatten <- function(x) {
   tag <- attr(x, "Rd_tag")
-  if (identical(tag, "COMMENT")) {
+  # Images, raw output and unevaluated code have no text. A lifecycle badge,
+  # `\ifelse{html}{\href{...}{\figure{...}}}{\strong{[Experimental]}}`, so
+  # leaves nothing behind.
+  if (!is.null(tag) && tag %in% c("COMMENT", "\\figure", "\\out", "\\Sexpr")) {
     return("")
+  }
+  if (identical(tag, "\\href")) {
+    return(rd_flatten(x[[2]]))
+  }
+  # Format-conditional text: the HTML version, as the tooltip is HTML.
+  if (!is.null(tag) && tag %in% c("\\if", "\\ifelse")) {
+    html <- grepl("html", paste(unlist(x[[1]]), collapse = ""), fixed = TRUE)
+    branch <- if (html) {
+      x[[2]]
+    } else if (tag == "\\ifelse") {
+      x[[3]]
+    }
+    return(if (is.null(branch)) "" else rd_flatten(branch))
   }
   if (is.character(x)) {
     return(paste(x, collapse = ""))

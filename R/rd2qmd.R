@@ -13,26 +13,25 @@
 # * everything else stays HTML, except inline code and math, see
 #   rd_html_to_markdown().
 
-write_man_pages <- function(path) {
-  rd_files <- list.files(
-    file.path(path, "man"),
-    pattern = "\\.Rd$",
-    full.names = TRUE
-  )
+write_man_pages <- function(path, config = list()) {
   out_dir <- file.path(project_dir(path), "reference")
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
+  topics <- rd_topics(path)
+  topics <- topics[has_page(topics, config)]
+  rd_files <- file.path(
+    path,
+    "man",
+    paste0(vapply(topics, `[[`, character(1), "basename"), ".Rd")
+  )
   macros <- rd_macros(path)
   pkg <- desc::desc_get_field("Package", file = path)
+  pages <- topic_pages(topics)
   n <- 0L
   for (rd_file in rd_files) {
     rd <- tools::parse_Rd(rd_file, macros = macros)
-    # pkgdown renders no page for internal topics either.
-    if ("internal" %in% rd_tag_values(rd, "\\keyword")) {
-      next
-    }
     lines <- tryCatch(
-      rd_to_qmd(rd, pkg),
+      rd_to_qmd(rd, pkg, pages),
       error = function(e) {
         cli::cli_abort("Failed to convert {.file {rd_file}}.", parent = e)
       }
@@ -49,18 +48,11 @@ write_man_pages <- function(path) {
   invisible()
 }
 
-rd_tag_values <- function(rd, tag) {
-  tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-  vapply(
-    rd[tags == tag],
-    function(x) trimws(paste(unlist(x), collapse = "")),
-    character(1)
-  )
-}
-
-# The lines of the reference/*.qmd page for the parsed Rd `rd`.
-rd_to_qmd <- function(rd, pkg) {
-  html <- rd_html(rd)
+# The lines of the reference/*.qmd page for the parsed Rd `rd`. `pages` maps
+# the package's topics to their pages, see topic_pages().
+rd_to_qmd <- function(rd, pkg, pages = character()) {
+  html <- rd_html(link_rd(rd, pkg, pages))
+  html <- link_help_hrefs(html, pkg, pages)
 
   title_end <- grep("</h2>", html, fixed = TRUE)[1]
   title <- paste(html[seq_len(title_end)], collapse = " ")
@@ -120,12 +112,109 @@ with_sexpr_stages <- function(rd, render) {
     render(c("build", "install", "render")),
     error = function(e) {
       cli::cli_warn(
-        "Running the {.code \\Sexpr} macros of {.file {attr(rd, 'Rdfile')}} failed; rendering it without them.",
+        "Running the {.code \\Sexpr} macros of {.file {rd_file_name(rd)}} failed; rendering it without them.",
         parent = e
       )
       render("render")
     }
   )
+}
+
+# ---- links ------------------------------------------------------------------------
+#
+# Rd2HTML() drops the target of every `\link{}`, as there's no help system to
+# point to, so each is made an `\href{}` to the topic's page first: the
+# package's own reference page, or another package's documentation as downlit
+# finds it (its pkgdown site, or rdrr.io). A link to nothing it finds stays
+# plain text.
+
+# The page of each of `topics` (those with one, see has_page()), named by
+# alias and by Rd file name, which `\link[pkg:file]{}` can give: "foo" for
+# reference/foo.html.
+topic_pages <- function(topics) {
+  pages <- lapply(topics, function(t) {
+    keys <- unique(c(t$alias, t$basename))
+    structure(rep(t$basename, length(keys)), names = keys)
+  })
+  unlist(unname(pages))
+}
+
+# The URL of `topic` in `package` (NULL for any package) from a reference
+# page of the package `pkg`, or NA.
+topic_url <- function(topic, package, pkg, pages) {
+  if (
+    (is.null(package) || identical(package, pkg)) && topic %in% names(pages)
+  ) {
+    return(paste0(pages[[topic]], ".html"))
+  }
+  if (identical(package, pkg)) {
+    return(NA_character_)
+  }
+  tryCatch(downlit::href_topic(topic, package), error = function(e) NA)
+}
+
+# `rd` with every `\link{}` it can resolve made an `\href{}`.
+link_rd <- function(rd, pkg, pages) {
+  tag <- attr(rd, "Rd_tag")
+  if (identical(tag, "\\link")) {
+    url <- rd_link_url(rd, pkg, pages)
+    if (is.na(url)) {
+      return(rd)
+    }
+    text <- rd
+    attributes(text) <- NULL
+    return(structure(
+      list(list(structure(url, Rd_tag = "VERB")), text),
+      Rd_tag = "\\href"
+    ))
+  }
+  if (is.list(rd)) {
+    rd[] <- lapply(rd, link_rd, pkg = pkg, pages = pages)
+  }
+  rd
+}
+
+# `\link{topic}`, `\link[=topic]{text}`, `\link[package]{topic}` or
+# `\link[package:topic]{text}`.
+rd_link_url <- function(link, pkg, pages) {
+  text <- paste(unlist(link), collapse = "")
+  option <- attr(link, "Rd_option")
+  option <- if (is.null(option)) "" else paste(unlist(option), collapse = "")
+  if (!nzchar(option) || startsWith(option, "=")) {
+    package <- NULL
+    topic <- if (nzchar(option)) substring(option, 2) else text
+  } else {
+    parts <- strsplit(option, ":", fixed = TRUE)[[1]]
+    package <- parts[[1]]
+    topic <- if (length(parts) > 1) parts[[2]] else text
+  }
+  topic_url(topic, package, pkg, pages)
+}
+
+# roxygen links an R6 class's inherited methods with raw HTML, to R's help
+# system: `href='../../<package>/html/<topic>.html#<method>'`.
+link_help_hrefs <- function(html, pkg, pages) {
+  pattern <- "href=(['\"])\\.\\./\\.\\./([^/'\"]+)/html/([^/'\"#]+)\\.html(#[^'\"]*)?\\1"
+  m <- gregexpr(pattern, html, perl = TRUE)
+  regmatches(html, m) <- lapply(regmatches(html, m), function(hrefs) {
+    vapply(
+      hrefs,
+      function(href) {
+        parts <- regmatches(href, regexec(pattern, href, perl = TRUE))[[1]]
+        url <- topic_url(parts[[4]], parts[[3]], pkg, pages)
+        if (is.na(url)) href else sprintf("href=\"%s%s\"", url, parts[[5]])
+      },
+      character(1),
+      USE.NAMES = FALSE
+    )
+  })
+  html
+}
+
+# The file `rd` was parsed from, e.g. "man/foo.Rd".
+rd_file_name <- function(rd) {
+  file <- attr(attr(rd, "srcref"), "srcfile")$filename
+  if (is.null(file)) "" else file.path("man", basename(file))
 }
 
 # Undoes the HTML-escaping `tools::Rd2HTML()` applies.
@@ -170,7 +259,8 @@ trim_blank_lines <- function(lines) {
 # * Inline `<code>...</code>`: Pandoc would parse the text inside as Markdown,
 #   so its smart-quotes extension turns `\code{f("a")}` into f(“a”), and a
 #   backslash right before `</code>`, as `\verb{\\}` gives, escapes the closing
-#   tag. It becomes a Markdown code span, which renders as `<code>` too.
+#   tag. It becomes a Markdown code span, which renders as `<code>` too, and
+#   linked inline code (see link_rd()) a Markdown link around one.
 # * `\eqn{}`/`\deqn{}` (`<code class="reqn">`) become `$...$`/`$$...$$`, so
 #   Quarto renders the math. Any other `$` is escaped so it isn't taken for
 #   math.
@@ -178,14 +268,19 @@ trim_blank_lines <- function(lines) {
 #   anyway.
 #
 # `<pre>` blocks are left alone, as Pandoc doesn't parse inside them, except
-# that a language-tagged one (roxygen's ```` ```yaml ```` blocks) becomes a
-# fenced code block, so it's highlighted and gets a copy button.
+# that a language-tagged one (roxygen's ```` ```yaml ```` blocks, and the
+# usage and examples of R6 methods) becomes a fenced code block, so it's
+# highlighted and gets a copy button.
 
 rd_html_token_pattern <- paste0(
-  "(?s)<div class=\"sourceCode (\\w+)\"><pre>(.*?)</pre></div>",
+  # One group number for the language and code of either kind of block.
+  "(?s)(?|<div class=\"sourceCode (\\w+)\"><pre>(.*?)</pre></div>",
+  # An R6 method's usage or example, as roxygen writes it.
+  "|<div class=\"(r)(?: [^\"]*)?\">\\s*<pre>(.*?)</pre>\\s*</div>)",
   "|<pre\\b.*?</pre>",
   "|<p style=\"text-align: center;\"><code class=\"reqn\">(.*?)</code>\\s*</p>",
-  "|<code(\\s[^>]*)?>([^<]*)</code>"
+  "|<code(\\s[^>]*)?>([^<]*)</code>",
+  "|<code><a href=\"([^\"]*)\">([^<]*)</a></code>"
 )
 
 rd_html_to_markdown <- function(lines) {
@@ -232,6 +327,12 @@ rd_html_to_markdown <- function(lines) {
         token
       } else if (!is.na(capture(i, 3))) {
         paste0("\n\n$$", unescape_rd2html(capture(i, 3)), "$$\n\n")
+      } else if (!is.na(capture(i, 6))) {
+        sprintf(
+          "[%s](%s)",
+          code_span(unescape_rd2html(capture(i, 7))),
+          capture(i, 6)
+        )
       } else if (grepl("class=\"reqn\"", token, fixed = TRUE)) {
         paste0("$", unescape_rd2html(capture(i, 5)), "$")
       } else {

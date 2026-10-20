@@ -59,9 +59,27 @@ test_that("rd_html_to_markdown() turns inline code into code spans", {
     rd_html_to_markdown("<code>a</code> and <code>x &lt;- `y`</code>"),
     "`a` and `` x <- `y` ``"
   )
-  # A <code> with markup inside stays HTML.
-  linked <- "<code><a href=\"foo.html\">foo()</a></code>"
-  expect_identical(rd_html_to_markdown(linked), linked)
+  # Linked inline code becomes a Markdown link around a code span.
+  expect_identical(
+    rd_html_to_markdown(
+      "<code><a href=\"foo.html\">f(&quot;a&quot;)</a></code>"
+    ),
+    "[`f(\"a\")`](foo.html)"
+  )
+  # A <code> with other markup inside stays HTML.
+  marked <- "<code><b>foo()</b></code>"
+  expect_identical(rd_html_to_markdown(marked), marked)
+})
+
+test_that("rd_html_to_markdown() turns R6 method usage into a fenced block", {
+  expect_identical(
+    rd_html_to_markdown(c(
+      "<div class=\"r\">",
+      "<pre>Account$new(owner = &quot;x&quot;)</pre>",
+      "</div>"
+    )),
+    c("", "```r", "Account$new(owner = \"x\")", "```", "")
+  )
 })
 
 test_that("rd_html_to_markdown() escapes $ outside code and math only", {
@@ -124,6 +142,46 @@ test_that("rd_to_qmd() renders the package's Rd macros and build-stage \\Sexpr{}
     "<a href=\"https://doi.org/10.1000/xyz\">doi:10.1000/xyz</a>",
     fixed = TRUE
   )
+})
+
+test_that("rd_to_qmd() links \\link{}s to the topic's page", {
+  rd <- parse_rd_text(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Foo}",
+    "\\description{",
+    "\\code{\\link{bar}}, \\link[=bar]{the bar}, \\code{\\link[stats:median]{median()}},",
+    "\\link{not_a_topic}.",
+    "}"
+  ))
+  qmd <- rd_to_qmd(rd, "examplepkg", pages = c(bar = "bar-page"))
+  expect_identical(
+    qmd_section(qmd, "Description"),
+    c(
+      "[`bar`](bar-page.html), <a href=\"bar-page.html\">the bar</a>, [`median()`](https://rdrr.io/r/stats/median.html),",
+      "not_a_topic."
+    )
+  )
+})
+
+test_that("link_help_hrefs() points R6 inherited method links at the topic's page", {
+  html <- "<a href='../../examplepkg/html/Parent.html#method-Parent-greet'>x</a>"
+  expect_identical(
+    link_help_hrefs(html, "examplepkg", c(Parent = "Parent")),
+    "<a href=\"Parent.html#method-Parent-greet\">x</a>"
+  )
+  # An unknown topic is left as is.
+  expect_identical(link_help_hrefs(html, "examplepkg", character()), html)
+})
+
+test_that("rd_to_qmd() names the Rd file whose \\Sexpr{}s fail", {
+  rd <- parse_rd_text(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Foo}",
+    "\\description{\\Sexpr[stage=build]{stop(\"no\")}}"
+  ))
+  expect_warning(rd_to_qmd(rd, "examplepkg"), "man/file.*\\.Rd")
 })
 
 test_that("rd_to_qmd() keeps a custom Examples section as prose", {
@@ -248,21 +306,31 @@ test_that("example_blocks() runs @examplesIf examples only if the condition hold
   )
 })
 
-test_that("write_man_pages() writes a page per Rd file, except internal ones", {
+test_that("write_man_pages() writes a page per Rd file, except unlisted internal ones", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")
   write_rd(dir, "hidden", keyword = "internal")
+  write_rd(dir, "reexports", keyword = "internal")
+  reference_dir <- file.path(dir, "_quarto", "reference")
 
   expect_message(write_man_pages(dir), "1 man page")
-  expect_identical(
-    list.files(file.path(dir, "_quarto", "reference")),
-    "foo.qmd"
-  )
+  expect_identical(list.files(reference_dir), "foo.qmd")
+
+  unlink(reference_dir, recursive = TRUE)
+  config <- reference_config(c(
+    "reference:",
+    "  - title: All",
+    "    contents:",
+    "      - foo",
+    "      - reexports"
+  ))
+  expect_message(write_man_pages(dir, config), "2 man pages")
+  expect_setequal(list.files(reference_dir), c("foo.qmd", "reexports.qmd"))
 })
 
 test_that("write_man_pages() names the Rd file it failed to convert", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")
-  local_mocked_bindings(rd_to_qmd = function(rd, pkg) stop("boom"))
+  local_mocked_bindings(rd_to_qmd = function(...) stop("boom"))
   expect_error(write_man_pages(dir), "foo.Rd")
 })

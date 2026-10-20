@@ -129,21 +129,14 @@ check_quarto <- function() {
   }
 }
 
-render_project <- function(path, quiet = TRUE, devel = FALSE) {
+# `envvars` makes the package available to the pages' R processes, see
+# install_envvars() and load_all_envvars().
+render_project <- function(path, envvars, quiet = TRUE) {
   docs <- file.path(path, "docs")
   # A stale page would otherwise outlive its source. CNAME (GitHub Pages'
   # custom domain) and hidden files such as .nojekyll stay.
   files <- list.files(docs, full.names = TRUE)
   unlink(files[basename(files) != "CNAME"], recursive = TRUE)
-
-  scratch <- tempfile("quartodown-")
-  dir.create(scratch)
-  on.exit(unlink(scratch, recursive = TRUE), add = TRUE)
-  envvars <- if (devel) {
-    load_all_envvars(path, scratch)
-  } else {
-    install_envvars(path, scratch)
-  }
 
   local_envvars(envvars)
   quarto::quarto_render(
@@ -220,6 +213,19 @@ load_all_envvars <- function(path, scratch) {
   c(R_PROFILE_USER = profile)
 }
 
+# Evaluates `code` with the temporary library of `envvars` (from
+# install_envvars()), if any, first on this R session's library path.
+with_libpaths <- function(envvars, code) {
+  if (is.na(envvars["R_LIBS"])) {
+    return(code)
+  }
+  old <- .libPaths()
+  on.exit(.libPaths(old))
+  lib <- strsplit(envvars[["R_LIBS"]], .Platform$path.sep, fixed = TRUE)[[1]]
+  .libPaths(c(lib[[1]], old))
+  code
+}
+
 # Sets `envvars` until the calling function exits.
 local_envvars <- function(envvars, envir = parent.frame()) {
   old <- Sys.getenv(names(envvars), unset = NA, names = TRUE)
@@ -251,7 +257,7 @@ write_pkgdown_yml <- function(path) {
     return(invisible())
   }
   vignettes <- find_vignettes(path)
-  articles <- as.list(paste0(strip_ext(vignettes), ".html"))
+  articles <- as.list(sprintf("%s.html", strip_ext(vignettes)))
   names(articles) <- basename(strip_ext(vignettes))
   yaml::write_yaml(
     list(

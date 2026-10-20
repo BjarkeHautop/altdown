@@ -298,6 +298,33 @@ pre > code:not(.sourceCode) {
   background-color: transparent;
 }
 
+// Quarto's light and dark syntax-highlighting themes differ in more than color:
+// the dark one italicizes comments (and with `collapse: true`, code output's
+// `#>` lines are highlighted as comments too), bolds extensions, underlines
+// errors and gives region markers a near-white background, while the light one
+// italicizes comment vars, documentation and warnings instead. Pin these to
+// the light theme's styles so only colors change with the color scheme. The
+// extra class beats the themes' `code span.xx`.
+code.sourceCode {
+  span.co,
+  span.er,
+  span.ex {
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+  }
+
+  span.cv,
+  span.do,
+  span.wa {
+    font-style: italic;
+  }
+
+  span.re {
+    background-color: transparent;
+  }
+}
+
 // Quarto moves the copy button clear of an annotated block's markers with
 // `.code-annotated .code-copy-button`, but the button is a sibling of
 // `pre.code-annotated` (inside `.code-copy-outer-scaffold`), not a

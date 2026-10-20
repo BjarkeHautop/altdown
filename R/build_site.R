@@ -5,8 +5,8 @@
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
 #' package sources and `_quartodown.yml`, then renders it:
 #'
-#' * a reference page per `man/*.Rd` file, except `\keyword{internal}` ones,
-#'   with its examples run;
+#' * a reference page per `man/*.Rd` file, with its examples run, except
+#'   `\keyword{internal}` ones not listed under `reference:`;
 #' * the vignettes, including those in `vignettes/articles/`;
 #' * `NEWS.md` as the changelog, with issues (`#123`) and GitHub users
 #'   (`@user`) linked;
@@ -34,7 +34,10 @@
 #'   pkgdown's `reference:` field. `contents` entries can be a topic alias or
 #'   a selector: `starts_with()`, `ends_with()`, `contains()`, `matches()`,
 #'   `has_concept()`, `has_keyword()`, `-` to exclude, and `c()` to combine.
-#'   Without it, every topic is listed in one section.
+#'   Without it, every topic is listed in one section. Internal topics
+#'   (`\keyword{internal}`, e.g. roxygen's `reexports`) needn't be listed, but
+#'   are, with a page, when named or selected with `internal = TRUE` (e.g.
+#'   `starts_with("dev_", internal = TRUE)`).
 #' * `articles`: the order of the "Articles" navbar menu, as vignette paths
 #'   relative to `vignettes/` without extension (e.g. `articles/details`).
 #'   Without it, every vignette other than the "Get started" one is listed,
@@ -90,10 +93,21 @@ build_site <- function(
   config <- read_config(path)
   check_quarto()
 
+  # The package is installed first: build-stage `\Sexpr` macros in the Rd
+  # files, such as Rdpack's `\insertRef{}`, need it, as in `R CMD build`.
+  scratch <- tempfile("quartodown-")
+  dir.create(scratch)
+  on.exit(unlink(scratch, recursive = TRUE), add = TRUE)
+  envvars <- if (devel) {
+    load_all_envvars(path, scratch)
+  } else {
+    install_envvars(path, scratch)
+  }
+
   reset_project(path, freeze = freeze)
   copy_vignettes(path)
   copy_figures(path)
-  write_man_pages(path)
+  with_libpaths(envvars, write_man_pages(path, config))
   import_markdown_files(path)
   copy_theme_files(path)
   write_home(path)
@@ -101,7 +115,7 @@ build_site <- function(
   build_authors_qmd(path)
   write_quarto_config(path, config, freeze = freeze)
 
-  render_project(path, quiet = quiet, devel = devel)
+  render_project(path, envvars, quiet = quiet)
   write_pkgdown_yml(path)
   link_code(path)
 

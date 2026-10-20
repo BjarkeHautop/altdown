@@ -10,7 +10,8 @@
 # name, `starts_with()`/`ends_with()`/`contains()`/`matches()` matched
 # against every \alias{}, `has_concept()`/`has_keyword()` matched against
 # \concept{}/\keyword{} tags, `-` to exclude, and `c()` to combine several
-# selectors on one line.
+# selectors on one line. An internal topic is listed only when named, or
+# selected with `internal = TRUE`, and then gets a page too.
 
 # Reads every man/*.Rd into a topic record - basename (the name of its
 # reference/<basename>.qmd page, see write_man_pages()),
@@ -34,13 +35,15 @@ rd_topics <- function(path) {
 
     alias <- tag_text("\\alias")
     names <- usage_names(rd[tags == "\\usage"])
+    keywords <- tag_text("\\keyword")
     list(
       basename = fs::path_ext_remove(basename(rd_file)),
       title = trimws(paste(unlist(rd[tags == "\\title"]), collapse = "")),
       alias = alias,
       names = if (length(names) > 0) names else alias,
       concepts = tag_text("\\concept"),
-      keywords = tag_text("\\keyword")
+      keywords = keywords,
+      internal = "internal" %in% keywords
     )
   })
 }
@@ -161,7 +164,9 @@ escape_html <- function(x) {
 short_name <- function(u) {
   name <- escape_html(u$name)
   if (make.names(u$name) != u$name) {
-    name <- paste0("`", name, "`")
+    # As an entity: Pandoc would take a literal backtick for a code span,
+    # even inside the raw HTML `<code>`, and show "&lt;" in `units<-` as is.
+    name <- paste0("&#96;", name, "&#96;")
   }
   switch(
     u$type,
@@ -202,8 +207,9 @@ usage_names <- function(usage) {
 }
 
 # Builds the environment `contents:` entries are evaluated in: every
-# \alias{} bound to its topic's integer position, plus the selector
-# functions, mirroring pkgdown's `match_env()`.
+# \alias{} and Rd file name bound to its topic's integer position, plus the
+# selector functions, mirroring pkgdown's `match_env()`. The selectors other
+# than has_keyword() skip internal topics unless `internal = TRUE`.
 match_env <- function(topics) {
   env <- new.env(parent = emptyenv())
   assign("-", function(x) -x, envir = env)
@@ -215,31 +221,49 @@ match_env <- function(topics) {
       assign(alias, i, envir = env)
     }
   }
+  for (i in seq_along(topics)) {
+    assign(topics[[i]]$basename, i, envir = env)
+  }
 
-  any_alias <- function(f) {
-    which(vapply(alias_vecs, function(x) any(f(x)), logical(1)))
+  internal_topics <- vapply(topics, `[[`, logical(1), "internal")
+  selectable <- function(match, internal) {
+    which(match & (internal | !internal_topics))
+  }
+  any_alias <- function(f, internal) {
+    selectable(vapply(alias_vecs, function(x) any(f(x)), logical(1)), internal)
   }
 
   assign(
     "starts_with",
-    function(x) any_alias(function(a) grepl(paste0("^", x), a)),
+    function(x, internal = FALSE) {
+      any_alias(function(a) grepl(paste0("^", x), a), internal)
+    },
     envir = env
   )
   assign(
     "ends_with",
-    function(x) any_alias(function(a) grepl(paste0(x, "$"), a)),
+    function(x, internal = FALSE) {
+      any_alias(function(a) grepl(paste0(x, "$"), a), internal)
+    },
     envir = env
   )
   assign(
     "contains",
-    function(x) any_alias(function(a) grepl(x, a, fixed = TRUE)),
+    function(x, internal = FALSE) {
+      any_alias(function(a) grepl(x, a, fixed = TRUE), internal)
+    },
     envir = env
   )
-  assign("matches", function(x) any_alias(function(a) grepl(x, a)), envir = env)
+  assign(
+    "matches",
+    function(x, internal = FALSE) any_alias(function(a) grepl(x, a), internal),
+    envir = env
+  )
   assign(
     "has_concept",
-    function(x) {
-      which(vapply(topics, function(t) any(t$concepts == x), logical(1)))
+    function(x, internal = FALSE) {
+      match <- vapply(topics, function(t) any(t$concepts == x), logical(1))
+      selectable(match, internal)
     },
     envir = env
   )
@@ -310,7 +334,8 @@ select_topics <- function(match_strings, topics) {
   }
 
   sign1 <- all_sign(indexes[[1]], match_strings[[1]])
-  sel <- switch(sign1, "+" = integer(), "-" = seq_along(topics))
+  public <- which(!vapply(topics, `[[`, logical(1), "internal"))
+  sel <- switch(sign1, "+" = integer(), "-" = public)
 
   for (i in seq_along(indexes)) {
     sign <- all_sign(indexes[[i]], match_strings[[i]])
@@ -328,34 +353,11 @@ build_reference_qmd <- function(path, config = list()) {
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   out_path <- file.path(out_dir, "index.qmd")
   topics <- rd_topics(path)
-  # Internal topics get no page (see write_man_pages()), so (like pkgdown)
-  # they never appear in the index, even when a `reference:` entry matches.
-  internal <- vapply(
-    topics,
-    function(t) "internal" %in% t$keywords,
-    logical(1)
-  )
+  internal <- vapply(topics, `[[`, logical(1), "internal")
+  blocks <- reference_blocks(config, topics)
+  block_indexes <- reference_block_topics(blocks, topics)
 
-  # Without a `reference:` field, list every topic in one section.
-  if (is.null(config$reference)) {
-    config$reference <- list(list(
-      title = "All functions",
-      contents = vapply(
-        topics[!internal],
-        function(t) t$alias[[1]],
-        character(1)
-      )
-    ))
-  }
-
-  block_indexes <- lapply(
-    config$reference,
-    function(block) {
-      idx <- select_topics(as.character(block$contents), topics)
-      idx[!internal[idx]]
-    }
-  )
-
+  # Internal topics needn't be listed.
   unlisted <- setdiff(which(!internal), unique(unlist(block_indexes)))
   if (length(unlisted) > 0) {
     unlisted_names <- vapply(
@@ -370,7 +372,8 @@ build_reference_qmd <- function(path, config = list()) {
 
   sections <- Map(
     function(block, idx) {
-      # Drop a section whose contents were all internal topics.
+      # Drop a section whose contents matched nothing, e.g. a selector that
+      # matched only internal topics.
       if (length(idx) == 0 && length(block$contents) > 0) {
         return(NULL)
       }
@@ -407,11 +410,39 @@ build_reference_qmd <- function(path, config = list()) {
         }
       )
     },
-    config$reference,
+    blocks,
     block_indexes
   )
 
   lines <- c('---', 'title: "Function reference"', '---', "", unlist(sections))
   lines <- lines[-length(lines)] # drop trailing blank line
   writeLines(lines, out_path)
+}
+
+# The sections of the reference index: `reference:`, or without it, one
+# section listing every public topic.
+reference_blocks <- function(config, topics) {
+  if (!is.null(config$reference)) {
+    return(config$reference)
+  }
+  public <- !vapply(topics, `[[`, logical(1), "internal")
+  list(list(
+    title = "All functions",
+    contents = vapply(topics[public], function(t) t$alias[[1]], character(1))
+  ))
+}
+
+# The topics each of `blocks` lists, as positions in `topics`.
+reference_block_topics <- function(blocks, topics) {
+  lapply(blocks, function(block) {
+    select_topics(as.character(block$contents), topics)
+  })
+}
+
+# Whether each of `topics` gets a reference page: every public topic does,
+# and an internal one only if the reference index lists it.
+has_page <- function(topics, config = list()) {
+  blocks <- reference_blocks(config, topics)
+  listed <- unlist(reference_block_topics(blocks, topics))
+  !vapply(topics, `[[`, logical(1), "internal") | seq_along(topics) %in% listed
 }

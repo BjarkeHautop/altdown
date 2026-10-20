@@ -4,8 +4,8 @@
 # their documentation with downlit, on every page in docs/. This replaces
 # Quarto's own `code-link`, which runs downlit on knitr pages only and
 # re-highlights every R code block, dropping the markers of annotated ones.
-# Annotated blocks keep Quarto's highlighting; their calls are linked token by
-# token instead (link_annotated()).
+# Annotated blocks keep Quarto's highlighting; their calls and infix operators
+# are linked token by token instead (link_annotated()).
 
 # Links code on every docs/**/*.html file.
 link_code <- function(path = ".") {
@@ -42,8 +42,9 @@ link_code_file <- function(file) {
   xml2::write_html(html, file, format = FALSE)
 }
 
-# Links the calls in an annotated block without re-highlighting it: each
-# Pandoc `<span class="fu">` (with a preceding `pkg::` if there is one) is
+# Links the calls and infix operators in an annotated block without
+# re-highlighting it: each Pandoc `<span class="fu">` (with a preceding
+# `pkg::` if there is one), and each `<span class="sc">` holding a `%op%`, is
 # resolved with downlit and its text wrapped in a link, as downlit would.
 link_annotated <- function(pre) {
   # Packages attached in the block itself count too.
@@ -65,9 +66,27 @@ link_annotated <- function(pre) {
     if (is.na(url)) {
       next
     }
-    xml2::xml_remove(xml2::xml_contents(call))
-    xml2::xml_add_child(call, "a", name, href = url)
+    link_span(call, url)
   }
+
+  ops <- xml2::xml_find_all(pre, ".//span[@class = 'sc'][not(a)]")
+  for (op in ops) {
+    name <- xml2::xml_text(op)
+    if (!grepl("^%[^%]+%$", name)) {
+      next
+    }
+    # downlit resolves an operator only written as a call.
+    url <- downlit::autolink_url(paste0("`", name, "`()"))
+    if (!is.na(url)) {
+      link_span(op, url)
+    }
+  }
+}
+
+link_span <- function(span, url) {
+  name <- xml2::xml_text(span)
+  xml2::xml_remove(xml2::xml_contents(span))
+  xml2::xml_add_child(span, "a", name, href = url)
 }
 
 # "pkg::" for a call highlighted as `pkg<span class="sc">::</span><span

@@ -10,11 +10,12 @@ pages, and every Quarto feature works.
 
 `quartodown::build_site()` runs in three stages:
 
-1. **Before rendering**, it writes a Quarto project into `_quarto/`.
+1. **Before rendering**, it installs the package into a temporary library and
+   writes a Quarto project into `_quarto/`. With `build_site(devel = TRUE)`,
+   each page's R process loads it from source with `pkgload::load_all()`
+   instead.[^devel]
 2. **During rendering**, Quarto renders `_quarto/` into `docs/`, running the
-   examples and vignette code against the package installed into a temporary
-   library. With `build_site(devel = TRUE)`, the package is loaded from source
-   with `pkgload::load_all()` instead.[^devel]
+   examples and vignette code against that package.
 3. **After rendering**, it links code to its documentation and adds hover
    tooltips.
 
@@ -74,6 +75,11 @@ reference:
 4. A selector: `starts_with()`, `ends_with()`, `contains()`, `matches()`,
    `has_concept()`, `has_keyword()`, `-` to exclude and `c()` to combine.
 
+`build_site()` warns about any topic the index leaves out, except
+`\keyword{internal}` ones. An internal topic is listed, and gets a page, only
+when named, as with roxygen's `reexports`, or selected with `internal = TRUE`,
+as in `starts_with("dev_", internal = TRUE)`.
+
 ### The navbar and footer
 
 The navbar links the "Get started" vignette, the reference index, the other
@@ -108,11 +114,16 @@ quarto:
 
 ## The man pages
 
-Each `man/*.Rd` file, except `\keyword{internal}` ones, becomes a reference
-page, rendered with the package's Rd macros (such as Rdpack's `\insertRef{}`):
+Each `man/*.Rd` file, except `\keyword{internal}` ones the [reference
+index](#the-reference-index) doesn't list, becomes a reference page, rendered
+with the package's Rd macros (such as Rdpack's `\insertRef{}`). Build-stage
+`\Sexpr{}` macros run with the package installed, as in `R CMD build`, though
+not with `devel = TRUE`.
 
-- **Usage**, and code blocks with a language, such as roxygen's
-  ```` ```yaml ````, are syntax-highlighted with a copy button.
+- **Usage**, the usage of R6 methods, and code blocks with a language, such as
+  roxygen's ```` ```yaml ````, are syntax-highlighted with a copy button.
+- **Links** go to the topic's reference page, or, for another package's topic,
+  to its documentation as downlit finds it.
 - **Math** in `\eqn{}` and `\deqn{}` is rendered.
 - **Examples** run, with their output in the same block. `\dontrun{}` code is
   shown but not run, `\dontshow{}` code is run but not shown, and `@examplesIf`
@@ -122,7 +133,8 @@ page, rendered with the package's Rd macros (such as Rdpack's `\insertRef{}`):
 
 [downlit](https://downlit.r-lib.org/) links function calls in R code blocks, and
 inline code like `mean()`, to their documentation. In blocks with [code
-annotations](showcase.html#code-annotations), only function calls are linked.
+annotations](showcase.html#code-annotations), only function calls and `%op%`
+operators such as `%in%` are linked.
 
 References to the package's own functions also get a hover tooltip with their
 usage and the first sentence of their description. Try it: hover over

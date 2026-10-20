@@ -107,6 +107,28 @@ test_that("write_pkgdown_yml() points downlit at the site's reference pages and 
   )
 })
 
+test_that("write_pkgdown_yml() lists no articles without vignettes", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "docs"))
+  desc::desc_set_urls("https://o.github.io/examplepkg/", file = dir)
+  write_pkgdown_yml(dir)
+  meta <- yaml::read_yaml(file.path(dir, "docs", "pkgdown.yml"))
+  expect_length(meta$articles, 0)
+})
+
+test_that("with_libpaths() puts the temporary library first while it runs", {
+  lib <- withr::local_tempdir()
+  old <- .libPaths()
+  envvars <- c(R_LIBS = paste(c(lib, old), collapse = .Platform$path.sep))
+  expect_identical(
+    with_libpaths(envvars, .libPaths()[1]),
+    normalizePath(lib, "/")
+  )
+  expect_identical(.libPaths(), old)
+  # devel = TRUE has no library.
+  expect_identical(with_libpaths(c(R_PROFILE_USER = "p"), .libPaths()), old)
+})
+
 test_that("preview_site() errors when the site hasn't been built", {
   expect_error(preview_site(new_pkg()), "build_site")
 })
