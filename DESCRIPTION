@@ -4,9 +4,10 @@ Version: 0.0.0.9000
 Date: 2026-08-27
 Authors@R:
     person(given = "Bjarke", family = "Hautop Kristensen", email = "bjarke.hautop@gmail.com", role = c("aut", "cre"))
-Description: Builds package websites with 'Quarto', styled to resemble
-    'pkgdown'. Because the site is rendered by 'Quarto', all 'Quarto'
-    features are supported.
+Description: Builds package websites with 'Quarto'. The whole site,
+    help pages and vignettes included, is rendered by 'Quarto', so every
+    'Quarto' feature works, from callouts to code annotations. Functions
+    mentioned in code link to their help pages, with hover tooltips.
 License: MIT + file LICENSE
 URL: https://bjarkehautop.github.io/quartodown/, https://github.com/bjarkehautop/quartodown
 BugReports: https://github.com/bjarkehautop/quartodown/issues

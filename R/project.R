@@ -47,7 +47,7 @@ copy_figures <- function(path) {
 }
 
 # Markdown files rendered as a page of the same name, from the package root or
-# .github/, as pkgdown does.
+# .github/.
 community_files <- c("CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "SUPPORT.md")
 
 # The path, relative to `path`, of the community file `name`, or NULL.

@@ -6,9 +6,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-quartodown builds a pkgdown-style website for an R package with
-[Quarto](https://quarto.org/). This guide sets up a package, builds its site,
-and publishes it on GitHub Pages.
+quartodown builds a website for an R package with [Quarto](https://quarto.org/).
+This guide sets up a package, builds its site, and publishes it on GitHub Pages.
 
 ## Set up
 
@@ -131,5 +130,4 @@ vignettes need. Then, on GitHub, set the repository to serve Pages from the
 
 [Technical
 details](https://bjarkehautop.github.io/quartodown/vignettes/articles/technical.html)
-explains how a build works and how quartodown makes a Quarto site look like
-pkgdown.
+explains how a build works and how quartodown's theme is put together.

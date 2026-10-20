@@ -5,12 +5,12 @@ code in this repository.
 
 ## What this is
 
-quartodown is an R package that builds pkgdown-style (Bootstrap 5) package
-websites with Quarto. It generates a Quarto website project in `_quarto/` from
-the package sources, renders it into `docs/` with `quarto::quarto_render()`,
-then post-processes the HTML. Configuration is the optional `_quartodown.yml` at
-the package root. The exported API is `use_quartodown()` (one-time setup, writes
-`_quartodown.yml` and gitignore entries), `build_site()` and `preview_site()`.
+quartodown is an R package that builds Bootstrap 5 package websites with Quarto.
+It generates a Quarto website project in `_quarto/` from the package sources,
+renders it into `docs/` with `quarto::quarto_render()`, then post-processes the
+HTML. Configuration is the optional `_quartodown.yml` at the package root. The
+exported API is `use_quartodown()` (one-time setup, writes `_quartodown.yml` and
+gitignore entries), `build_site()` and `preview_site()`.
 
 ## Commands
 
@@ -56,10 +56,10 @@ quartodown::preview_site()
      overrides from `_quartodown.yml`'s `quarto:` key are applied by
      `merge_quarto_config()` (unnamed lists append, other values replace, `~`
      removes).
-   - `index.md`: README + pkgdown-style sidebar ([R/sidebar.R](R/sidebar.R));
-     badges are pulled out of the `<!-- badges: start/end -->` block, and
-     `<picture>` light/dark images are rewritten to
-     `.light-content`/`.dark-content` `<img>`s.
+   - `index.md`: README + sidebar ([R/sidebar.R](R/sidebar.R)); badges are
+     pulled out of the `<!-- badges: start/end -->` block, and `<picture>`
+     light/dark images are rewritten to `.light-content`/`.dark-content`
+     `<img>`s.
    - `reference/index.qmd` ([R/reference.R](R/reference.R)): pkgdown-compatible
      `reference:` grouping with selectors (`starts_with()`, `has_concept()`,
      `-`, …) evaluated against Rd topics.

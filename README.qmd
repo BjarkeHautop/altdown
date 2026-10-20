@@ -10,8 +10,8 @@ format: gfm
 
 # quartodown <picture><source media="(prefers-color-scheme: dark)" srcset="man/figures/logo.png" /><img src="man/figures/logo-light.png" align="right" height="139" alt="quartodown logo" /></picture>
 
-quartodown is an R package that builds package websites with Quarto, styled to
-mirror the output of pkgdown (Bootstrap 5).
+quartodown is an R package that turns your package's README, help pages and
+vignettes into a website, rendered entirely by Quarto.
 
 ## Why quartodown?
 
@@ -20,11 +20,11 @@ own (`theme: "none"`, `minimal: TRUE`). As a result, Quarto features such as
 callout blocks, code annotations and tabsets don't render correctly; callouts,
 for instance, become plain blockquotes.
 
-quartodown renders the whole site with Quarto itself, and adds a pkgdown-style
-layout on top. You get:
+quartodown renders the whole site with Quarto itself, so you get:
 
-- full Quarto support;
-- a familiar pkgdown look;
+- full Quarto support, on every page;
+- a package website layout: a home page sidebar, a grouped function reference,
+  articles and a changelog;
 - function links with hover tooltips.
 
 ## Installation

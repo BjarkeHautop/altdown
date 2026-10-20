@@ -1,7 +1,6 @@
 #' Build the package website
 #'
-#' Builds the package website into `docs/` with [Quarto](https://quarto.org/),
-#' styled to mirror pkgdown.
+#' Builds the package website into `docs/` with [Quarto](https://quarto.org/).
 #'
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
 #' package sources and `_quartodown.yml`, then renders it:
@@ -15,7 +14,7 @@
 #'   `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`);
 #' * the navbar, with a "Get started" link, the function reference, an
 #'   "Articles" menu and the changelog;
-#' * the home page, built from `README.md` plus a pkgdown-style sidebar
+#' * the home page, built from `README.md` plus a sidebar
 #'   (links, license, citation, developers and the README's badges). An image
 #'   with light and dark versions, given as a `<picture>` with a
 #'   `<source media="(prefers-color-scheme: dark)">` as on GitHub, follows the

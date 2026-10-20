@@ -5,8 +5,8 @@ title: "Technical details"
 quartodown builds the site in three stages: it generates a
 [Quarto](https://quarto.org/) website project from the package sources, renders
 it with Quarto, and adds hover tooltips to the result. The man pages, vignettes
-and the [pkgdown](https://pkgdown.r-lib.org/)-style layout around them are all
-Quarto pages, so every Quarto feature works.
+and the generated pages around them are all Quarto pages, so every Quarto
+feature works.
 
 ## How a build works
 
@@ -37,22 +37,22 @@ _quarto/
 ├── vignettes/                    # the vignettes, as they are
 ├── man/figures/                  # images for the README and man pages
 ├── NEWS.md                       # changelog, with issues and users linked
-├── quartodown.scss               # pkgdown-style theme on top of Quarto's HTML
+├── quartodown.scss               # theme on top of Quarto's HTML
 ├── quartodown-header.html        # dark-mode default
 └── quartodown-after-body.html    # navbar alignment
 ```
 
-As in pkgdown, the reference pages are served at `reference/<topic>.html`, and
-`docs/pkgdown.yml` tells other sites' [downlit](https://downlit.r-lib.org/)
-links where to find them.
+As in [pkgdown](https://pkgdown.r-lib.org/), the reference pages are served at
+`reference/<topic>.html`, and `docs/pkgdown.yml` tells other sites'
+[downlit](https://downlit.r-lib.org/) links where to find them.
 
 ## Before rendering
 
 ### The home page
 
-`index.md` holds the README next to a pkgdown-style sidebar with links, the
-license, the citation, the developers and the README's badges. On narrow screens
-the sidebar moves below the content.
+`index.md` holds the README next to a sidebar with links, the license, the
+citation, the developers and the README's badges. On narrow screens the sidebar
+moves below the content.
 
 A README `<picture>` with a light and a dark version (GitHub's
 `prefers-color-scheme` convention) becomes one `<img>` per theme, switched by
@@ -83,8 +83,8 @@ reference:
 ### The navbar and footer
 
 The navbar links the "Get started" vignette, the reference index, the other
-vignettes under "Articles" and the changelog. The footer has pkgdown's
-"Developed by ..." text, built from `Authors@R`.
+vignettes under "Articles" and the changelog. The footer has a "Developed by
+..." line, built from `Authors@R`.
 
 ::: {.callout-tip}
 ## Changing the Quarto configuration
@@ -111,7 +111,7 @@ quarto:
 
 Each `man/*.Rd` file, except `\keyword{internal}` ones, becomes
 `_quarto/reference/<name>.qmd`. It's rendered to HTML with `tools::Rd2HTML()`,
-as R's help does, and then adjusted to look like pkgdown's:
+as R's help does, and then adjusted for the site:
 
 - **Rd macros** work: the package's own (`RdMacros:` in `DESCRIPTION`, or
   `man/macros/`), such as Rdpack's `\insertRef{}`, and build-time `\Sexpr{}`s
@@ -135,10 +135,10 @@ over `build_site()` or `use_quartodown()`.
 The sentence is cut off at 200 characters, and `build_site()` warns when one is
 longer. To build without tooltips, use `build_site(tooltips = FALSE)`.
 
-## Matching the pkgdown look
+## The theme
 
-`quartodown.scss` is styled after pkgdown's `pkgdown.scss`, written for Quarto's
-HTML, and layered on top of Quarto's own themes:
+`quartodown.scss`, written for Quarto's HTML (and originally adapted from
+pkgdown's stylesheet), is layered on top of Quarto's own themes:
 
 ```yaml
 theme:

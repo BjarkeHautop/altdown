@@ -37,8 +37,7 @@ with callr or parallel workers) won't find the package there.}
 Invisibly, the path to the built site.
 }
 \description{
-Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Quarto},
-styled to mirror pkgdown.
+Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Quarto}.
 }
 \details{
 \code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
@@ -53,7 +52,7 @@ with its examples run;
 \code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/});
 \item the navbar, with a "Get started" link, the function reference, an
 "Articles" menu and the changelog;
-\item the home page, built from \code{README.md} plus a pkgdown-style sidebar
+\item the home page, built from \code{README.md} plus a sidebar
 (links, license, citation, developers and the README's badges). An image
 with light and dark versions, given as a \verb{<picture>} with a
 \verb{<source media="(prefers-color-scheme: dark)">} as on GitHub, follows the
