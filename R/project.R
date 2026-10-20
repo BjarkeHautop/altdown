@@ -129,18 +129,107 @@ check_quarto <- function() {
   }
 }
 
-render_project <- function(path, quiet = TRUE) {
+render_project <- function(path, quiet = TRUE, devel = FALSE) {
   docs <- file.path(path, "docs")
   # A stale page would otherwise outlive its source. CNAME (GitHub Pages'
   # custom domain) and hidden files such as .nojekyll stay.
   files <- list.files(docs, full.names = TRUE)
   unlink(files[basename(files) != "CNAME"], recursive = TRUE)
 
+  scratch <- tempfile("quartodown-")
+  dir.create(scratch)
+  on.exit(unlink(scratch, recursive = TRUE), add = TRUE)
+  envvars <- if (devel) {
+    load_all_envvars(path, scratch)
+  } else {
+    install_envvars(path, scratch)
+  }
+
+  local_envvars(envvars)
   quarto::quarto_render(
     input = project_dir(path),
     quiet = quiet,
     as_job = FALSE
   )
+  invisible()
+}
+
+# ---- the package for the pages' code ------------------------------------------
+#
+# Quarto runs each page's code in a new R process, where `library(pkg)` loads
+# the package from the library. So the package being documented is either
+# installed into a temporary library put first on that process's library
+# path, or, with `devel = TRUE`, loaded from source with pkgload::load_all()
+# by an R profile that process runs at startup.
+
+install_envvars <- function(path, scratch) {
+  lib <- file.path(scratch, "library")
+  dir.create(lib)
+  pkg <- desc::desc_get_field("Package", file = path)
+  cli::cli_inform("Installing {.pkg {pkg}} into a temporary library.")
+  output <- suppressWarnings(system2(
+    file.path(R.home("bin"), "R"),
+    c(
+      "CMD",
+      "INSTALL",
+      "--no-multiarch",
+      "--with-keep.source",
+      "-l",
+      shQuote(lib),
+      shQuote(normalizePath(path))
+    ),
+    stdout = TRUE,
+    stderr = TRUE
+  ))
+  status <- attr(output, "status")
+  if (!is.null(status) && status != 0) {
+    # The log's lines, with braces escaped so cli doesn't interpolate them.
+    log <- gsub("([{}])", "\\1\\1", utils::tail(output, 20))
+    cli::cli_abort(c(
+      "Installing {.pkg {pkg}} failed.",
+      "i" = "Fix the installation, or build with {.code devel = TRUE}.",
+      structure(log, names = rep(" ", length(log)))
+    ))
+  }
+  c(R_LIBS = paste(c(lib, .libPaths()), collapse = .Platform$path.sep))
+}
+
+load_all_envvars <- function(path, scratch) {
+  if (!requireNamespace("pkgload", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "Building with {.code devel = TRUE} needs the {.pkg pkgload} package.",
+      "i" = "Install it with {.code install.packages(\"pkgload\")}."
+    ))
+  }
+  profile <- file.path(scratch, "Rprofile.R")
+  writeLines(
+    c(
+      # R_PROFILE_USER replaces the user's own profile, so it's run first.
+      "if (file.exists('.Rprofile')) {",
+      "  source('.Rprofile')",
+      "} else if (file.exists('~/.Rprofile')) {",
+      "  source('~/.Rprofile')",
+      "}",
+      sprintf(
+        "suppressMessages(pkgload::load_all(%s, export_all = FALSE, helpers = FALSE, quiet = TRUE))",
+        deparse(normalizePath(path))
+      )
+    ),
+    profile
+  )
+  c(R_PROFILE_USER = profile)
+}
+
+# Sets `envvars` until the calling function exits.
+local_envvars <- function(envvars, envir = parent.frame()) {
+  old <- Sys.getenv(names(envvars), unset = NA, names = TRUE)
+  do.call(Sys.setenv, as.list(envvars))
+  defer <- function() {
+    unset <- is.na(old)
+    Sys.unsetenv(names(old)[unset])
+    if (!all(unset)) do.call(Sys.setenv, as.list(old[!unset]))
+  }
+  do.call(on.exit, list(substitute(defer()), add = TRUE), envir = envir)
   invisible()
 }
 

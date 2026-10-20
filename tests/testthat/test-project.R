@@ -110,3 +110,51 @@ test_that("write_pkgdown_yml() points downlit at the site's reference pages and 
 test_that("preview_site() errors when the site hasn't been built", {
   expect_error(preview_site(new_pkg()), "build_site")
 })
+
+test_that("install_envvars() installs the package into a library put first on R_LIBS", {
+  dir <- new_pkg()
+  desc::desc_set(
+    Title = "Example",
+    Description = "An example.",
+    License = "MIT",
+    `Authors@R` = 'person("Jane", "Doe", email = "jane@example.com", role = c("aut", "cre"))',
+    file = dir
+  )
+  dir.create(file.path(dir, "R"))
+  writeLines("hello <- function() 'hi'", file.path(dir, "R", "hello.R"))
+  writeLines("export(hello)", file.path(dir, "NAMESPACE"))
+  scratch <- withr::local_tempdir()
+
+  expect_message(envvars <- install_envvars(dir, scratch), "temporary library")
+  lib <- strsplit(envvars[["R_LIBS"]], .Platform$path.sep, fixed = TRUE)[[1]][1]
+  expect_true(file.exists(file.path(lib, "examplepkg", "DESCRIPTION")))
+})
+
+test_that("install_envvars() errors when the package doesn't install", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "R"))
+  writeLines("this is not R code(", file.path(dir, "R", "broken.R"))
+  expect_error(
+    suppressMessages(install_envvars(dir, withr::local_tempdir())),
+    "devel = TRUE"
+  )
+})
+
+test_that("load_all_envvars() writes a profile that loads the package from source", {
+  dir <- new_pkg()
+  envvars <- load_all_envvars(dir, withr::local_tempdir())
+  profile <- readLines(envvars[["R_PROFILE_USER"]])
+  expect_match(profile, "pkgload::load_all(", fixed = TRUE, all = FALSE)
+  expect_match(profile, normalizePath(dir), fixed = TRUE, all = FALSE)
+})
+
+test_that("local_envvars() restores set and unset variables on exit", {
+  withr::local_envvar(QUARTODOWN_A = "old", QUARTODOWN_B = NA)
+  f <- function() {
+    local_envvars(c(QUARTODOWN_A = "new", QUARTODOWN_B = "set"))
+    Sys.getenv(c("QUARTODOWN_A", "QUARTODOWN_B"))
+  }
+  expect_identical(unname(f()), c("new", "set"))
+  expect_identical(Sys.getenv("QUARTODOWN_A"), "old")
+  expect_identical(Sys.getenv("QUARTODOWN_B", unset = NA), NA_character_)
+})

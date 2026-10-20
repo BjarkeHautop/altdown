@@ -66,9 +66,12 @@ quartodown::preview_site()
    - `authors.qmd` ([R/authors.R](R/authors.R)).
    - Theme files copied verbatim from [inst/quarto/](inst/quarto/)
      (`quartodown.scss`, header/after-body HTML).
-2. **Rendering** — clears `docs/` (keeping `CNAME` and hidden files), renders
-   `_quarto/` into it (`output-dir: ../docs/`) and writes `docs/pkgdown.yml`
-   (`urls` + `articles`, all downlit reads). The name is fixed: downlit fetches
+2. **Rendering** — clears `docs/` (keeping `CNAME` and hidden files), makes the
+   package available to the pages' R processes (installed into a temp library
+   prepended via `R_LIBS`, or with `devel = TRUE` a generated `R_PROFILE_USER`
+   profile that runs `pkgload::load_all()`), renders `_quarto/` into it
+   (`output-dir: ../docs/`) and writes `docs/pkgdown.yml` (`urls` + `articles`,
+   all downlit reads). The name is fixed: downlit fetches
    `<site URL>/pkgdown.yml` to link other packages' code to this site, so it
    must not be renamed.
 3. **After rendering** — `add_tooltips()` ([R/tooltips.R](R/tooltips.R))

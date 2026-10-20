@@ -4,7 +4,13 @@
 \alias{build_site}
 \title{Build the package website}
 \usage{
-build_site(path = ".", tooltips = TRUE, freeze = FALSE, quiet = TRUE)
+build_site(
+  path = ".",
+  tooltips = TRUE,
+  freeze = FALSE,
+  quiet = TRUE,
+  devel = FALSE
+)
 }
 \arguments{
 \item{path}{Path to the package root.}
@@ -20,6 +26,12 @@ build, for pages whose source hasn't changed since? Uses Quarto's
 which keeps them in \verb{_quarto/_freeze/}.}
 
 \item{quiet}{Logical. Hide Quarto's rendering output?}
+
+\item{devel}{Logical. By default, the examples and vignettes run against
+the package installed from \code{path} into a temporary library. With
+\code{devel = TRUE}, they run against it loaded with \code{\link[pkgload:load_all]{pkgload::load_all()}}
+instead, which is faster, but code that starts other R processes (e.g.
+with callr or parallel workers) won't find the package there.}
 }
 \value{
 Invisibly, the path to the built site.

@@ -33,10 +33,11 @@ quartodown::preview_site()
 `build_site()` builds the site into `docs/`, and `preview_site()` opens it in
 your browser.
 
-::: {.callout-important}
-Examples in the man pages and code in the vignettes run against the installed
-version of your package, so install it before building, e.g. with
-`devtools::install()`.
+::: {.callout-tip}
+Examples in the man pages and code in the vignettes run against your package's
+current source: `build_site()` installs it into a temporary library first. To
+skip the install while iterating, use `build_site(devel = TRUE)`, which loads it
+with `pkgload::load_all()` instead.
 :::
 
 The site is built from what's already in your package:
@@ -122,9 +123,9 @@ jobs:
           folder: docs
 ```
 
-`local::.` installs your package, so examples and vignettes run against it.
-Then, on GitHub, set the repository to serve Pages from the `gh-pages` branch
-(*Settings* → *Pages*).
+`local::.` installs your package's dependencies, which its examples and
+vignettes need. Then, on GitHub, set the repository to serve Pages from the
+`gh-pages` branch (*Settings* → *Pages*).
 
 ## Learn more
 

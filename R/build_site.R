@@ -63,6 +63,11 @@
 #'   [freeze](https://quarto.org/docs/projects/code-execution.html#freeze),
 #'   which keeps them in `_quarto/_freeze/`.
 #' @param quiet Logical. Hide Quarto's rendering output?
+#' @param devel Logical. By default, the examples and vignettes run against
+#'   the package installed from `path` into a temporary library. With
+#'   `devel = TRUE`, they run against it loaded with [pkgload::load_all()]
+#'   instead, which is faster, but code that starts other R processes (e.g.
+#'   with callr or parallel workers) won't find the package there.
 #' @return Invisibly, the path to the built site.
 #' @export
 #'
@@ -76,7 +81,8 @@ build_site <- function(
   path = ".",
   tooltips = TRUE,
   freeze = FALSE,
-  quiet = TRUE
+  quiet = TRUE,
+  devel = FALSE
 ) {
   config <- read_config(path)
   check_quarto()
@@ -92,7 +98,7 @@ build_site <- function(
   build_authors_qmd(path)
   write_quarto_config(path, config, freeze = freeze)
 
-  render_project(path, quiet = quiet)
+  render_project(path, quiet = quiet, devel = devel)
   write_pkgdown_yml(path)
 
   if (isTRUE(tooltips)) {

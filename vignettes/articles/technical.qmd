@@ -16,7 +16,11 @@ Quarto pages, so every Quarto feature works.
    page per man page, the vignettes, the changelog, license and community files,
    and the generated pages and theme files below.
 2. **During rendering**, Quarto renders `_quarto/` into `docs/`, running the
-   examples and vignette code.
+   examples and vignette code. Quarto runs each page's code in a new R process,
+   which loads the package from the library, so `build_site()` first installs
+   the package into a temporary library and puts it first on that process's
+   library path. With `build_site(devel = TRUE)`, it skips the install and has
+   each process load the package from source with `pkgload::load_all()`.
 3. **After rendering**, it adds hover tooltips to the HTML in `docs/`.
 
 The only file you edit is `_quartodown.yml`. Everything in `_quarto/` is
