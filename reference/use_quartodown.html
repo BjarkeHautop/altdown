@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-dcf07ec0f83046975e9fcdb250eddc04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -410,9 +410,9 @@ _quarto/*
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">pkg</span>, <span class="st">"DESCRIPTION"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./use_quartodown.html">use_quartodown</a></span><span class="op">(</span><span class="va">pkg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Wrote '/tmp/RtmpPdK77U/examplepkg19683696dc2b/_quartodown.yml' (edit this to group your functions).</span></span>
-<span><span class="co">#&gt; ✔ Added `_quarto/*` and `!_quarto/_freeze/` to '/tmp/RtmpPdK77U/examplepkg19683696dc2b/.gitignore'.</span></span>
-<span><span class="co">#&gt; ✔ Added `^docs$`, `^_quarto$`, and `^_quartodown\.yml$` to '/tmp/RtmpPdK77U/examplepkg19683696dc2b/.Rbuildignore'.</span></span>
+<span><span class="co">#&gt; ✔ Wrote '/tmp/RtmpdIxL32/examplepkg192a5ecccbaf/_quartodown.yml' (edit this to group your functions).</span></span>
+<span><span class="co">#&gt; ✔ Added `_quarto/*` and `!_quarto/_freeze/` to '/tmp/RtmpdIxL32/examplepkg192a5ecccbaf/.gitignore'.</span></span>
+<span><span class="co">#&gt; ✔ Added `^docs$`, `^_quarto$`, and `^_quartodown\.yml$` to '/tmp/RtmpdIxL32/examplepkg192a5ecccbaf/.Rbuildignore'.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Next steps:</span></span>
 <span><span class="co">#&gt; 1. Edit '_quartodown.yml' to group your functions the way you want.</span></span>
@@ -423,12 +423,13 @@ _quarto/*
 <span><span class="co">#&gt;  [2] "# all fields, including `articles:` (navbar order) and `quarto:` (extra"      </span></span>
 <span><span class="co">#&gt;  [3] "# Quarto settings)."                                                          </span></span>
 <span><span class="co">#&gt;  [4] ""                                                                             </span></span>
-<span><span class="co">#&gt;  [5] "# Groups the function reference index, in the same shape as pkgdown's"        </span></span>
-<span><span class="co">#&gt;  [6] "# `reference:` field."                                                        </span></span>
-<span><span class="co">#&gt;  [7] "reference:"                                                                   </span></span>
-<span><span class="co">#&gt;  [8] "  - title: All functions"                                                     </span></span>
-<span><span class="co">#&gt;  [9] "    contents:"                                                                </span></span>
-<span><span class="co">#&gt; [10] "      []"</span></span>
+<span><span class="co">#&gt;  [5] "# Groups the function reference index into sections, each with a `title:`"    </span></span>
+<span><span class="co">#&gt;  [6] "# and the `contents:` it lists (topic names or selectors such as"             </span></span>
+<span><span class="co">#&gt;  [7] "# starts_with(\"read_\")). See ?quartodown::build_site for the details."      </span></span>
+<span><span class="co">#&gt;  [8] "reference:"                                                                   </span></span>
+<span><span class="co">#&gt;  [9] "  - title: All functions"                                                     </span></span>
+<span><span class="co">#&gt; [10] "    contents:"                                                                </span></span>
+<span><span class="co">#&gt; [11] "      []"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html">unlink</a></span><span class="op">(</span><span class="va">pkg</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
@@ -469,8 +470,7 @@ _quarto/*
     title.appendChild(document.createTextNode(" "));
     title.appendChild(version);
   }
-  // Leave `#>` output lines out of what the copy button copies, as pkgdown
-  // does. clipboard.js copies synchronously in its click handler, so a copy
+  // Leave `#>` output lines out of what the copy button copies. clipboard.js copies synchronously in its click handler, so a copy
   // event during a copy-button click is its.
   function stripOutputOnCopy() {
     var fromButton = false;

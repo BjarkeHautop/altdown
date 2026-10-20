@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-dcf07ec0f83046975e9fcdb250eddc04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -398,7 +398,8 @@ a.quartodown-tip-ref{cursor:help;}
 ├── NEWS.md                       # changelog, with issues and users linked
 ├── quartodown.scss               # theme on top of Quarto's HTML
 ├── quartodown-header.html        # dark-mode default
-└── quartodown-after-body.html    # navbar alignment</code></pre>
+├── quartodown-after-body.html    # navbar alignment
+└── orcid.svg, ror.svg            # icons for authors' ORCID/ROR ids</code></pre>
 <p>Reference pages are served at <code>reference/&lt;topic&gt;.html</code>, and <code>docs/pkgdown.yml</code> lets <a href="https://downlit.r-lib.org/">downlit</a> on other sites link to them.</p>
 </section><section id="before-rendering" class="level2"><h2 class="anchored" data-anchor-id="before-rendering">Before rendering</h2>
 <section id="the-home-page" class="level3"><h3 class="anchored" data-anchor-id="the-home-page">The home page</h3>
@@ -531,8 +532,7 @@ a.quartodown-tip-ref{cursor:help;}
     title.appendChild(document.createTextNode(" "));
     title.appendChild(version);
   }
-  // Leave `#>` output lines out of what the copy button copies, as pkgdown
-  // does. clipboard.js copies synchronously in its click handler, so a copy
+  // Leave `#>` output lines out of what the copy button copies. clipboard.js copies synchronously in its click handler, so a copy
   // event during a copy-button click is its.
   function stripOutputOnCopy() {
     var fromButton = false;

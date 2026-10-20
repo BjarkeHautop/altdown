@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-dcf07ec0f83046975e9fcdb250eddc04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-fd7be7c2e4dde47cca778a6b47979f04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -445,10 +445,10 @@ Logical. By default, the examples and vignettes run against the package installe
 <p>the home page, built from <code>README.md</code> plus a sidebar (links, license, citation, developers and badges);</p>
 </li>
 <li>
-<p>code output printed in the code’s block, each line prefixed with <code>#&gt;</code>, as in pkgdown (the copy button leaves those lines out);</p>
+<p>code output printed in the code’s block, each line prefixed with <code>#&gt;</code> (the copy button leaves those lines out);</p>
 </li>
 <li>
-<p>function calls in R code, and inline code like <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>, linked to their documentation with <a href="https://downlit.r-lib.org/">downlit</a>, as in pkgdown;</p>
+<p>function calls in R code, and inline code like <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>, linked to their documentation with <a href="https://downlit.r-lib.org/">downlit</a>;</p>
 </li>
 <li>
 <p>the "Authors and Citation" page.</p>
@@ -459,7 +459,37 @@ Logical. By default, the examples and vignettes run against the package installe
 <p><code>_quartodown.yml</code>, at the package root, is optional; <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./use_quartodown.html">use_quartodown()</a></code> creates one. It can contain:</p>
 <ul>
 <li>
-<p><code>reference</code>: groups the function reference index, in the same shape as pkgdown’s <code>reference:</code> field. <code>contents</code> entries can be a topic alias or a selector: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>has_concept()</code>, <code>has_keyword()</code>, <code>-</code> to exclude, and <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> to combine. Without it, every topic is listed in one section. Internal topics (<code>\keyword{internal}</code>) are left out unless named or selected with <code>internal = TRUE</code>, e.g. <code>starts_with("dev_", internal = TRUE)</code>; then they get a page too.</p>
+<p><code>reference</code>: groups the function reference index into sections. It is a list of sections, each with any of:</p>
+<ul>
+<li>
+<p><code>title</code>: the section heading;</p>
+</li>
+<li>
+<p><code>subtitle</code>: a heading one level below it;</p>
+</li>
+<li>
+<p><code>desc</code>: Markdown text shown under the heading(s);</p>
+</li>
+<li>
+<p><code>contents</code>: the topics listed, in order.</p>
+</li>
+</ul>
+<p>For example:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reference</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">title</span><span class="kw">:</span><span class="at"> Read and write</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">desc</span><span class="kw">:</span><span class="at"> Functions for getting data in and out.</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">contents</span><span class="kw">:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> read_data</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> starts_with("write_")</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">title</span><span class="kw">:</span><span class="at"> Helpers</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">contents</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> has_concept("helpers")</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> -internal_helper</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>Each <code>contents</code> entry is a topic (an <code>\alias</code> or Rd file name) or a selector: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code> and <code>matches()</code> (a regular expression) match aliases, and <code>has_concept()</code> and <code>has_keyword()</code> match <code>\concept</code>s and <code>\keyword</code>s. <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> combines selectors, and a leading <code>-</code> removes topics from those selected by the entries above it (or, as the first entry, from all topics). Topics not listed in any section get a warning and are left off the index.</p>
+<p>Without <code>reference</code>, every topic is listed in one section. Internal topics (<code>\keyword{internal}</code>) are left out unless named or selected with <code>internal = TRUE</code>, e.g. <code>starts_with("dev_", internal = TRUE)</code>; then they get a page too. The format is the same as pkgdown’s <code>reference:</code> field, so an existing one can be copied over.</p>
 </li>
 <li>
 <p><code>articles</code>: the order of the "Articles" navbar menu, as vignette paths relative to <code>vignettes/</code> without extension (e.g. <code>articles/details</code>). Without it, every vignette other than the "Get started" one is listed, top-level vignettes first, then those in <code>vignettes/articles/</code>.</p>
@@ -467,12 +497,12 @@ Logical. By default, the examples and vignettes run against the package installe
 <li>
 <p><code>quarto</code>: settings merged over the generated Quarto configuration. Settings are merged key by key: a list of entries (e.g. the navbar’s <code>left:</code> or <code>right:</code> items) is added to, any other value is replaced, and <code>~</code> removes a setting. For example, to add a navbar link:</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">navbar</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">right</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">text</span><span class="kw">:</span><span class="at"> Blog</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://example.com</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">navbar</span><span class="kw">:</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">right</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">text</span><span class="kw">:</span><span class="at"> Blog</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://example.com</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </li>
@@ -480,7 +510,7 @@ Logical. By default, the examples and vignettes run against the package installe
 <p>The "Get started" link points to the vignette named after the package, or to the only top-level vignette if there is just one.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./use_quartodown.html">use_quartodown</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./preview_site.html">preview_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -522,8 +552,7 @@ Logical. By default, the examples and vignettes run against the package installe
     title.appendChild(document.createTextNode(" "));
     title.appendChild(version);
   }
-  // Leave `#>` output lines out of what the copy button copies, as pkgdown
-  // does. clipboard.js copies synchronously in its click handler, so a copy
+  // Leave `#>` output lines out of what the copy button copies. clipboard.js copies synchronously in its click handler, so a copy
   // event during a copy-button click is its.
   function stripOutputOnCopy() {
     var fromButton = false;

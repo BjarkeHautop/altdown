@@ -1,17 +1,255 @@
 [
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "quartodown ",
+    "section": "",
+    "text": "quartodown is an R package that turns your package’s README, help pages and vignettes into a website, rendered entirely by Quarto.\n\n\npkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (theme: \"none\", minimal: TRUE). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.\nquartodown renders the whole site with Quarto itself, so you get:\n\nfull Quarto support, on every page;\na package website layout: a home page sidebar, a grouped function reference, articles and a changelog;\nfunction links with hover tooltips.\n\n\n\n\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/quartodown\")\n\n\n\nBrowse around to see how it looks! Quarto features shows callouts, tabsets, footnotes and more on a quartodown site. If you like what you see, and want to use it for your own package, run:\nquartodown::use_quartodown()\nThis writes _quartodown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like. It also gitignores the files the build generates.\nThen build the site:\nquartodown::build_site()\nA preview can then be viewed using quartodown::preview_site().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. See ?quartodown::build_site for everything quartodown.yml can configure.\n\n\n\n\njlbind\n\nUsing quartodown for your package? Feel free to open a pull request adding it to this list."
+  },
+  {
+    "objectID": "index.html#why-quartodown",
+    "href": "index.html#why-quartodown",
+    "title": "quartodown ",
+    "section": "",
+    "text": "pkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (theme: \"none\", minimal: TRUE). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.\nquartodown renders the whole site with Quarto itself, so you get:\n\nfull Quarto support, on every page;\na package website layout: a home page sidebar, a grouped function reference, articles and a changelog;\nfunction links with hover tooltips."
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "quartodown ",
+    "section": "",
+    "text": "Install from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/quartodown\")"
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "quartodown ",
+    "section": "",
+    "text": "Browse around to see how it looks! Quarto features shows callouts, tabsets, footnotes and more on a quartodown site. If you like what you see, and want to use it for your own package, run:\nquartodown::use_quartodown()\nThis writes _quartodown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like. It also gitignores the files the build generates.\nThen build the site:\nquartodown::build_site()\nA preview can then be viewed using quartodown::preview_site().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. See ?quartodown::build_site for everything quartodown.yml can configure."
+  },
+  {
+    "objectID": "index.html#packages-using-quartodown",
+    "href": "index.html#packages-using-quartodown",
+    "title": "quartodown ",
+    "section": "",
+    "text": "jlbind\n\nUsing quartodown for your package? Feel free to open a pull request adding it to this list."
+  },
+  {
+    "objectID": "reference/preview_site.html",
+    "href": "reference/preview_site.html",
+    "title": "Preview the built site",
+    "section": "",
+    "text": "Serves docs/, as built by build_site(), in a web browser, and reloads the page when the site is rebuilt."
+  },
+  {
+    "objectID": "reference/preview_site.html#description",
+    "href": "reference/preview_site.html#description",
+    "title": "Preview the built site",
+    "section": "",
+    "text": "Serves docs/, as built by build_site(), in a web browser, and reloads the page when the site is rebuilt."
+  },
+  {
+    "objectID": "reference/preview_site.html#usage",
+    "href": "reference/preview_site.html#usage",
+    "title": "Preview the built site",
+    "section": "Usage",
+    "text": "Usage\npreview_site(path = \".\")"
+  },
+  {
+    "objectID": "reference/preview_site.html#arguments",
+    "href": "reference/preview_site.html#arguments",
+    "title": "Preview the built site",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\npath\n\n\nPath to the package root."
+  },
+  {
+    "objectID": "reference/preview_site.html#value",
+    "href": "reference/preview_site.html#value",
+    "title": "Preview the built site",
+    "section": "Value",
+    "text": "Value\nThe server, invisibly; see servr::httw()."
+  },
+  {
+    "objectID": "reference/preview_site.html#examples",
+    "href": "reference/preview_site.html#examples",
+    "title": "Preview the built site",
+    "section": "Examples",
+    "text": "Examples\nbuild_site()\npreview_site()"
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html",
+    "href": "reference/use_quartodown_action.html",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "",
+    "text": "Writes .github/workflows/quartodown.yaml, a GitHub Actions workflow that builds the site and deploys it to the gh-pages branch. It runs build_site() on every push, pull request and release, but only deploys when it isn’t a pull request. Also adds ^\\.github$ to .Rbuildignore if it’s not already there."
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html#description",
+    "href": "reference/use_quartodown_action.html#description",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "",
+    "text": "Writes .github/workflows/quartodown.yaml, a GitHub Actions workflow that builds the site and deploys it to the gh-pages branch. It runs build_site() on every push, pull request and release, but only deploys when it isn’t a pull request. Also adds ^\\.github$ to .Rbuildignore if it’s not already there."
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html#usage",
+    "href": "reference/use_quartodown_action.html#usage",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "Usage",
+    "text": "Usage\nuse_quartodown_action(path = \".\", overwrite = FALSE)"
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html#arguments",
+    "href": "reference/use_quartodown_action.html#arguments",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\noverwrite\n\n\nLogical. Replace an existing .github/workflows/quartodown.yaml? By default it’s left as is."
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html#details",
+    "href": "reference/use_quartodown_action.html#details",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "Details",
+    "text": "Details\nOnce the workflow’s first run has created the gh-pages branch, go to the Pages section of the repository’s settings on GitHub and choose to deploy from that branch."
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html#value",
+    "href": "reference/use_quartodown_action.html#value",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "Value",
+    "text": "Value\nInvisibly, the path to the workflow file."
+  },
+  {
+    "objectID": "reference/use_quartodown_action.html#examples",
+    "href": "reference/use_quartodown_action.html#examples",
+    "title": "Set up a GitHub Actions workflow that publishes the site",
+    "section": "Examples",
+    "text": "Examples\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_quartodown_action(pkg)\n#&gt; ✔ Wrote '/tmp/RtmpPUx52v/examplepkg19491d6874df/.github/workflows/quartodown.yaml'.\n#&gt; ✔ Added `^\\.github$` to '/tmp/RtmpPUx52v/examplepkg19491d6874df/.Rbuildignore'.\n#&gt; \n#&gt; Next steps:\n#&gt; 1. Commit and push the workflow.\n#&gt; 2. Once its first run has created the `gh-pages` branch, go to the Pages\n#&gt; section of the repository's settings on GitHub and choose to deploy from that\n#&gt; branch.\nlist.files(pkg, recursive = TRUE, all.files = TRUE)\n#&gt; [1] \".github/workflows/quartodown.yaml\" \".Rbuildignore\"                    \n#&gt; [3] \"DESCRIPTION\"\nunlink(pkg, recursive = TRUE)"
+  },
+  {
+    "objectID": "reference/build_site.html",
+    "href": "reference/build_site.html",
+    "title": "Build the package website",
+    "section": "",
+    "text": "Builds the package website into docs/ with Quarto."
+  },
+  {
+    "objectID": "reference/build_site.html#description",
+    "href": "reference/build_site.html#description",
+    "title": "Build the package website",
+    "section": "",
+    "text": "Builds the package website into docs/ with Quarto."
+  },
+  {
+    "objectID": "reference/build_site.html#usage",
+    "href": "reference/build_site.html#usage",
+    "title": "Build the package website",
+    "section": "Usage",
+    "text": "Usage\nbuild_site(\n  path = \".\",\n  tooltips = TRUE,\n  freeze = FALSE,\n  quiet = TRUE,\n  devel = FALSE\n)"
+  },
+  {
+    "objectID": "reference/build_site.html#arguments",
+    "href": "reference/build_site.html#arguments",
+    "title": "Build the package website",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\npath\n\n\nPath to the package root.\n\n\n\n\ntooltips\n\n\nLogical. Link references to the package’s own functions (in code blocks and inline code) to their reference page, with a hover tooltip showing the function’s usage and the first sentence of its description?\n\n\n\n\nfreeze\n\n\nLogical. Reuse the results of code that ran in an earlier build, for pages whose source hasn’t changed since? Uses Quarto’s freeze, which keeps them in _quarto/_freeze/.\n\n\n\n\nquiet\n\n\nLogical. Hide Quarto’s rendering output?\n\n\n\n\ndevel\n\n\nLogical. By default, the examples and vignettes run against the package installed from path into a temporary library. With devel = TRUE, they run against it loaded with pkgload::load_all() instead, which is faster, but code that starts other R processes (e.g. with callr or parallel workers) won’t find the package there."
+  },
+  {
+    "objectID": "reference/build_site.html#details",
+    "href": "reference/build_site.html#details",
+    "title": "Build the package website",
+    "section": "Details",
+    "text": "Details\nbuild_site() assembles a Quarto website project in _quarto/ from the package sources and _quartodown.yml, then renders it:\n\n\nthe function reference: a grouped index, and a page per man/*.Rd file with its examples run, except \\keyword{internal} ones not listed under reference:;\n\n\nthe vignettes, including those in vignettes/articles/;\n\n\nNEWS.md as the changelog, with issues (#123) and GitHub users (@user) linked;\n\n\nLICENSE.md, the LICENSE file, and CODE_OF_CONDUCT.md, CONTRIBUTING.md and SUPPORT.md (at the top level or in .github/);\n\n\nthe navbar, with a \"Get started\" link, the function reference, an \"Articles\" menu and the changelog;\n\n\nthe home page, built from README.md plus a sidebar (links, license, citation, developers and badges);\n\n\ncode output printed in the code’s block, each line prefixed with #&gt; (the copy button leaves those lines out);\n\n\nfunction calls in R code, and inline code like mean(), linked to their documentation with downlit;\n\n\nthe \"Authors and Citation\" page."
+  },
+  {
+    "objectID": "reference/build_site.html#value",
+    "href": "reference/build_site.html#value",
+    "title": "Build the package website",
+    "section": "Value",
+    "text": "Value\nInvisibly, the path to the built site."
+  },
+  {
+    "objectID": "reference/build_site.html#configuration",
+    "href": "reference/build_site.html#configuration",
+    "title": "Build the package website",
+    "section": "Configuration",
+    "text": "Configuration\n_quartodown.yml, at the package root, is optional; use_quartodown() creates one. It can contain:\n\n\nreference: groups the function reference index into sections. It is a list of sections, each with any of:\n\n\ntitle: the section heading;\n\n\nsubtitle: a heading one level below it;\n\n\ndesc: Markdown text shown under the heading(s);\n\n\ncontents: the topics listed, in order.\n\n\nFor example:\nreference:\n  - title: Read and write\n    desc: Functions for getting data in and out.\n    contents:\n      - read_data\n      - starts_with(\"write_\")\n  - title: Helpers\n    contents:\n      - has_concept(\"helpers\")\n      - -internal_helper\nEach contents entry is a topic (an \\alias or Rd file name) or a selector: starts_with(), ends_with(), contains() and matches() (a regular expression) match aliases, and has_concept() and has_keyword() match \\concepts and \\keywords. c() combines selectors, and a leading - removes topics from those selected by the entries above it (or, as the first entry, from all topics). Topics not listed in any section get a warning and are left off the index.\nWithout reference, every topic is listed in one section. Internal topics (\\keyword{internal}) are left out unless named or selected with internal = TRUE, e.g. starts_with(\"dev_\", internal = TRUE); then they get a page too. The format is the same as pkgdown’s reference: field, so an existing one can be copied over.\n\n\narticles: the order of the \"Articles\" navbar menu, as vignette paths relative to vignettes/ without extension (e.g. articles/details). Without it, every vignette other than the \"Get started\" one is listed, top-level vignettes first, then those in vignettes/articles/.\n\n\nquarto: settings merged over the generated Quarto configuration. Settings are merged key by key: a list of entries (e.g. the navbar’s left: or right: items) is added to, any other value is replaced, and ~ removes a setting. For example, to add a navbar link:\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n\n\nThe \"Get started\" link points to the vignette named after the package, or to the only top-level vignette if there is just one."
+  },
+  {
+    "objectID": "reference/build_site.html#examples",
+    "href": "reference/build_site.html#examples",
+    "title": "Build the package website",
+    "section": "Examples",
+    "text": "Examples\nuse_quartodown()\nbuild_site()\npreview_site()"
+  },
+  {
+    "objectID": "NEWS.html",
+    "href": "NEWS.html",
+    "title": "quartodown 0.0.0.9000",
+    "section": "",
+    "text": "quartodown 0.0.0.9000\n\nInitial release."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html",
+    "href": "vignettes/articles/technical.html",
+    "title": "Technical details",
+    "section": "",
+    "text": "quartodown generates a Quarto website project from the package sources, so the man pages, vignettes and generated pages are all Quarto pages, and every Quarto feature works."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#how-a-build-works",
+    "href": "vignettes/articles/technical.html#how-a-build-works",
+    "title": "Technical details",
+    "section": "How a build works",
+    "text": "How a build works\nquartodown::build_site() runs in three stages:\n\nBefore rendering, it installs the package into a temporary library and writes a Quarto project into _quarto/. With build_site(devel = TRUE), each page’s R process loads it from source with pkgload::load_all() instead.1\nDuring rendering, Quarto renders _quarto/ into docs/, running the examples and vignette code against that package.\nAfter rendering, it links code to its documentation and adds hover tooltips.\n\nThe only file you edit is _quartodown.yml. _quarto/ is rewritten on every build, and gitignored by quartodown::use_quartodown():\n_quarto/\n├── _quarto.yml                   # Quarto configuration (navbar, footer, theme)\n├── index.md                      # home page\n├── reference/\n│   ├── index.qmd                 # function reference index\n│   └── &lt;topic&gt;.qmd               # a page per man/*.Rd\n├── authors.qmd                   # authors and citation page\n├── vignettes/                    # the vignettes, as they are\n├── man/figures/                  # images for the README and man pages\n├── NEWS.md                       # changelog, with issues and users linked\n├── quartodown.scss               # theme on top of Quarto's HTML\n├── quartodown-header.html        # dark-mode default\n├── quartodown-after-body.html    # navbar alignment\n└── orcid.svg, ror.svg            # icons for authors' ORCID/ROR ids\nReference pages are served at reference/&lt;topic&gt;.html, and docs/pkgdown.yml lets downlit on other sites link to them."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#before-rendering",
+    "href": "vignettes/articles/technical.html#before-rendering",
+    "title": "Technical details",
+    "section": "Before rendering",
+    "text": "Before rendering\n\nThe home page\nindex.md holds the README next to a sidebar with links, the license, the citation, the developers and the README’s badges.\nA README &lt;picture&gt; with light and dark versions shows the one matching the site’s theme.\n\n\nThe reference index\nTo group and order the function index, use the reference: field in _quartodown.yml:\nreference:\n1  - title: Building the site\n2    desc: &gt;\n      Set up a package, then build its site.\n    contents:\n3      - use_quartodown\n4      - starts_with(\"build_\")\n\n1\n\nEach entry becomes a section of the index, with this heading.\n\n2\n\nAn optional description, shown under the heading.\n\n3\n\nA topic, by any of its \\alias{} names.\n\n4\n\nA selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude and c() to combine.\n\n\nbuild_site() warns about any topic the index leaves out, except \\keyword{internal} ones. An internal topic is listed, and gets a page, only when named, as with roxygen’s reexports, or selected with internal = TRUE, as in starts_with(\"dev_\", internal = TRUE).\n\n\nThe navbar and footer\nThe navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog. The footer has a “Developed by …” line, built from Authors@R.\n\n\nCode output\nR output is shown in the same block as the code, prefixed with #&gt;. To show a chunk’s output in a block of its own, set #| collapse: false on it.\n\n\n\n\n\n\nTipChanging the Quarto configuration\n\n\n\nA quarto: field in _quartodown.yml is merged over the generated configuration. Lists, like the navbar’s items, are appended to; any other setting is replaced, and ~ removes it. For example, to add a navbar link and fold code blocks:\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n  format:\n    html:\n      code-fold: true"
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#the-man-pages",
+    "href": "vignettes/articles/technical.html#the-man-pages",
+    "title": "Technical details",
+    "section": "The man pages",
+    "text": "The man pages\nEach man/*.Rd file, except \\keyword{internal} ones the reference index doesn’t list, becomes a reference page, rendered with the package’s Rd macros (such as Rdpack’s \\insertRef{}). Build-stage \\Sexpr{} macros run with the package installed, as in R CMD build, though not with devel = TRUE.\n\nUsage, the usage of R6 methods, and code blocks with a language, such as roxygen’s ```yaml, are syntax-highlighted with a copy button.\nLinks go to the topic’s reference page, or, for another package’s topic, to its documentation as downlit finds it.\nMath in \\eqn{} and \\deqn{} is rendered.\nExamples run, with their output in the same block. \\dontrun{} code is shown but not run, \\dontshow{} code is run but not shown, and @examplesIf examples run only if their condition holds."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#after-rendering",
+    "href": "vignettes/articles/technical.html#after-rendering",
+    "title": "Technical details",
+    "section": "After rendering",
+    "text": "After rendering\ndownlit links function calls in R code blocks, and inline code like mean(), to their documentation. In blocks with code annotations, only function calls and %op% operators such as %in% are linked.\nReferences to the package’s own functions also get a hover tooltip with their usage and the first sentence of their description. Try it: hover over build_site() or use_quartodown(). build_site() warns when a first sentence is longer than 200 characters, since the tooltip cuts it off. To build without tooltips, use build_site(tooltips = FALSE)."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#the-theme",
+    "href": "vignettes/articles/technical.html#the-theme",
+    "title": "Technical details",
+    "section": "The theme",
+    "text": "The theme\nThe site uses Quarto’s default theme in light mode and darkly in dark mode, with quartodown.scss on top of each:\ntheme:\n  light: [default, quartodown.scss]\n  dark: [darkly, quartodown.scss]\nquartodown.scss gives both modes the same font and heading sizes, so switching modes doesn’t shift the text. quartodown-header.html and quartodown-after-body.html also:\n\nshow the dark theme to new visitors whose system is set to dark mode,\nline up the navbar title with the page text,\nshow the version number smaller next to the package name,\nleave #&gt; output lines out when copying code."
+  },
+  {
+    "objectID": "vignettes/articles/technical.html#footnotes",
+    "href": "vignettes/articles/technical.html#footnotes",
+    "title": "Technical details",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\ndevel = TRUE may not work if your examples or vignettes start other R processes, for example with callr or parallel.↩︎"
+  },
+  {
     "objectID": "authors.html",
     "href": "authors.html",
     "title": "Authors and Citation",
     "section": "",
-    "text": "Bjarke Hautop Kristensen. Author, maintainer.\n\n\n\n\nHadley Wickham. Contributor.\n\n\n\n\nJay Hesselberth. Contributor.\n\n\n\n\nMaëlle Salmon. Contributor.\n\n\n\n\nOlivier Roy. Contributor.\n\n\n\n\nSalim Brüggemann. Contributor.\n\n\n\n\nPosit Software, PBC . Copyright holder."
+    "text": "Bjarke Hautop Kristensen. Author, maintainer.\n\n\n\n\nHadley Wickham. Contributor. Code adapted from pkgdown\n\n\n\n\nJay Hesselberth. Contributor. Code adapted from pkgdown\n\n\n\n\nMaëlle Salmon. Contributor. Code adapted from pkgdown\n\n\n\n\nOlivier Roy. Contributor. Code adapted from pkgdown\n\n\n\n\nSalim Brüggemann. Contributor. Code adapted from pkgdown\n\n\n\n\nPosit Software, PBC. Copyright holder. Copyright holder of pkgdown"
   },
   {
     "objectID": "authors.html#authors",
     "href": "authors.html#authors",
     "title": "Authors and Citation",
     "section": "",
-    "text": "Bjarke Hautop Kristensen. Author, maintainer.\n\n\n\n\nHadley Wickham. Contributor.\n\n\n\n\nJay Hesselberth. Contributor.\n\n\n\n\nMaëlle Salmon. Contributor.\n\n\n\n\nOlivier Roy. Contributor.\n\n\n\n\nSalim Brüggemann. Contributor.\n\n\n\n\nPosit Software, PBC . Copyright holder."
+    "text": "Bjarke Hautop Kristensen. Author, maintainer.\n\n\n\n\nHadley Wickham. Contributor. Code adapted from pkgdown\n\n\n\n\nJay Hesselberth. Contributor. Code adapted from pkgdown\n\n\n\n\nMaëlle Salmon. Contributor. Code adapted from pkgdown\n\n\n\n\nOlivier Roy. Contributor. Code adapted from pkgdown\n\n\n\n\nSalim Brüggemann. Contributor. Code adapted from pkgdown\n\n\n\n\nPosit Software, PBC. Copyright holder. Copyright holder of pkgdown"
   },
   {
     "objectID": "authors.html#citation",
@@ -105,46 +343,53 @@
     "text": "Footnotes\n\n\nThis is a footnote. It can contain formatting, code and links.↩︎"
   },
   {
-    "objectID": "reference/preview_site.html",
-    "href": "reference/preview_site.html",
-    "title": "Preview the built site",
+    "objectID": "vignettes/quartodown.html",
+    "href": "vignettes/quartodown.html",
+    "title": "Get started with quartodown",
     "section": "",
-    "text": "Serves docs/, as built by build_site(), in a web browser, and reloads the page when the site is rebuilt."
+    "text": "quartodown builds a website for an R package with Quarto. This guide sets up a package, builds its site, and publishes it on GitHub Pages."
   },
   {
-    "objectID": "reference/preview_site.html#description",
-    "href": "reference/preview_site.html#description",
-    "title": "Preview the built site",
+    "objectID": "vignettes/quartodown.html#set-up",
+    "href": "vignettes/quartodown.html#set-up",
+    "title": "Get started with quartodown",
+    "section": "Set up",
+    "text": "Set up\nFrom the root of your package, run:\nquartodown::use_quartodown()\nThis writes _quartodown.yml at the package root, the configuration file you can edit, and adds the files the build generates to .gitignore and .Rbuildignore."
+  },
+  {
+    "objectID": "vignettes/quartodown.html#build-the-site",
+    "href": "vignettes/quartodown.html#build-the-site",
+    "title": "Get started with quartodown",
+    "section": "Build the site",
+    "text": "Build the site\nquartodown::build_site()\nquartodown::preview_site()\nbuild_site() builds the site into docs/, and preview_site() opens it in your browser. Examples and vignettes run against your package’s current source. While iterating, build_site(devel = TRUE) is faster because it loads the package with pkgload::load_all() instead of installing it.\nThe following is added to your site:\n\nHome page: your README.md. Next to it, a sidebar links to the source code, the bug tracker and CRAN (if the package is there), and shows the license, citation and authors from DESCRIPTION. Any badges in your README (between &lt;!-- badges: start --&gt; and &lt;!-- badges: end --&gt;) are moved into the sidebar.\nReference: a page for each help topic in man/, plus an index page listing them all.\nGet started: the vignette with the same name as your package, like this one.\nArticles: all your other vignettes, including any in vignettes/articles/.\nChangelog: your NEWS.md. Issue numbers like #123 and GitHub usernames like @user become links."
+  },
+  {
+    "objectID": "vignettes/quartodown.html#organize-the-reference-index",
+    "href": "vignettes/quartodown.html#organize-the-reference-index",
+    "title": "Get started with quartodown",
+    "section": "Organize the reference index",
+    "text": "Organize the reference index\nBy default the reference index lists every function in one section. To group them, edit the reference: field in _quartodown.yml:\nreference:\n  - title: Setting up\n    contents:\n      - use_quartodown\n  - title: Building\n    contents:\n      - starts_with(\"build_\")\nSee ?build_site for the other fields."
+  },
+  {
+    "objectID": "vignettes/quartodown.html#publish-on-github-pages",
+    "href": "vignettes/quartodown.html#publish-on-github-pages",
+    "title": "Get started with quartodown",
+    "section": "Publish on GitHub Pages",
+    "text": "Publish on GitHub Pages\nTo build the site and deploy it to the gh-pages branch on every push, add a GitHub Actions workflow:\nquartodown::use_quartodown_action()\nThis writes .github/workflows/quartodown.yaml. Commit and push it. Once its first run has created the gh-pages branch, go to the Pages section of your repository’s settings on GitHub and choose to deploy from that branch."
+  },
+  {
+    "objectID": "vignettes/quartodown.html#learn-more",
+    "href": "vignettes/quartodown.html#learn-more",
+    "title": "Get started with quartodown",
+    "section": "Learn more",
+    "text": "Learn more\nQuarto features shows Quarto’s authoring features, such as callouts, tabsets and footnotes, on a quartodown site.\nTechnical details explains how a build works and how quartodown’s theme is put together."
+  },
+  {
+    "objectID": "LICENSE-text.html",
+    "href": "LICENSE-text.html",
+    "title": "License",
     "section": "",
-    "text": "Serves docs/, as built by build_site(), in a web browser, and reloads the page when the site is rebuilt."
-  },
-  {
-    "objectID": "reference/preview_site.html#usage",
-    "href": "reference/preview_site.html#usage",
-    "title": "Preview the built site",
-    "section": "Usage",
-    "text": "Usage\npreview_site(path = \".\")"
-  },
-  {
-    "objectID": "reference/preview_site.html#arguments",
-    "href": "reference/preview_site.html#arguments",
-    "title": "Preview the built site",
-    "section": "Arguments",
-    "text": "Arguments\n\n\n\npath\n\n\nPath to the package root."
-  },
-  {
-    "objectID": "reference/preview_site.html#value",
-    "href": "reference/preview_site.html#value",
-    "title": "Preview the built site",
-    "section": "Value",
-    "text": "Value\nThe server, invisibly; see servr::httw()."
-  },
-  {
-    "objectID": "reference/preview_site.html#examples",
-    "href": "reference/preview_site.html#examples",
-    "title": "Preview the built site",
-    "section": "Examples",
-    "text": "Examples\nbuild_site()\npreview_site()"
+    "text": "YEAR: 2026\nCOPYRIGHT HOLDER: quartodown authors"
   },
   {
     "objectID": "reference/use_quartodown.html",
@@ -193,112 +438,7 @@
     "href": "reference/use_quartodown.html#examples",
     "title": "Set up a package to use quartodown",
     "section": "Examples",
-    "text": "Examples\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_quartodown(pkg)\n#&gt; ✔ Wrote '/tmp/RtmpPdK77U/examplepkg19683696dc2b/_quartodown.yml' (edit this to group your functions).\n#&gt; ✔ Added `_quarto/*` and `!_quarto/_freeze/` to '/tmp/RtmpPdK77U/examplepkg19683696dc2b/.gitignore'.\n#&gt; ✔ Added `^docs$`, `^_quarto$`, and `^_quartodown\\.yml$` to '/tmp/RtmpPdK77U/examplepkg19683696dc2b/.Rbuildignore'.\n#&gt; \n#&gt; Next steps:\n#&gt; 1. Edit '_quartodown.yml' to group your functions the way you want.\n#&gt; 2. Build the site with `quartodown::build_site()`.\n#&gt; 3. Preview it with `quartodown::preview_site()`.\nreadLines(file.path(pkg, \"_quartodown.yml\"))\n#&gt;  [1] \"# Configuration for quartodown::build_site(). See ?quartodown::build_site for\"\n#&gt;  [2] \"# all fields, including `articles:` (navbar order) and `quarto:` (extra\"      \n#&gt;  [3] \"# Quarto settings).\"                                                          \n#&gt;  [4] \"\"                                                                             \n#&gt;  [5] \"# Groups the function reference index, in the same shape as pkgdown's\"        \n#&gt;  [6] \"# `reference:` field.\"                                                        \n#&gt;  [7] \"reference:\"                                                                   \n#&gt;  [8] \"  - title: All functions\"                                                     \n#&gt;  [9] \"    contents:\"                                                                \n#&gt; [10] \"      []\"\nunlink(pkg, recursive = TRUE)"
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html",
-    "href": "reference/use_quartodown_action.html",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "",
-    "text": "Writes .github/workflows/quartodown.yaml, a GitHub Actions workflow that builds the site and deploys it to the gh-pages branch. It runs build_site() on every push, pull request and release, but only deploys when it isn’t a pull request. Also adds ^\\.github$ to .Rbuildignore if it’s not already there."
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html#description",
-    "href": "reference/use_quartodown_action.html#description",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "",
-    "text": "Writes .github/workflows/quartodown.yaml, a GitHub Actions workflow that builds the site and deploys it to the gh-pages branch. It runs build_site() on every push, pull request and release, but only deploys when it isn’t a pull request. Also adds ^\\.github$ to .Rbuildignore if it’s not already there."
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html#usage",
-    "href": "reference/use_quartodown_action.html#usage",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "Usage",
-    "text": "Usage\nuse_quartodown_action(path = \".\", overwrite = FALSE)"
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html#arguments",
-    "href": "reference/use_quartodown_action.html#arguments",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "Arguments",
-    "text": "Arguments\n\n\n\npath\n\n\nPath to the target package root. Defaults to the current directory.\n\n\n\n\noverwrite\n\n\nLogical. Replace an existing .github/workflows/quartodown.yaml? By default it’s left as is."
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html#details",
-    "href": "reference/use_quartodown_action.html#details",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "Details",
-    "text": "Details\nOnce the workflow’s first run has created the gh-pages branch, go to the Pages section of the repository’s settings on GitHub and choose to deploy from that branch."
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html#value",
-    "href": "reference/use_quartodown_action.html#value",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "Value",
-    "text": "Value\nInvisibly, the path to the workflow file."
-  },
-  {
-    "objectID": "reference/use_quartodown_action.html#examples",
-    "href": "reference/use_quartodown_action.html#examples",
-    "title": "Set up a GitHub Actions workflow that publishes the site",
-    "section": "Examples",
-    "text": "Examples\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_quartodown_action(pkg)\n#&gt; ✔ Wrote '/tmp/RtmpjUXQMH/examplepkg194644d4713a/.github/workflows/quartodown.yaml'.\n#&gt; ✔ Added `^\\.github$` to '/tmp/RtmpjUXQMH/examplepkg194644d4713a/.Rbuildignore'.\n#&gt; \n#&gt; Next steps:\n#&gt; 1. Commit and push the workflow.\n#&gt; 2. Once its first run has created the `gh-pages` branch, go to the Pages\n#&gt; section of the repository's settings on GitHub and choose to deploy from that\n#&gt; branch.\nlist.files(pkg, recursive = TRUE, all.files = TRUE)\n#&gt; [1] \".github/workflows/quartodown.yaml\" \".Rbuildignore\"                    \n#&gt; [3] \"DESCRIPTION\"\nunlink(pkg, recursive = TRUE)"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "quartodown ",
-    "section": "",
-    "text": "quartodown is an R package that turns your package’s README, help pages and vignettes into a website, rendered entirely by Quarto.\n\n\npkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (theme: \"none\", minimal: TRUE). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.\nquartodown renders the whole site with Quarto itself, so you get:\n\nfull Quarto support, on every page;\na package website layout: a home page sidebar, a grouped function reference, articles and a changelog;\nfunction links with hover tooltips.\n\n\n\n\nInstall from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/quartodown\")\n\n\n\nBrowse around to see how it looks! Quarto features shows callouts, tabsets, footnotes and more on a quartodown site. If you like what you see, and want to use it for your own package, run:\nquartodown::use_quartodown()\nThis writes _quartodown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s reference: field. It also gitignores the files the build generates.\nThen build the site:\nquartodown::build_site()\nA preview can then be viewed using quartodown::preview_site().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. See ?quartodown::build_site for everything quartodown.yml can configure.\n\n\n\n\njlbind\n\nUsing quartodown for your package? Feel free to open a pull request adding it to this list."
-  },
-  {
-    "objectID": "index.html#why-quartodown",
-    "href": "index.html#why-quartodown",
-    "title": "quartodown ",
-    "section": "",
-    "text": "pkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (theme: \"none\", minimal: TRUE). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.\nquartodown renders the whole site with Quarto itself, so you get:\n\nfull Quarto support, on every page;\na package website layout: a home page sidebar, a grouped function reference, articles and a changelog;\nfunction links with hover tooltips."
-  },
-  {
-    "objectID": "index.html#installation",
-    "href": "index.html#installation",
-    "title": "quartodown ",
-    "section": "",
-    "text": "Install from GitHub:\npak::pak(\"https://github.com/BjarkeHautop/quartodown\")"
-  },
-  {
-    "objectID": "index.html#usage",
-    "href": "index.html#usage",
-    "title": "quartodown ",
-    "section": "",
-    "text": "Browse around to see how it looks! Quarto features shows callouts, tabsets, footnotes and more on a quartodown site. If you like what you see, and want to use it for your own package, run:\nquartodown::use_quartodown()\nThis writes _quartodown.yml, with a reference: field that lists your package’s current functions in one section; edit it to group them however you’d like, in the same shape as pkgdown’s reference: field. It also gitignores the files the build generates.\nThen build the site:\nquartodown::build_site()\nA preview can then be viewed using quartodown::preview_site().\nThe navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in vignettes/articles/, go under “Articles”. See ?quartodown::build_site for everything quartodown.yml can configure."
-  },
-  {
-    "objectID": "index.html#packages-using-quartodown",
-    "href": "index.html#packages-using-quartodown",
-    "title": "quartodown ",
-    "section": "",
-    "text": "jlbind\n\nUsing quartodown for your package? Feel free to open a pull request adding it to this list."
-  },
-  {
-    "objectID": "NEWS.html",
-    "href": "NEWS.html",
-    "title": "quartodown 0.0.0.9000",
-    "section": "",
-    "text": "quartodown 0.0.0.9000\n\nInitial release."
-  },
-  {
-    "objectID": "LICENSE.html",
-    "href": "LICENSE.html",
-    "title": "MIT License",
-    "section": "",
-    "text": "MIT License\nCopyright (c) 2026 quartodown authors\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
-  },
-  {
-    "objectID": "LICENSE-text.html",
-    "href": "LICENSE-text.html",
-    "title": "License",
-    "section": "",
-    "text": "YEAR: 2026\nCOPYRIGHT HOLDER: quartodown authors"
+    "text": "Examples\n\npkg &lt;- tempfile(\"examplepkg\")\ndir.create(pkg)\nwrite(\n  \"Package: examplepkg\\nVersion: 0.0.0.9000\",\n  file.path(pkg, \"DESCRIPTION\")\n)\nuse_quartodown(pkg)\n#&gt; ✔ Wrote '/tmp/RtmpdIxL32/examplepkg192a5ecccbaf/_quartodown.yml' (edit this to group your functions).\n#&gt; ✔ Added `_quarto/*` and `!_quarto/_freeze/` to '/tmp/RtmpdIxL32/examplepkg192a5ecccbaf/.gitignore'.\n#&gt; ✔ Added `^docs$`, `^_quarto$`, and `^_quartodown\\.yml$` to '/tmp/RtmpdIxL32/examplepkg192a5ecccbaf/.Rbuildignore'.\n#&gt; \n#&gt; Next steps:\n#&gt; 1. Edit '_quartodown.yml' to group your functions the way you want.\n#&gt; 2. Build the site with `quartodown::build_site()`.\n#&gt; 3. Preview it with `quartodown::preview_site()`.\nreadLines(file.path(pkg, \"_quartodown.yml\"))\n#&gt;  [1] \"# Configuration for quartodown::build_site(). See ?quartodown::build_site for\"\n#&gt;  [2] \"# all fields, including `articles:` (navbar order) and `quarto:` (extra\"      \n#&gt;  [3] \"# Quarto settings).\"                                                          \n#&gt;  [4] \"\"                                                                             \n#&gt;  [5] \"# Groups the function reference index into sections, each with a `title:`\"    \n#&gt;  [6] \"# and the `contents:` it lists (topic names or selectors such as\"             \n#&gt;  [7] \"# starts_with(\\\"read_\\\")). See ?quartodown::build_site for the details.\"      \n#&gt;  [8] \"reference:\"                                                                   \n#&gt;  [9] \"  - title: All functions\"                                                     \n#&gt; [10] \"    contents:\"                                                                \n#&gt; [11] \"      []\"\nunlink(pkg, recursive = TRUE)"
   },
   {
     "objectID": "reference/index.html",
@@ -315,150 +455,10 @@
     "text": "build_site()\n\n\nBuild the package website\n\n\npreview_site()\n\n\nPreview the built site\n\n\nuse_quartodown()\n\n\nSet up a package to use quartodown\n\n\nuse_quartodown_action()\n\n\nSet up a GitHub Actions workflow that publishes the site"
   },
   {
-    "objectID": "reference/build_site.html",
-    "href": "reference/build_site.html",
-    "title": "Build the package website",
+    "objectID": "LICENSE.html",
+    "href": "LICENSE.html",
+    "title": "MIT License",
     "section": "",
-    "text": "Builds the package website into docs/ with Quarto."
-  },
-  {
-    "objectID": "reference/build_site.html#description",
-    "href": "reference/build_site.html#description",
-    "title": "Build the package website",
-    "section": "",
-    "text": "Builds the package website into docs/ with Quarto."
-  },
-  {
-    "objectID": "reference/build_site.html#usage",
-    "href": "reference/build_site.html#usage",
-    "title": "Build the package website",
-    "section": "Usage",
-    "text": "Usage\nbuild_site(\n  path = \".\",\n  tooltips = TRUE,\n  freeze = FALSE,\n  quiet = TRUE,\n  devel = FALSE\n)"
-  },
-  {
-    "objectID": "reference/build_site.html#arguments",
-    "href": "reference/build_site.html#arguments",
-    "title": "Build the package website",
-    "section": "Arguments",
-    "text": "Arguments\n\n\n\npath\n\n\nPath to the package root.\n\n\n\n\ntooltips\n\n\nLogical. Link references to the package’s own functions (in code blocks and inline code) to their reference page, with a hover tooltip showing the function’s usage and the first sentence of its description?\n\n\n\n\nfreeze\n\n\nLogical. Reuse the results of code that ran in an earlier build, for pages whose source hasn’t changed since? Uses Quarto’s freeze, which keeps them in _quarto/_freeze/.\n\n\n\n\nquiet\n\n\nLogical. Hide Quarto’s rendering output?\n\n\n\n\ndevel\n\n\nLogical. By default, the examples and vignettes run against the package installed from path into a temporary library. With devel = TRUE, they run against it loaded with pkgload::load_all() instead, which is faster, but code that starts other R processes (e.g. with callr or parallel workers) won’t find the package there."
-  },
-  {
-    "objectID": "reference/build_site.html#details",
-    "href": "reference/build_site.html#details",
-    "title": "Build the package website",
-    "section": "Details",
-    "text": "Details\nbuild_site() assembles a Quarto website project in _quarto/ from the package sources and _quartodown.yml, then renders it:\n\n\nthe function reference: a grouped index, and a page per man/*.Rd file with its examples run, except \\keyword{internal} ones not listed under reference:;\n\n\nthe vignettes, including those in vignettes/articles/;\n\n\nNEWS.md as the changelog, with issues (#123) and GitHub users (@user) linked;\n\n\nLICENSE.md, the LICENSE file, and CODE_OF_CONDUCT.md, CONTRIBUTING.md and SUPPORT.md (at the top level or in .github/);\n\n\nthe navbar, with a \"Get started\" link, the function reference, an \"Articles\" menu and the changelog;\n\n\nthe home page, built from README.md plus a sidebar (links, license, citation, developers and badges);\n\n\ncode output printed in the code’s block, each line prefixed with #&gt;, as in pkgdown (the copy button leaves those lines out);\n\n\nfunction calls in R code, and inline code like mean(), linked to their documentation with downlit, as in pkgdown;\n\n\nthe \"Authors and Citation\" page."
-  },
-  {
-    "objectID": "reference/build_site.html#value",
-    "href": "reference/build_site.html#value",
-    "title": "Build the package website",
-    "section": "Value",
-    "text": "Value\nInvisibly, the path to the built site."
-  },
-  {
-    "objectID": "reference/build_site.html#configuration",
-    "href": "reference/build_site.html#configuration",
-    "title": "Build the package website",
-    "section": "Configuration",
-    "text": "Configuration\n_quartodown.yml, at the package root, is optional; use_quartodown() creates one. It can contain:\n\n\nreference: groups the function reference index, in the same shape as pkgdown’s reference: field. contents entries can be a topic alias or a selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude, and c() to combine. Without it, every topic is listed in one section. Internal topics (\\keyword{internal}) are left out unless named or selected with internal = TRUE, e.g. starts_with(\"dev_\", internal = TRUE); then they get a page too.\n\n\narticles: the order of the \"Articles\" navbar menu, as vignette paths relative to vignettes/ without extension (e.g. articles/details). Without it, every vignette other than the \"Get started\" one is listed, top-level vignettes first, then those in vignettes/articles/.\n\n\nquarto: settings merged over the generated Quarto configuration. Settings are merged key by key: a list of entries (e.g. the navbar’s left: or right: items) is added to, any other value is replaced, and ~ removes a setting. For example, to add a navbar link:\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n\n\nThe \"Get started\" link points to the vignette named after the package, or to the only top-level vignette if there is just one."
-  },
-  {
-    "objectID": "reference/build_site.html#examples",
-    "href": "reference/build_site.html#examples",
-    "title": "Build the package website",
-    "section": "Examples",
-    "text": "Examples\nuse_quartodown()\nbuild_site()\npreview_site()"
-  },
-  {
-    "objectID": "vignettes/articles/technical.html",
-    "href": "vignettes/articles/technical.html",
-    "title": "Technical details",
-    "section": "",
-    "text": "quartodown generates a Quarto website project from the package sources, so the man pages, vignettes and generated pages are all Quarto pages, and every Quarto feature works."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#how-a-build-works",
-    "href": "vignettes/articles/technical.html#how-a-build-works",
-    "title": "Technical details",
-    "section": "How a build works",
-    "text": "How a build works\nquartodown::build_site() runs in three stages:\n\nBefore rendering, it installs the package into a temporary library and writes a Quarto project into _quarto/. With build_site(devel = TRUE), each page’s R process loads it from source with pkgload::load_all() instead.1\nDuring rendering, Quarto renders _quarto/ into docs/, running the examples and vignette code against that package.\nAfter rendering, it links code to its documentation and adds hover tooltips.\n\nThe only file you edit is _quartodown.yml. _quarto/ is rewritten on every build, and gitignored by quartodown::use_quartodown():\n_quarto/\n├── _quarto.yml                   # Quarto configuration (navbar, footer, theme)\n├── index.md                      # home page\n├── reference/\n│   ├── index.qmd                 # function reference index\n│   └── &lt;topic&gt;.qmd               # a page per man/*.Rd\n├── authors.qmd                   # authors and citation page\n├── vignettes/                    # the vignettes, as they are\n├── man/figures/                  # images for the README and man pages\n├── NEWS.md                       # changelog, with issues and users linked\n├── quartodown.scss               # theme on top of Quarto's HTML\n├── quartodown-header.html        # dark-mode default\n└── quartodown-after-body.html    # navbar alignment\nReference pages are served at reference/&lt;topic&gt;.html, and docs/pkgdown.yml lets downlit on other sites link to them."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#before-rendering",
-    "href": "vignettes/articles/technical.html#before-rendering",
-    "title": "Technical details",
-    "section": "Before rendering",
-    "text": "Before rendering\n\nThe home page\nindex.md holds the README next to a sidebar with links, the license, the citation, the developers and the README’s badges.\nA README &lt;picture&gt; with light and dark versions shows the one matching the site’s theme.\n\n\nThe reference index\nTo group and order the function index, use the reference: field in _quartodown.yml:\nreference:\n1  - title: Building the site\n2    desc: &gt;\n      Set up a package, then build its site.\n    contents:\n3      - use_quartodown\n4      - starts_with(\"build_\")\n\n1\n\nEach entry becomes a section of the index, with this heading.\n\n2\n\nAn optional description, shown under the heading.\n\n3\n\nA topic, by any of its \\alias{} names.\n\n4\n\nA selector: starts_with(), ends_with(), contains(), matches(), has_concept(), has_keyword(), - to exclude and c() to combine.\n\n\nbuild_site() warns about any topic the index leaves out, except \\keyword{internal} ones. An internal topic is listed, and gets a page, only when named, as with roxygen’s reexports, or selected with internal = TRUE, as in starts_with(\"dev_\", internal = TRUE).\n\n\nThe navbar and footer\nThe navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog. The footer has a “Developed by …” line, built from Authors@R.\n\n\nCode output\nR output is shown in the same block as the code, prefixed with #&gt;. To show a chunk’s output in a block of its own, set #| collapse: false on it.\n\n\n\n\n\n\nTipChanging the Quarto configuration\n\n\n\nA quarto: field in _quartodown.yml is merged over the generated configuration. Lists, like the navbar’s items, are appended to; any other setting is replaced, and ~ removes it. For example, to add a navbar link and fold code blocks:\nquarto:\n  website:\n    navbar:\n      right:\n        - text: Blog\n          href: https://example.com\n  format:\n    html:\n      code-fold: true"
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#the-man-pages",
-    "href": "vignettes/articles/technical.html#the-man-pages",
-    "title": "Technical details",
-    "section": "The man pages",
-    "text": "The man pages\nEach man/*.Rd file, except \\keyword{internal} ones the reference index doesn’t list, becomes a reference page, rendered with the package’s Rd macros (such as Rdpack’s \\insertRef{}). Build-stage \\Sexpr{} macros run with the package installed, as in R CMD build, though not with devel = TRUE.\n\nUsage, the usage of R6 methods, and code blocks with a language, such as roxygen’s ```yaml, are syntax-highlighted with a copy button.\nLinks go to the topic’s reference page, or, for another package’s topic, to its documentation as downlit finds it.\nMath in \\eqn{} and \\deqn{} is rendered.\nExamples run, with their output in the same block. \\dontrun{} code is shown but not run, \\dontshow{} code is run but not shown, and @examplesIf examples run only if their condition holds."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#after-rendering",
-    "href": "vignettes/articles/technical.html#after-rendering",
-    "title": "Technical details",
-    "section": "After rendering",
-    "text": "After rendering\ndownlit links function calls in R code blocks, and inline code like mean(), to their documentation. In blocks with code annotations, only function calls and %op% operators such as %in% are linked.\nReferences to the package’s own functions also get a hover tooltip with their usage and the first sentence of their description. Try it: hover over build_site() or use_quartodown(). build_site() warns when a first sentence is longer than 200 characters, since the tooltip cuts it off. To build without tooltips, use build_site(tooltips = FALSE)."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#the-theme",
-    "href": "vignettes/articles/technical.html#the-theme",
-    "title": "Technical details",
-    "section": "The theme",
-    "text": "The theme\nThe site uses Quarto’s default theme in light mode and darkly in dark mode, with quartodown.scss on top of each:\ntheme:\n  light: [default, quartodown.scss]\n  dark: [darkly, quartodown.scss]\nquartodown.scss gives both modes the same font and heading sizes, so switching modes doesn’t shift the text. quartodown-header.html and quartodown-after-body.html also:\n\nshow the dark theme to new visitors whose system is set to dark mode,\nline up the navbar title with the page text,\nshow the version number smaller next to the package name,\nleave #&gt; output lines out when copying code."
-  },
-  {
-    "objectID": "vignettes/articles/technical.html#footnotes",
-    "href": "vignettes/articles/technical.html#footnotes",
-    "title": "Technical details",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\ndevel = TRUE may not work if your examples or vignettes start other R processes, for example with callr or parallel.↩︎"
-  },
-  {
-    "objectID": "vignettes/quartodown.html",
-    "href": "vignettes/quartodown.html",
-    "title": "Get started with quartodown",
-    "section": "",
-    "text": "quartodown builds a website for an R package with Quarto. This guide sets up a package, builds its site, and publishes it on GitHub Pages."
-  },
-  {
-    "objectID": "vignettes/quartodown.html#set-up",
-    "href": "vignettes/quartodown.html#set-up",
-    "title": "Get started with quartodown",
-    "section": "Set up",
-    "text": "Set up\nFrom the root of your package, run:\nquartodown::use_quartodown()\nThis writes _quartodown.yml at the package root, the configuration file you can edit, and adds the files the build generates to .gitignore and .Rbuildignore."
-  },
-  {
-    "objectID": "vignettes/quartodown.html#build-the-site",
-    "href": "vignettes/quartodown.html#build-the-site",
-    "title": "Get started with quartodown",
-    "section": "Build the site",
-    "text": "Build the site\nquartodown::build_site()\nquartodown::preview_site()\nbuild_site() builds the site into docs/, and preview_site() opens it in your browser. Examples and vignettes run against your package’s current source. While iterating, build_site(devel = TRUE) is faster because it loads the package with pkgload::load_all() instead of installing it.\nThe following is added to your site:\n\nHome page: your README.md. Next to it, a sidebar links to the source code, the bug tracker and CRAN (if the package is there), and shows the license, citation and authors from DESCRIPTION. Any badges in your README (between &lt;!-- badges: start --&gt; and &lt;!-- badges: end --&gt;) are moved into the sidebar.\nReference: a page for each help topic in man/, plus an index page listing them all.\nGet started: the vignette with the same name as your package, like this one.\nArticles: all your other vignettes, including any in vignettes/articles/.\nChangelog: your NEWS.md. Issue numbers like #123 and GitHub usernames like @user become links."
-  },
-  {
-    "objectID": "vignettes/quartodown.html#organize-the-reference-index",
-    "href": "vignettes/quartodown.html#organize-the-reference-index",
-    "title": "Get started with quartodown",
-    "section": "Organize the reference index",
-    "text": "Organize the reference index\nBy default the reference index lists every function in one section. To group them, edit the reference: field in _quartodown.yml:\nreference:\n  - title: Setting up\n    contents:\n      - use_quartodown\n  - title: Building\n    contents:\n      - starts_with(\"build_\")\nSee ?build_site for the other fields."
-  },
-  {
-    "objectID": "vignettes/quartodown.html#publish-on-github-pages",
-    "href": "vignettes/quartodown.html#publish-on-github-pages",
-    "title": "Get started with quartodown",
-    "section": "Publish on GitHub Pages",
-    "text": "Publish on GitHub Pages\nTo build the site and deploy it to the gh-pages branch on every push, add a GitHub Actions workflow:\nquartodown::use_quartodown_action()\nThis writes .github/workflows/quartodown.yaml. Commit and push it. Once its first run has created the gh-pages branch, go to the Pages section of your repository’s settings on GitHub and choose to deploy from that branch."
-  },
-  {
-    "objectID": "vignettes/quartodown.html#learn-more",
-    "href": "vignettes/quartodown.html#learn-more",
-    "title": "Get started with quartodown",
-    "section": "Learn more",
-    "text": "Learn more\nQuarto features shows Quarto’s authoring features, such as callouts, tabsets and footnotes, on a quartodown site.\nTechnical details explains how a build works and how quartodown’s theme is put together."
+    "text": "MIT License\nCopyright (c) 2026 quartodown authors\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
   }
 ]
