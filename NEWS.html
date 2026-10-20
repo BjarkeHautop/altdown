@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>news – altdown 0.0.0.9000</title>
+<title>news – quartodown 0.0.0.9000</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -47,9 +47,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-cbb99149e1c34264912d7b856a3c82be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-333bcda2ad92058c3786c51f858e072d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-cbb99149e1c34264912d7b856a3c82be.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-74d50107868953456cd08a36b72f1539.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-f06876e8cb1241d0f9c4a49d6371ec6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-74d50107868953456cd08a36b72f1539.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -273,7 +273,7 @@ visitor has never toggled here before - an explicit past choice always wins.
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">altdown 0.0.0.9000</span>
+    <span class="navbar-title">quartodown 0.0.0.9000</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -283,11 +283,11 @@ visitor has never toggled here before - an explicit past choice always wins.
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./vignettes/altdown.html"> 
+    <a class="nav-link" href="./vignettes/quartodown.html"> 
 <span class="menu-text">Get started</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./reference.html"> 
+    <a class="nav-link" href="./reference/index.html"> 
 <span class="menu-text">Reference</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -308,7 +308,7 @@ visitor has never toggled here before - an explicit past choice always wins.
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/bjarkehautop/altdown"> <i class="bi bi-github" role="img" aria-label="GitHub">
+    <a class="nav-link" href="https://github.com/bjarkehautop/quartodown"> <i class="bi bi-github" role="img" aria-label="GitHub">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -329,7 +329,7 @@ visitor has never toggled here before - an explicit past choice always wins.
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#altdown-0.0.0.9000" id="toc-altdown-0.0.0.9000" class="nav-link active" data-scroll-target="#altdown-0.0.0.9000">altdown 0.0.0.9000</a></li>
+  <li><a href="#quartodown-0.0.0.9000" id="toc-quartodown-0.0.0.9000" class="nav-link active" data-scroll-target="#quartodown-0.0.0.9000">quartodown 0.0.0.9000</a></li>
   </ul>
 </nav>
     </div>
@@ -340,8 +340,8 @@ visitor has never toggled here before - an explicit past choice always wins.
 
 
 
-<section id="altdown-0.0.0.9000" class="level1">
-<h1>altdown 0.0.0.9000</h1>
+<section id="quartodown-0.0.0.9000" class="level1">
+<h1>quartodown 0.0.0.9000</h1>
 <ul>
 <li>Initial release.</li>
 </ul>
@@ -364,12 +364,10 @@ instead, on every page, after layout settles.
     // Links/License column), <main> itself becomes a "page-full"
     // grid spanning the whole viewport, so its own box tells us
     // nothing about where the visible text starts — look at the
-    // title/first heading instead. On every other page, main's own
-    // edge already sits flush with the text and is the more
-    // reliable target (man pages have no <h1>, only unnumbered
-    // <h2> titles, so this avoids depending on heading level).
+    // title instead. On every other page, main's own edge already
+    // sits flush with the text.
     if (main.classList.contains("page-full")) {
-      var heading = main.querySelector("h1, h2.unnumbered");
+      var heading = main.querySelector("h1");
       if (heading) return heading.getBoundingClientRect().left;
     }
     return main.getBoundingClientRect().left;
@@ -387,7 +385,7 @@ instead, on every page, after layout settles.
   // <version>" (see `website.title` in quarto_config()) -
   // Quarto gives us no way to style just the version at the YAML
   // level. Split it out into its own `<small>` here so
-  // altdown.scss can shrink it, pkgdown style.
+  // quartodown.scss can shrink it, pkgdown style.
   function shrinkNavbarVersion() {
     var title = document.querySelector(".navbar-title");
     if (!title || title.querySelector(".navbar-version")) return;
@@ -837,7 +835,7 @@ instead, on every page, after layout settles.
       &nbsp;
     </div>
     <div class="nav-footer-right">
-<p>Site built with <a href="https://altdoc.etiennebacher.com/">altdoc</a> and <a href="https://quarto.org/">Quarto</a>, using the <a href="https://github.com/BjarkeHautop/altdown">altdown</a> theme.</p>
+<p>Site built with <a href="https://github.com/BjarkeHautop/quartodown">quartodown</a> and <a href="https://quarto.org/">Quarto</a>.</p>
 </div>
   </div>
 </footer>
