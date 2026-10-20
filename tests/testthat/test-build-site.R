@@ -580,6 +580,28 @@ test_that("build_reference_qmd() leaves out internal topics, which altdoc doesn'
   expect_false(any(grepl("examplepkg-package", lines, fixed = TRUE)))
 })
 
+test_that("build_reference_qmd() renders pkgdown's title-only and subtitle blocks", {
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo")
+
+  config <- reference_config(c(
+    "reference:",
+    "  - title: Verbs",
+    "  - subtitle: Rows",
+    "    desc: Row verbs.",
+    "    contents:",
+    "      - foo"
+  ))
+
+  build_reference_qmd(dir, config)
+  lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
+  expect_true("## Verbs" %in% lines)
+  expect_true("### Rows" %in% lines)
+  expect_false("## " %in% lines)
+  # The title-only block gets no empty <dl>.
+  expect_length(grep('<dl class="ref-index">', lines, fixed = TRUE), 1)
+})
+
 test_that("build_reference_qmd() lists every topic in one section without `reference:`", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")
@@ -877,7 +899,7 @@ test_that("hide_library_calls() drops the package's own library() from plain blo
   )
 })
 
-test_that("rd_macro_sections() renders sections using the package's Rd macros", {
+test_that("rd_splice_sections() renders sections using the package's Rd macros", {
   dir <- new_pkg()
   dir.create(file.path(dir, "man", "macros"), recursive = TRUE)
   writeLines(
@@ -896,20 +918,55 @@ test_that("rd_macro_sections() renders sections using the package's Rd macros", 
     file.path(dir, "man", "foo.Rd")
   )
 
-  sections <- rd_macro_sections(dir)
+  sections <- rd_splice_sections(dir)
   expect_named(sections, "foo")
   expect_named(sections$foo, "References")
   expect_true(any(grepl("HELLO", sections$foo$References)))
 })
 
-test_that("rd_macro_sections() is empty for a package without Rd macros", {
+test_that("rd_splice_sections() is empty for a package without Rd macros", {
   dir <- new_pkg()
   dir.create(file.path(dir, "man"))
   writeLines(
     c("\\name{foo}", "\\alias{foo}", "\\title{Foo}", "\\description{Plain.}"),
     file.path(dir, "man", "foo.Rd")
   )
-  expect_identical(rd_macro_sections(dir), list())
+  expect_identical(rd_splice_sections(dir), list())
+})
+
+test_that("rd_splice_sections() keeps a custom Examples section's prose out of an R chunk", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "man"))
+  writeLines(
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\description{Plain.}",
+      "\\section{Examples}{",
+      "Here we show \\code{foo()}:",
+      "\\preformatted{foo()}",
+      "}"
+    ),
+    file.path(dir, "man", "foo.Rd")
+  )
+  writeLines(
+    c(
+      "\\name{bar}",
+      "\\alias{bar}",
+      "\\title{Bar}",
+      "\\description{Plain.}",
+      "\\section{Examples}{Prose.}",
+      "\\examples{bar()}"
+    ),
+    file.path(dir, "man", "bar.Rd")
+  )
+
+  sections <- rd_splice_sections(dir)
+  expect_named(sections, "foo")
+  expect_named(sections$foo, "Examples")
+  expect_true(any(grepl("Here we show", sections$foo$Examples)))
+  expect_false(any(grepl("```", sections$foo$Examples, fixed = TRUE)))
 })
 
 test_that("splice_rd_sections() replaces only the named sections' bodies", {

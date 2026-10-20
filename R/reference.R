@@ -390,14 +390,20 @@ build_reference_qmd <- function(path, config = list()) {
         },
         character(1)
       )
+      # As in pkgdown, `title:` is a section heading and `subtitle:` a
+      # heading one level down; either may stand alone with no contents.
       c(
-        paste0("## ", block$title),
-        "",
+        if (!is.null(block$title)) c(paste0("## ", block$title), ""),
+        if (!is.null(block$subtitle)) c(paste0("### ", block$subtitle), ""),
         if (!is.null(block$desc)) c(trimws(block$desc), ""),
-        '<dl class="ref-index">',
-        paste(entries, collapse = "\n\n"),
-        "</dl>",
-        ""
+        if (length(entries) > 0) {
+          c(
+            '<dl class="ref-index">',
+            paste(entries, collapse = "\n\n"),
+            "</dl>",
+            ""
+          )
+        }
       )
     },
     config$reference,

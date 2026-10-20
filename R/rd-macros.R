@@ -8,6 +8,11 @@
 # renders each Rd again with them, and writes every section that comes out
 # differently to altdoc/altdown-rd-sections.rds, which the pre-render script
 # splices into man/*.qmd in place of altdoc's.
+#
+# The same file fixes a custom `\section{Examples}{...}` (prose, as in dplyr's
+# ?select) in an Rd without `\examples{}`: altdoc takes any "Examples" heading
+# for the examples and wraps its prose in an R chunk, which fails to run. Its
+# HTML is spliced back in instead.
 
 rd_sections_file <- "altdown-rd-sections.rds"
 
@@ -16,7 +21,7 @@ rd_sections_file <- "altdown-rd-sections.rds"
 rd_sections_keep <- c("Usage", "Examples")
 
 write_rd_sections <- function(path) {
-  saveRDS(rd_macro_sections(path), file.path(path, "altdoc", rd_sections_file))
+  saveRDS(rd_splice_sections(path), file.path(path, "altdoc", rd_sections_file))
   invisible()
 }
 
@@ -33,13 +38,11 @@ has_rd_macros <- function(path) {
 }
 
 # A list with an entry per man/*.Rd file (named after it, without extension)
-# that comes out differently with the package's macros, holding the changed
-# sections' lines (named after their headings), ready for a man/*.qmd.
-rd_macro_sections <- function(path) {
-  if (!has_rd_macros(path)) {
-    return(list())
-  }
-  macros <- tools::loadPkgRdMacros(path)
+# that needs sections replaced - those that come out differently with the
+# package's macros, and a custom Examples section - holding their lines (named
+# after their headings), ready for a man/*.qmd.
+rd_splice_sections <- function(path) {
+  macros <- if (has_rd_macros(path)) tools::loadPkgRdMacros(path)
   rd_files <- list.files(
     file.path(path, "man"),
     pattern = "\\.Rd$",
@@ -48,22 +51,44 @@ rd_macro_sections <- function(path) {
 
   out <- list()
   for (rd_file in rd_files) {
-    as_altdoc <- rd_html_sections(rd_file)
+    custom_examples <- has_custom_examples_section(rd_file, rd_macros(path))
+    if (is.null(macros) && !custom_examples) {
+      next
+    }
     with_macros <- rd_html_sections(rd_file, macros)
-    changed <- names(with_macros)[
-      !names(with_macros) %in% rd_sections_keep &
-        !vapply(
-          names(with_macros),
-          function(s) identical(with_macros[[s]], as_altdoc[[s]]),
-          logical(1)
-        )
-    ]
+    changed <- character()
+    if (!is.null(macros)) {
+      as_altdoc <- rd_html_sections(rd_file)
+      changed <- names(with_macros)[
+        !names(with_macros) %in% rd_sections_keep &
+          !vapply(
+            names(with_macros),
+            function(s) identical(with_macros[[s]], as_altdoc[[s]]),
+            logical(1)
+          )
+      ]
+    }
+    if (custom_examples) {
+      changed <- c(changed, "Examples")
+    }
     if (length(changed) > 0) {
       topic <- sub("\\.Rd$", "", basename(rd_file))
       out[[topic]] <- with_macros[changed]
     }
   }
   out
+}
+
+# TRUE when `rd_file` has a `\section{Examples}{...}` but no `\examples{}`.
+has_custom_examples_section <- function(rd_file, macros) {
+  rd <- tools::parse_Rd(rd_file, macros = macros)
+  tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
+  titles <- vapply(
+    rd[tags == "\\section"],
+    function(x) trimws(paste(unlist(x[[1]]), collapse = "")),
+    character(1)
+  )
+  "Examples" %in% titles && !"\\examples" %in% tags
 }
 
 # Renders `rd_file` to HTML as `altdoc:::.rd2qmd()` does (or, given `macros`,

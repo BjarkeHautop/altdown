@@ -34,7 +34,7 @@ altdoc/
 ├── altdown-header.html        # dark-mode default
 ├── altdown-after-body.html    # navbar alignment
 ├── altdown-pre-render.R       # fixes up altdoc's man pages
-└── altdown-rd-sections.rds    # man page sections using Rd macros
+└── altdown-rd-sections.rds    # man page sections altdoc gets wrong
 ```
 
 ## Before rendering
@@ -116,6 +116,8 @@ like pkgdown's:
   `DESCRIPTION`, or `man/macros/`), so Rdpack's `\insertRef{}`, for instance,
   shows its raw arguments. `build_site()` renders those Rd files again with
   them, and the script swaps in the sections that differ.
+- **A custom `\section{Examples}{}`** (prose rather than `\examples{}`) stays
+  prose: altdoc would wrap it in an R chunk, which fails to run.
 
 ## After rendering: hover tooltips
 

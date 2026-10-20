@@ -11,6 +11,10 @@ test_that("use_altdown() writes a starter altdown.yml listing every topic", {
     c("\\name{foo}", "\\alias{foo}", "\\title{Foo}", "\\usage{foo(x)}"),
     file.path(dir, "man", "foo.Rd")
   )
+  writeLines(
+    c("\\name{bar}", "\\alias{bar}", "\\title{Bar}", "\\keyword{internal}"),
+    file.path(dir, "man", "bar.Rd")
+  )
 
   expect_message(use_altdown(dir), "Wrote")
 

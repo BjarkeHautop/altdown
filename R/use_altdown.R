@@ -144,7 +144,8 @@ use_altdown <- function(path = ".") {
 }
 
 # One \name{} per man/*.Rd, sorted, as a single "All functions" section,
-# leaving any grouping to the user.
+# leaving any grouping to the user. Internal topics are left out, since
+# they never appear on the reference page.
 .starter_reference_yml <- function(path) {
   man_dir <- file.path(path, "man")
   rd_files <- if (dir.exists(man_dir)) {
@@ -153,15 +154,25 @@ use_altdown <- function(path = ".") {
     character()
   }
 
+  macros <- rd_macros(path)
   names <- vapply(
     rd_files,
     function(rd_file) {
-      rd <- tools::parse_Rd(rd_file)
+      rd <- tools::parse_Rd(rd_file, macros = macros)
       tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
+      keywords <- vapply(
+        rd[tags == "\\keyword"],
+        function(x) trimws(as.character(x[[1]])),
+        character(1)
+      )
+      if ("internal" %in% keywords) {
+        return(NA_character_)
+      }
       as.character(rd[tags == "\\name"][[1]][[1]])
     },
     character(1)
   )
+  names <- names[!is.na(names)]
 
   c(
     "reference:",
