@@ -101,7 +101,7 @@ test_that("build_topic_index() matches a \\usage{} block wrapped over several li
   expect_equal(index$glue$usage, "glue(...)")
 })
 
-test_that("build_topic_index() skips internal topics, which altdoc doesn't render", {
+test_that("build_topic_index() skips internal topics, which get no page", {
   dir <- withr::local_tempdir()
   write_rd(
     dir,
@@ -275,13 +275,13 @@ test_that("a downlit-linked code block reference is relinked to the local man pa
     "<span class=\"op\">(</span></code>"
   ))
 
-  result <- inject_tooltips_html(html, foo_index, "man/")
+  result <- inject_tooltips_html(html, foo_index, "reference/")
 
   expect_equal(result$n, 1L)
   expect_length(result$tips, 1L)
   expect_match(
     result$html,
-    '<span class="fu"><a class="altdown-tip-ref" data-altdown-tip="t1" href="man/foo.html">foo</a></span>',
+    '<span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="reference/foo.html">foo</a></span>',
     fixed = TRUE
   )
   expect_equal(result$tips[["t1"]]$usage, "foo(a, b)")
@@ -291,11 +291,11 @@ test_that("an unlinked fu span is linked and tagged too", {
   html <- sample_html(
     "<span class=\"fu\">foo</span><span class=\"op\">(</span>"
   )
-  result <- inject_tooltips_html(html, foo_index, "man/")
+  result <- inject_tooltips_html(html, foo_index, "reference/")
   expect_equal(result$n, 1L)
   expect_match(
     result$html,
-    'data-altdown-tip="t1" href="man/foo.html">foo</a></span>',
+    'data-quartodown-tip="t1" href="reference/foo.html">foo</a></span>',
     fixed = TRUE
   )
 })
@@ -309,15 +309,15 @@ test_that("a va-class span (e.g. an R6 class name used as a value) is tagged too
     "<span class=\"op\">$</span><span class=\"fu\">new</span>"
   ))
 
-  result <- inject_tooltips_html(html, index, "man/")
+  result <- inject_tooltips_html(html, index, "reference/")
 
   expect_equal(result$n, 1L)
   expect_match(
     result$html,
-    '<span class="va"><a class="altdown-tip-ref"',
+    '<span class="va"><a class="quartodown-tip-ref"',
     fixed = TRUE
   )
-  expect_match(result$html, 'href="man/Counter.html"', fixed = TRUE)
+  expect_match(result$html, 'href="reference/Counter.html"', fixed = TRUE)
   expect_equal(result$tips[["t1"]]$name, "Counter")
 })
 
@@ -325,11 +325,11 @@ test_that("inline code references are linked and tagged, with or without a downl
   html <- sample_html(paste0(
     "<p>Add numbers with <code><a href=\"https://rdrr.io/pkg/p/man/foo.html\">foo()</a></code>:</p>"
   ))
-  result <- inject_tooltips_html(html, foo_index, "man/")
+  result <- inject_tooltips_html(html, foo_index, "reference/")
   expect_equal(result$n, 1L)
   expect_match(
     result$html,
-    '<code><a class="altdown-tip-ref" data-altdown-tip="t1" href="man/foo.html">foo()</a></code>',
+    '<code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="reference/foo.html">foo()</a></code>',
     fixed = TRUE
   )
 
@@ -342,10 +342,10 @@ test_that("inline code references are linked and tagged, with or without a downl
     )
   )
   html <- sample_html("<p>See <code>print.animal()</code> for details.</p>")
-  result <- inject_tooltips_html(html, index, "man/")
+  result <- inject_tooltips_html(html, index, "reference/")
   expect_match(
     result$html,
-    'href="man/animal.html">print.animal()</a></code>',
+    'href="reference/animal.html">print.animal()</a></code>',
     fixed = TRUE
   )
 })
@@ -359,7 +359,7 @@ test_that("an inline reference to a backtick-quoted name resolves through its ba
     )
   )
   html <- sample_html("<p>See <code>`name&lt;-`()</code>.</p>")
-  result <- inject_tooltips_html(html, index, "man/")
+  result <- inject_tooltips_html(html, index, "reference/")
   expect_equal(result$n, 1L)
   expect_equal(result$tips[["t1"]]$usage, "name(x) <- value")
 })
@@ -368,17 +368,17 @@ test_that("references qualified with the package's own namespace resolve, others
   html <- sample_html(
     "<p><code>p::foo()</code> and <code>p:::foo(1, 2)</code></p>"
   )
-  result <- inject_tooltips_html(html, foo_index, "man/", pkg = "p")
+  result <- inject_tooltips_html(html, foo_index, "reference/", pkg = "p")
   expect_equal(result$n, 2L)
   expect_length(result$tips, 1L)
   expect_match(
     result$html,
-    'href="man/foo.html">p::foo()</a></code>',
+    'href="reference/foo.html">p::foo()</a></code>',
     fixed = TRUE
   )
 
   html <- sample_html("<p><code>other::foo()</code></p>")
-  result <- inject_tooltips_html(html, foo_index, "man/", pkg = "p")
+  result <- inject_tooltips_html(html, foo_index, "reference/", pkg = "p")
   expect_equal(result$n, 0L)
   expect_equal(result$html, html)
 })
@@ -388,7 +388,7 @@ test_that("references to names not in the index are left untouched", {
     "<span class=\"fu\"><a href=\"https://rdrr.io/r/base/library.html\">library</a></span>",
     "<span class=\"fu\">bar</span>"
   ))
-  result <- inject_tooltips_html(html, foo_index, "man/")
+  result <- inject_tooltips_html(html, foo_index, "reference/")
   expect_equal(result$n, 0L)
   expect_equal(result$html, html)
 })
@@ -398,23 +398,29 @@ test_that("repeated references to the same name share one tip id", {
   result <- inject_tooltips_html(
     sample_html(paste(link, link)),
     foo_index,
-    "man/"
+    "reference/"
   )
   expect_equal(result$n, 2L)
   expect_length(result$tips, 1L)
   expect_length(
-    gregexpr('data-altdown-tip="t1"', result$html, fixed = TRUE)[[1]],
+    gregexpr('data-quartodown-tip="t1"', result$html, fixed = TRUE)[[1]],
     2L
   )
 })
 
-test_that("reference_href_prefix() points at docs/man/ relative to the page's depth", {
-  expect_equal(reference_href_prefix("/x/docs/index.html", "/x/docs"), "man/")
+test_that("reference_href_prefix() points at docs/reference/ relative to the page's depth", {
+  expect_equal(
+    reference_href_prefix("/x/docs/index.html", "/x/docs"),
+    "reference/"
+  )
   expect_equal(
     reference_href_prefix("/x/docs/vignettes/using.html", "/x/docs"),
-    "../man/"
+    "../reference/"
   )
-  expect_equal(reference_href_prefix("/x/docs/man/foo.html", "/x/docs"), "./")
+  expect_equal(
+    reference_href_prefix("/x/docs/reference/foo.html", "/x/docs"),
+    "./"
+  )
 })
 
 # ---- tooltip payload ----------------------------------------------------------
@@ -425,7 +431,7 @@ test_that("a topic with no \\usage{} shows its name as the signature", {
   )
   expect_match(
     tooltip_payload_html(tips),
-    '<code class="altdown-tip-sig">Counter</code>',
+    '<code class="quartodown-tip-sig">Counter</code>',
     fixed = TRUE
   )
 })
@@ -436,7 +442,7 @@ test_that("code in the brief is rendered as <code>, with its contents escaped", 
   )
   expect_match(
     tooltip_payload_html(tips),
-    '<span class="altdown-tip-brief">Stored in <code>dir(&quot;a&quot;) &lt; b</code>.</span>',
+    '<span class="quartodown-tip-brief">Stored in <code>dir(&quot;a&quot;) &lt; b</code>.</span>',
     fixed = TRUE
   )
 })
@@ -461,7 +467,7 @@ test_that("add_tooltips() rewrites pages on disk and is idempotent on rerun", {
       "}"
     )
   )
-  dir.create(file.path(dir, "docs", "man"), recursive = TRUE)
+  dir.create(file.path(dir, "docs", "reference"), recursive = TRUE)
   page <- file.path(dir, "docs", "index.html")
   writeLines(
     sample_html(
@@ -473,7 +479,7 @@ test_that("add_tooltips() rewrites pages on disk and is idempotent on rerun", {
   res1 <- add_tooltips(dir, quiet = TRUE)
   expect_equal(res1, list(files = 1L, links = 1L))
   html <- paste(readLines(page), collapse = "\n")
-  expect_match(html, 'href="man/foo.html"', fixed = TRUE)
+  expect_match(html, 'href="reference/foo.html"', fixed = TRUE)
   expect_match(html, paste0(tooltip_marker, "\n<style>"), fixed = TRUE)
   expect_match(html, "</script>\n</body></html>", fixed = TRUE)
 
@@ -481,5 +487,5 @@ test_that("add_tooltips() rewrites pages on disk and is idempotent on rerun", {
 })
 
 test_that("add_tooltips() errors when the site hasn't been built", {
-  expect_error(add_tooltips(withr::local_tempdir()), "man/")
+  expect_error(add_tooltips(withr::local_tempdir()), "reference/")
 })

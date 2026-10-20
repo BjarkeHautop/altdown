@@ -1,11 +1,10 @@
-# ---- altdoc/reference.qmd generation ---------------------------------------
+# ---- reference/index.qmd generation ------------------------------------------
 #
-# altdoc has no pkgdown-style `reference:` field for grouping/ordering the
-# function index (see https://github.com/etiennebacher/altdoc/issues/326),
-# so we build one ourselves: the `reference:` field of `altdoc/altdown.yml`
-# uses the same shape as pkgdown's `_pkgdown.yml` `reference:` field, and
-# this reads it plus each man/*.Rd's \title{}/\alias{}/\concept{}/\keyword{}
-# to regenerate `altdoc/reference.qmd` before every build.
+# The `reference:` field of `_quartodown.yml` groups and orders the
+# function index, in the same shape as pkgdown's `_pkgdown.yml` `reference:`
+# field. This reads it plus each man/*.Rd's
+# \title{}/\alias{}/\concept{}/\keyword{} to write the index page before
+# every build.
 #
 # `contents:` entries support the same selectors pkgdown does: a plain alias
 # name, `starts_with()`/`ends_with()`/`contains()`/`matches()` matched
@@ -13,8 +12,8 @@
 # \concept{}/\keyword{} tags, `-` to exclude, and `c()` to combine several
 # selectors on one line.
 
-# Reads every man/*.Rd into a topic record - basename (the name
-# .render_one_man() uses for the rendered man/<basename>.qmd target),
+# Reads every man/*.Rd into a topic record - basename (the name of its
+# reference/<basename>.qmd page, see write_man_pages()),
 # \title{}, and every \alias{}/\concept{}/\keyword{} tag - so `reference:`
 # entries can select a function by any of its aliases, and selector
 # functions have something to match against.
@@ -265,7 +264,7 @@ match_eval <- function(string, env) {
   expr <- tryCatch(str2lang(string), error = function(e) NULL)
   if (is.null(expr)) {
     cli::cli_abort(
-      "altdoc/altdown.yml `reference:` entry {.val {string}} must be valid R code."
+      "_quartodown.yml `reference:` entry {.val {string}} must be valid R code."
     )
   }
 
@@ -273,7 +272,7 @@ match_eval <- function(string, env) {
     val <- mget(as.character(expr), envir = env, ifnotfound = list(NULL))[[1]]
     if (!is.numeric(val)) {
       cli::cli_abort(
-        "altdoc/altdown.yml `reference:` entry {.val {string}} must be a known \\alias{{}} or selector."
+        "_quartodown.yml `reference:` entry {.val {string}} must be a known \\alias{{}} or selector."
       )
     }
     as.integer(val)
@@ -282,7 +281,7 @@ match_eval <- function(string, env) {
       as.integer(eval(expr, envir = env)),
       error = function(e) {
         cli::cli_abort(
-          "altdoc/altdown.yml `reference:` entry {.val {string}} failed to evaluate.",
+          "_quartodown.yml `reference:` entry {.val {string}} failed to evaluate.",
           parent = e
         )
       }
@@ -306,7 +305,7 @@ select_topics <- function(match_strings, topics) {
       return("-")
     }
     cli::cli_abort(
-      "altdoc/altdown.yml `reference:` entry {.val {text}} must be all positive or all negative."
+      "_quartodown.yml `reference:` entry {.val {text}} must be all positive or all negative."
     )
   }
 
@@ -325,9 +324,11 @@ select_topics <- function(match_strings, topics) {
 }
 
 build_reference_qmd <- function(path, config = list()) {
-  out_path <- file.path(path, "altdoc", "reference.qmd")
+  out_dir <- file.path(project_dir(path), "reference")
+  dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  out_path <- file.path(out_dir, "index.qmd")
   topics <- rd_topics(path)
-  # altdoc renders no page for \keyword{internal} topics, so (like pkgdown)
+  # Internal topics get no page (see write_man_pages()), so (like pkgdown)
   # they never appear in the index, even when a `reference:` entry matches.
   internal <- vapply(
     topics,
@@ -363,7 +364,7 @@ build_reference_qmd <- function(path, config = list()) {
       character(1)
     )
     cli::cli_warn(
-      "man/*.Rd defines {.val {unlisted_names}}, which {?is/are} not listed under `reference:` in altdoc/altdown.yml and won't appear on the reference page."
+      "man/*.Rd defines {.val {unlisted_names}}, which {?is/are} not listed under `reference:` in _quartodown.yml and won't appear on the reference page."
     )
   }
 
@@ -378,7 +379,7 @@ build_reference_qmd <- function(path, config = list()) {
         function(i) {
           topic <- topics[[i]]
           links <- sprintf(
-            '<code><a href="man/%s.qmd">%s</a></code>',
+            '<code><a href="%s.qmd">%s</a></code>',
             topic$basename,
             topic$names
           )

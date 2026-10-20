@@ -1,11 +1,18 @@
-#' Build an altdown-themed altdoc website
+#' Build the package website
 #'
-#' Builds the package website into `docs/` with
-#' [altdoc::render_docs()], styled to mirror pkgdown.
+#' Builds the package website into `docs/` with [Quarto](https://quarto.org/),
+#' styled to mirror pkgdown.
 #'
-#' Before rendering it generates, from the package sources and
-#' `altdoc/altdown.yml`:
+#' `build_site()` assembles a Quarto website project in `_quarto/` from the
+#' package sources and `_quartodown.yml`, then renders it:
 #'
+#' * a reference page per `man/*.Rd` file, except `\keyword{internal}` ones,
+#'   with its examples run;
+#' * the vignettes, including those in `vignettes/articles/`;
+#' * `NEWS.md` as the changelog, with issues (`#123`) and GitHub users
+#'   (`@user`) linked;
+#' * `LICENSE.md`, the `LICENSE` file, and `CODE_OF_CONDUCT.md`,
+#'   `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`);
 #' * the navbar, with a "Get started" link, the function reference, an
 #'   "Articles" menu and the changelog;
 #' * the home page, built from `README.md` plus a pkgdown-style sidebar
@@ -16,11 +23,9 @@
 #' * the grouped function reference index;
 #' * the "Authors and Citation" page.
 #'
-#' These generated files are written to `altdoc/` (which altdoc copies into
-#' its Quarto project), so they're gitignored by [use_altdown()].
-#'
 #' @section Configuration:
-#' `altdoc/altdown.yml` (created by [use_altdown()]) can contain:
+#' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]
+#' creates one. It can contain:
 #'
 #' * `reference`: groups the function reference index, in the same shape as
 #'   pkgdown's `reference:` field. `contents` entries can be a topic alias or
@@ -53,38 +58,42 @@
 #'   (in code blocks and inline code) to their reference page, with a hover
 #'   tooltip showing the function's usage and the first sentence of its
 #'   description?
-#' @param ... Passed on to [altdoc::render_docs()], e.g. `freeze` or
-#'   `parallel`.
+#' @param freeze Logical. Reuse the results of code that ran in an earlier
+#'   build, for pages whose source hasn't changed since? Uses Quarto's
+#'   [freeze](https://quarto.org/docs/projects/code-execution.html#freeze),
+#'   which keeps them in `_quarto/_freeze/`.
+#' @param quiet Logical. Hide Quarto's rendering output?
 #' @return Invisibly, the path to the built site.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' use_altdown()
+#' use_quartodown()
 #' build_site()
-#' altdoc::preview_docs()
+#' preview_site()
 #' }
 build_site <- function(
   path = ".",
   tooltips = TRUE,
-  ...
+  freeze = FALSE,
+  quiet = TRUE
 ) {
   config <- read_config(path)
+  check_quarto()
 
+  reset_project(path, freeze = freeze)
+  copy_vignettes(path)
+  copy_figures(path)
+  write_man_pages(path)
+  import_markdown_files(path)
   copy_theme_files(path)
   write_home(path)
   build_reference_qmd(path, config)
   build_authors_qmd(path)
-  write_quarto_config(path, config)
-  write_rd_sections(path)
-  write_pre_render_script(path)
+  write_quarto_config(path, config, freeze = freeze)
 
-  muffle_package_macro_warnings(
-    altdoc::render_docs(path = path, ...),
-    package_rd_macros(path)
-  )
-  # altdoc copies altdoc/ into docs/ after rendering; drop altdown's sources.
-  unlink(file.path(path, "docs", c("altdown.yml", generated_files)))
+  render_project(path, quiet = quiet)
+  write_pkgdown_yml(path)
 
   if (isTRUE(tooltips)) {
     add_tooltips(path)
@@ -93,35 +102,17 @@ build_site <- function(
   invisible(file.path(path, "docs"))
 }
 
-# Files build_site() writes into altdoc/ on every build. use_altdown()
-# gitignores them.
-generated_files <- c(
-  "quarto_website.yml",
-  "index.md",
-  "reference.qmd",
-  "authors.qmd",
-  "altdown.scss",
-  "altdown-header.html",
-  "altdown-after-body.html",
-  "altdown-pre-render.R",
-  "altdown-rd-sections.rds"
+theme_files <- c(
+  "quartodown.scss",
+  "quartodown-header.html",
+  "quartodown-after-body.html"
 )
 
-theme_files <- c(
-  "altdown.scss",
-  "altdown-header.html",
-  "altdown-after-body.html"
-)
+config_file <- "_quartodown.yml"
 
 read_config <- function(path) {
-  config_path <- file.path(path, "altdoc", "altdown.yml")
-  if (!file.exists(config_path)) {
-    cli::cli_abort(c(
-      "No {.path altdoc/altdown.yml} found in {.path {path}}.",
-      "i" = "Run {.run altdown::use_altdown()} to set up the package."
-    ))
-  }
-  config <- yaml::read_yaml(config_path)
+  config_path <- file.path(path, config_file)
+  config <- if (file.exists(config_path)) yaml::read_yaml(config_path)
   if (is.null(config)) list() else config
 }
 
@@ -129,21 +120,16 @@ copy_theme_files <- function(path) {
   src <- system.file(
     "quarto",
     theme_files,
-    package = "altdown",
+    package = "quartodown",
     mustWork = TRUE
   )
-  file.copy(src, file.path(path, "altdoc", theme_files), overwrite = TRUE)
+  file.copy(src, file.path(project_dir(path), theme_files), overwrite = TRUE)
   invisible()
 }
 
 # ---- Quarto configuration -----------------------------------------------------
-#
-# altdoc reads altdoc/quarto_website.yml, substitutes its `$ALTDOC_*`
-# variables and writes the result to _quarto/_quarto.yml. Everything is
-# filled in here instead, so the file has no variables left for it to
-# substitute.
 
-quarto_config <- function(path, config = list()) {
+quarto_config <- function(path, config = list(), freeze = FALSE) {
   pkg_name <- desc::desc_get_field("Package", file = path)
   version <- desc::desc_get_field("Version", default = "", file = path)
   gh_url <- pkg_github_url(path)
@@ -160,9 +146,7 @@ quarto_config <- function(path, config = list()) {
   settings <- list(
     project = list(
       type = "website",
-      `output-dir` = "../docs/",
-      # Fixes up the man pages altdoc generates, see write_pre_render_script().
-      `pre-render` = "altdown-pre-render.R"
+      `output-dir` = "../docs/"
     ),
     language = list(`search-text-placeholder` = " Search for"),
     website = list(
@@ -173,25 +157,29 @@ quarto_config <- function(path, config = list()) {
       `page-footer` = list(
         left = data_developed_by(path),
         right = paste(
-          "Site built with [altdoc](https://altdoc.etiennebacher.com/) and",
-          "[Quarto](https://quarto.org/), using the",
-          "[altdown](https://github.com/BjarkeHautop/altdown) theme."
+          "Site built with [quartodown](https://github.com/BjarkeHautop/quartodown)",
+          "and [Quarto](https://quarto.org/)."
         )
       )
     ),
     format = list(
       html = list(
         theme = list(
-          light = c("default", "altdown.scss"),
-          dark = c("darkly", "altdown.scss")
+          light = c("default", "quartodown.scss"),
+          dark = c("darkly", "quartodown.scss")
         ),
         `code-link` = TRUE,
         toc = TRUE,
-        `include-in-header` = "altdown-header.html",
-        `include-after-body` = "altdown-after-body.html"
+        `include-in-header` = "quartodown-header.html",
+        `include-after-body` = "quartodown-after-body.html"
       )
     )
   )
+
+  if (isTRUE(freeze)) {
+    # Reruns a page's code only when its source changed.
+    settings$execute <- list(freeze = "auto")
+  }
 
   if (!is.null(config$quarto)) {
     settings <- merge_quarto_config(settings, config$quarto)
@@ -219,10 +207,10 @@ merge_quarto_config <- function(x, val) {
   x
 }
 
-write_quarto_config <- function(path, config = list()) {
+write_quarto_config <- function(path, config = list(), freeze = FALSE) {
   yaml::write_yaml(
-    quarto_config(path, config),
-    file.path(path, "altdoc", "quarto_website.yml"),
+    quarto_config(path, config, freeze = freeze),
+    file.path(project_dir(path), "_quarto.yml"),
     handlers = list(logical = yaml::verbatim_logical)
   )
 }
@@ -245,7 +233,7 @@ navbar_left <- function(path, config = list()) {
       ))
     )
   }
-  left <- c(left, list(list(text = "Reference", file = "reference.qmd")))
+  left <- c(left, list(list(text = "Reference", file = "reference/index.qmd")))
   if (length(articles) > 0) {
     menu <- lapply(articles, function(a) {
       list(
@@ -255,33 +243,13 @@ navbar_left <- function(path, config = list()) {
     })
     left <- c(left, list(list(text = "Articles", menu = menu)))
   }
-  news <- news_file(path)
-  if (!is.null(news)) {
-    left <- c(left, list(list(text = "Changelog", file = news)))
+  if (file.exists(file.path(path, "NEWS.md"))) {
+    left <- c(left, list(list(text = "Changelog", file = "NEWS.md")))
   }
   left
 }
 
-# altdoc imports the first of these it finds as NEWS.md (or CHANGELOG.md),
-# see altdoc:::.import_basic().
-news_file <- function(path) {
-  for (name in c("NEWS", "CHANGELOG")) {
-    candidates <- c(
-      paste0(name, c(".md", ".txt", "", ".Rd")),
-      file.path("inst", paste0(name, c(".md", ".txt", "", ".Rd")))
-    )
-    if (any(file.exists(file.path(path, candidates)))) {
-      return(paste0(name, ".md"))
-    }
-  }
-  NULL
-}
-
 # ---- home page ----------------------------------------------------------------
-#
-# altdoc's home page is an index.md that includes README.md. altdoc copies
-# altdoc/ into its Quarto project after importing the README, so writing
-# altdoc/index.md replaces that page without touching README.md.
 
 write_home <- function(path) {
   readme <- readLines(
@@ -291,7 +259,7 @@ write_home <- function(path) {
   )
   writeLines(
     enc2utf8(build_website_readme(readme, path)),
-    file.path(path, "altdoc", "index.md"),
+    file.path(project_dir(path), "index.md"),
     useBytes = TRUE
   )
 }
@@ -333,7 +301,7 @@ build_website_readme <- function(lines, path = ".") {
     # right, in row 1 beside it. On small screens, where the grid collapses
     # to one column, the same DOM order stacks the sidebar below the body,
     # as in pkgdown.
-    c("::::: {.altdown-home}", title, "", body, ":::::", "", sidebar)
+    c("::::: {.quartodown-home}", title, "", body, ":::::", "", sidebar)
   }
 }
 

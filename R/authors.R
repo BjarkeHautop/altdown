@@ -74,6 +74,6 @@ build_authors_qmd <- function(path) {
     "```"
   )
 
-  writeLines(lines, file.path(path, "altdoc", "authors.qmd"))
+  writeLines(lines, file.path(project_dir(path), "authors.qmd"))
   invisible()
 }

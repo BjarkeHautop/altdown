@@ -1,7 +1,0 @@
-# Configuration for altdown::build_site(). See ?altdown::build_site.
-
-reference:
-  - title: All functions
-    contents:
-      - build_site
-      - use_altdown

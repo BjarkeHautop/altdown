@@ -1,14 +1,3 @@
-altdoc/freeze.rds
-altdoc/pkgdown.yml
-altdoc/quarto_website.yml
-altdoc/index.md
-altdoc/reference.qmd
-altdoc/authors.qmd
-altdoc/altdown.scss
-altdoc/altdown-header.html
-altdoc/altdown-after-body.html
-altdoc/altdown-pre-render.R
-altdoc/altdown-rd-sections.rds
 _quarto/*
 !_quarto/_freeze/
 docs/

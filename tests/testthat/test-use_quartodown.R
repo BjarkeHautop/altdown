@@ -1,9 +1,9 @@
-test_that("use_altdown() errors outside a package root", {
+test_that("use_quartodown() errors outside a package root", {
   dir <- withr::local_tempdir()
-  expect_error(use_altdown(dir), "DESCRIPTION")
+  expect_error(use_quartodown(dir), "DESCRIPTION")
 })
 
-test_that("use_altdown() writes a starter altdown.yml listing every topic", {
+test_that("use_quartodown() writes a starter quartodown.yml listing every topic", {
   dir <- withr::local_tempdir()
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
   dir.create(file.path(dir, "man"))
@@ -16,55 +16,47 @@ test_that("use_altdown() writes a starter altdown.yml listing every topic", {
     file.path(dir, "man", "bar.Rd")
   )
 
-  expect_message(use_altdown(dir), "Wrote")
+  expect_message(use_quartodown(dir), "Wrote")
 
-  expect_identical(list.files(file.path(dir, "altdoc")), "altdown.yml")
-  config <- yaml::yaml.load_file(file.path(dir, "altdoc", "altdown.yml"))
+  config <- yaml::yaml.load_file(file.path(dir, "_quartodown.yml"))
   expect_identical(config$reference[[1]]$contents, "foo")
 })
 
-test_that("use_altdown() adds the .gitignore/.Rbuildignore entries the build needs", {
+test_that("use_quartodown() adds the .gitignore/.Rbuildignore entries the build needs", {
   dir <- withr::local_tempdir()
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
 
-  use_altdown(dir)
+  use_quartodown(dir)
 
   gitignore <- readLines(file.path(dir, ".gitignore"))
-  expect_true(all(
-    c(
-      "altdoc/freeze.rds",
-      "altdoc/pkgdown.yml",
-      "_quarto/*",
-      "!_quarto/_freeze/",
-      file.path("altdoc", generated_files)
-    ) %in%
-      gitignore
-  ))
-  expect_false("altdoc/altdown.yml" %in% gitignore)
+  expect_true(all(c("_quarto/*", "!_quarto/_freeze/") %in% gitignore))
+  expect_false("_quartodown.yml" %in% gitignore)
 
   rbuildignore <- readLines(file.path(dir, ".Rbuildignore"))
-  expect_true(all(c("^docs$", "^altdoc$", "^_quarto$") %in% rbuildignore))
+  expect_true(all(
+    c("^docs$", "^_quarto$", "^_quartodown\\.yml$") %in% rbuildignore
+  ))
 })
 
-test_that("use_altdown() doesn't duplicate .gitignore/.Rbuildignore entries on repeat calls", {
+test_that("use_quartodown() doesn't duplicate .gitignore/.Rbuildignore entries on repeat calls", {
   dir <- withr::local_tempdir()
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
   writeLines("some/existing/entry", file.path(dir, ".gitignore"))
 
-  use_altdown(dir)
-  use_altdown(dir)
+  use_quartodown(dir)
+  use_quartodown(dir)
 
   gitignore <- readLines(file.path(dir, ".gitignore"))
-  expect_identical(sum(gitignore == "altdoc/freeze.rds"), 1L)
+  expect_identical(sum(gitignore == "_quarto/*"), 1L)
   expect_identical(sum(gitignore == "some/existing/entry"), 1L)
 })
 
-test_that("use_altdown() never overwrites an existing altdown.yml", {
+test_that("use_quartodown() never overwrites an existing quartodown.yml", {
   dir <- withr::local_tempdir()
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
-  use_altdown(dir)
+  use_quartodown(dir)
 
-  config <- yaml::yaml.load_file(file.path(dir, "altdoc", "altdown.yml"))
+  config <- yaml::yaml.load_file(file.path(dir, "_quartodown.yml"))
   expect_identical(config$reference[[1]]$contents, list())
 
   dir.create(file.path(dir, "man"))
@@ -73,7 +65,7 @@ test_that("use_altdown() never overwrites an existing altdown.yml", {
     file.path(dir, "man", "bar.Rd")
   )
 
-  expect_message(use_altdown(dir), "Skipping.*altdown\\.yml")
-  config <- yaml::yaml.load_file(file.path(dir, "altdoc", "altdown.yml"))
+  expect_message(use_quartodown(dir), "Skipping.*quartodown\\.yml")
+  config <- yaml::yaml.load_file(file.path(dir, "_quartodown.yml"))
   expect_identical(config$reference[[1]]$contents, list())
 })

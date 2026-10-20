@@ -1,0 +1,268 @@
+parse_rd_text <- function(lines, macros = NULL) {
+  file <- withr::local_tempfile(fileext = ".Rd")
+  writeLines(lines, file)
+  tools::parse_Rd(file, macros = macros)
+}
+
+rd_qmd <- function(lines, pkg = "examplepkg") {
+  rd_to_qmd(parse_rd_text(lines), pkg)
+}
+
+# The lines of `## <heading>`'s section, without blank lines.
+qmd_section <- function(qmd, heading) {
+  start <- which(qmd == paste("##", heading))
+  heads <- grep("^## ", qmd)
+  end <- c(heads[heads > start] - 1L, length(qmd))[1]
+  out <- qmd[seq(start + 1L, end)]
+  out[nzchar(trimws(out))]
+}
+
+test_that("rd_to_qmd() makes the title the page title, keeping its code", {
+  qmd <- rd_qmd(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Use \\code{foo}}",
+    "\\description{d}"
+  ))
+  expect_identical(
+    qmd[1:3],
+    c("---", "title: Use `foo`", "---")
+  )
+  expect_true("## Description" %in% qmd)
+})
+
+test_that("rd_to_qmd() makes Usage a fenced R block", {
+  qmd <- rd_qmd(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Foo}",
+    "\\usage{",
+    "foo(x = \"a\", y = x$z)",
+    "",
+    "x \\%op\\% y",
+    "}"
+  ))
+  expect_identical(
+    qmd_section(qmd, "Usage"),
+    c("```r", "foo(x = \"a\", y = x$z)", "x %op% y", "```")
+  )
+})
+
+test_that("rd_html_to_markdown() turns inline code into code spans", {
+  expect_identical(
+    rd_html_to_markdown(
+      "in <code>tools::R_user_dir(&quot;pkg&quot;)</code> or <code style=\"white-space: pre;\">\\</code>."
+    ),
+    "in `tools::R_user_dir(\"pkg\")` or `\\`."
+  )
+  expect_identical(
+    rd_html_to_markdown("<code>a</code> and <code>x &lt;- `y`</code>"),
+    "`a` and `` x <- `y` ``"
+  )
+  # A <code> with markup inside stays HTML.
+  linked <- "<code><a href=\"foo.html\">foo()</a></code>"
+  expect_identical(rd_html_to_markdown(linked), linked)
+})
+
+test_that("rd_html_to_markdown() escapes $ outside code and math only", {
+  expect_identical(
+    rd_html_to_markdown(
+      "<p>Costs $5, <code>x$y</code>, <code class=\"reqn\">x &lt; y</code>.</p>"
+    ),
+    "Costs \\$5, `x$y`, $x < y$."
+  )
+  expect_identical(
+    rd_html_to_markdown(c(
+      "<p style=\"text-align: center;\"><code class=\"reqn\">",
+      "\\sum x",
+      "</code>",
+      "</p>"
+    )),
+    c("", "", "$$", "\\sum x", "$$", "", "")
+  )
+})
+
+test_that("rd_html_to_markdown() leaves <pre> alone but fences language-tagged blocks", {
+  pre <- "<pre>CausalDiscoSearch$new(&quot;a&quot;)</pre>"
+  expect_identical(rd_html_to_markdown(pre), pre)
+  expect_identical(
+    rd_html_to_markdown(
+      "<div class=\"sourceCode R\"><pre>x &lt;- 1\n</pre></div>"
+    ),
+    c("", "```r", "x <- 1", "```", "")
+  )
+})
+
+test_that("rd_html_to_markdown() points figures at man/figures/", {
+  expect_identical(
+    rd_html_to_markdown("<img src=\"../help/figures/logo.png\">"),
+    "<img src=\"../man/figures/logo.png\">"
+  )
+})
+
+test_that("rd_to_qmd() renders the package's Rd macros and build-stage \\Sexpr{}s", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "man", "macros"), recursive = TRUE)
+  writeLines(
+    "\\newcommand{\\shout}{\\Sexpr[stage=build,results=rd]{toupper(\"#1\")}}",
+    file.path(dir, "man", "macros", "macros.Rd")
+  )
+  rd <- parse_rd_text(
+    c(
+      "\\name{foo}",
+      "\\alias{foo}",
+      "\\title{Foo}",
+      "\\description{See \\doi{10.1000/xyz}.}",
+      "\\references{\\shout{hello}}"
+    ),
+    macros = rd_macros(dir)
+  )
+  qmd <- rd_to_qmd(rd, "examplepkg")
+  expect_identical(qmd_section(qmd, "References"), "HELLO")
+  expect_match(
+    paste(qmd_section(qmd, "Description"), collapse = " "),
+    "<a href=\"https://doi.org/10.1000/xyz\">doi:10.1000/xyz</a>",
+    fixed = TRUE
+  )
+})
+
+test_that("rd_to_qmd() keeps a custom Examples section as prose", {
+  qmd <- rd_qmd(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Foo}",
+    "\\section{Examples}{Here we show \\code{foo()}.}",
+    "\\examples{foo()}"
+  ))
+  examples <- which(qmd == "## Examples")
+  expect_length(examples, 2)
+  expect_true("Here we show `foo()`." %in% qmd)
+  expect_identical(
+    qmd[examples[2] + 2],
+    "```{r, include=FALSE}"
+  )
+})
+
+example_rd <- function(...) {
+  parse_rd_text(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Foo}",
+    "\\examples{",
+    ...,
+    "}"
+  ))
+}
+
+test_that("example_blocks() runs examples after attaching the package", {
+  expect_identical(
+    example_blocks(example_rd("x <- 1", "x"), "my.pkg"),
+    c(
+      "```{r, include=FALSE}",
+      "library(my.pkg)",
+      "```",
+      "",
+      example_chunk_header,
+      "x <- 1",
+      "x",
+      "```",
+      ""
+    )
+  )
+})
+
+test_that("example_blocks() shows \\dontrun{} code unrun and runs the rest", {
+  blocks <- example_blocks(
+    example_rd(
+      "# setup",
+      "\\dontrun{",
+      "## a comment",
+      "online()",
+      "}",
+      "\\donttest{slow()}",
+      "\\dontshow{secret()}",
+      "y"
+    ),
+    "examplepkg"
+  )
+  blocks <- blocks[nzchar(blocks)]
+  expect_identical(
+    blocks,
+    c(
+      "```{r, include=FALSE}",
+      "library(examplepkg)",
+      "```",
+      example_chunk_header,
+      "# setup",
+      "```",
+      "```r",
+      "## a comment",
+      "online()",
+      "```",
+      example_chunk_header,
+      "slow()",
+      "```",
+      "```{r, include=FALSE}",
+      "secret()",
+      "```",
+      example_chunk_header,
+      "y",
+      "```"
+    )
+  )
+})
+
+test_that("example_blocks() renders examples that are all \\dontrun{} without R", {
+  blocks <- example_blocks(
+    example_rd("\\dontrun{a()}", "", "\\dontrun{b()}"),
+    "examplepkg"
+  )
+  expect_identical(blocks, c("```r", "a()", "b()", "```", ""))
+})
+
+test_that("example_blocks() runs @examplesIf examples only if the condition holds", {
+  examples_if <- function(cond) {
+    example_rd(
+      sprintf(
+        "\\dontshow{if (%s) withAutoprint(\\{ # examplesIf}",
+        cond
+      ),
+      "f()",
+      "\\dontshow{\\}) # examplesIf}",
+      "g()"
+    )
+  }
+
+  blocks <- example_blocks(examples_if("TRUE"), "examplepkg")
+  expect_false(any(grepl("examplesIf", blocks)))
+  expect_identical(
+    blocks[nzchar(blocks)][-(1:3)],
+    c(example_chunk_header, "f()", "g()", "```")
+  )
+
+  blocks <- example_blocks(examples_if("1 == 2"), "examplepkg")
+  expect_false(any(grepl("examplesIf", blocks)))
+  expect_identical(
+    blocks[nzchar(blocks)][-(1:3)],
+    c("```r", "f()", "```", example_chunk_header, "g()", "```")
+  )
+})
+
+test_that("write_man_pages() writes a page per Rd file, except internal ones", {
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo")
+  write_rd(dir, "hidden", keyword = "internal")
+
+  expect_message(write_man_pages(dir), "1 man page")
+  expect_identical(
+    list.files(file.path(dir, "_quarto", "reference")),
+    "foo.qmd"
+  )
+})
+
+test_that("write_man_pages() names the Rd file it failed to convert", {
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo")
+  local_mocked_bindings(rd_to_qmd = function(rd, pkg) stop("boom"))
+  expect_error(write_man_pages(dir), "foo.Rd")
+})

@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(altdown)
+library(quartodown)
 
-test_check("altdown")
+test_check("quartodown")

@@ -1,45 +1,36 @@
-#' Set up a package to use altdown
+#' Set up a package to use quartodown
 #'
-#' Writes `altdoc/altdown.yml`, the configuration file [build_site()] reads.
-#' It starts with a `reference:` field listing every function currently
-#' documented in `<path>/man/*.Rd` in one "All functions" section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
+#' Writes `_quartodown.yml`, the configuration file [build_site()] reads,
+#' at the package root. It starts with a `reference:` field listing every
+#' function currently documented in `<path>/man/*.Rd` in one "All functions"
+#' section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
 #' needs (see Details) if they're not already there.
 #'
-#' An existing `altdoc/altdown.yml` is never overwritten.
+#' An existing `_quartodown.yml` is never overwritten.
 #'
 #' @details
-#' `use_altdown()` adds the following lines to `.gitignore` and
+#' `use_quartodown()` adds the following lines to `.gitignore` and
 #' `.Rbuildignore` (only the ones not already present in each file):
 #'
 #' ```
 #' # .gitignore
 #' _quarto/*
 #' !_quarto/_freeze/
-#' altdoc/freeze.rds
-#' altdoc/pkgdown.yml
-#' altdoc/quarto_website.yml
-#' altdoc/index.md
-#' altdoc/reference.qmd
-#' altdoc/authors.qmd
-#' altdoc/altdown.scss
-#' altdoc/altdown-header.html
-#' altdoc/altdown-after-body.html
-#' altdoc/altdown-pre-render.R
-#' altdoc/altdown-rd-sections.rds
 #'
 #' # .Rbuildignore
 #' ^docs$
-#' ^altdoc$
 #' ^_quarto$
+#' ^_quartodown\.yml$
 #' ```
 #'
-#' The first four mirror what `altdoc::setup_docs(tool = "quarto_website")`
-#' adds, plus `altdoc/pkgdown.yml`, which `altdoc::render_docs()` rewrites
-#' on every build. The rest are the files [build_site()] generates.
+#' `_quarto/` is the Quarto project [build_site()] generates and renders
+#' into `docs/`. Its `_freeze/` directory holds the results of code run with
+#' `build_site(freeze = TRUE)`, which can be committed so later builds, e.g.
+#' on CI, reuse them.
 #'
 #' @param path Path to the target package root. Defaults to the current
 #'   directory.
-#' @return Invisibly, the path to the `altdoc/` directory.
+#' @return Invisibly, the path to `_quartodown.yml`.
 #' @export
 #'
 #' @examples
@@ -49,10 +40,10 @@
 #'   "Package: examplepkg\nVersion: 0.0.0.9000",
 #'   file.path(pkg, "DESCRIPTION")
 #' )
-#' use_altdown(pkg)
-#' list.files(file.path(pkg, "altdoc"))
+#' use_quartodown(pkg)
+#' readLines(file.path(pkg, "_quartodown.yml"))
 #' unlink(pkg, recursive = TRUE)
-use_altdown <- function(path = ".") {
+use_quartodown <- function(path = ".") {
   if (!file.exists(file.path(path, "DESCRIPTION"))) {
     stop(
       sprintf(
@@ -63,12 +54,7 @@ use_altdown <- function(path = ".") {
     )
   }
 
-  out_dir <- file.path(path, "altdoc")
-  if (!dir.exists(out_dir)) {
-    dir.create(out_dir, recursive = TRUE)
-  }
-
-  config_dest <- file.path(out_dir, "altdown.yml")
+  config_dest <- file.path(path, config_file)
   if (file.exists(config_dest)) {
     message(sprintf("Skipping '%s': already exists.", config_dest))
   } else {
@@ -82,33 +68,26 @@ use_altdown <- function(path = ".") {
   .add_ignore_lines(
     path,
     ".gitignore",
-    c(
-      "_quarto/*",
-      "!_quarto/_freeze/",
-      "altdoc/freeze.rds",
-      "altdoc/pkgdown.yml",
-      file.path("altdoc", generated_files)
-    )
+    c("_quarto/*", "!_quarto/_freeze/")
   )
   .add_ignore_lines(
     path,
     ".Rbuildignore",
-    c("^docs$", "^altdoc$", "^_quarto$")
+    c("^docs$", "^_quarto$", "^_quartodown\\.yml$")
   )
 
   message(
     "\nNext steps:\n",
-    "  1. Edit altdoc/altdown.yml to group your functions the way you want.\n",
-    "  2. Run: altdown::build_site()\n",
-    "  3. Preview site: altdoc::preview_docs()"
+    "  1. Edit _quartodown.yml to group your functions the way you want.\n",
+    "  2. Run: quartodown::build_site()\n",
+    "  3. Preview site: quartodown::preview_site()"
   )
 
-  invisible(out_dir)
+  invisible(config_dest)
 }
 
 # Appends any of `lines` not already present (as a whole line) in
-# `<path>/<file_name>`, creating the file first if needed. Mirrors what
-# altdoc's own `.add_gitignore()`/`.add_rbuildignore()` do.
+# `<path>/<file_name>`, creating the file first if needed.
 .add_ignore_lines <- function(path, file_name, lines) {
   dest <- file.path(path, file_name)
   existing <- if (file.exists(dest)) {
@@ -133,7 +112,7 @@ use_altdown <- function(path = ".") {
 
 .starter_config_yml <- function(path) {
   c(
-    "# Configuration for altdown::build_site(). See ?altdown::build_site for",
+    "# Configuration for quartodown::build_site(). See ?quartodown::build_site for",
     "# all fields, including `articles:` (navbar order) and `quarto:` (extra",
     "# Quarto settings).",
     "",

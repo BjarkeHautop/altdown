@@ -1,11 +1,11 @@
 # ---- hover tooltips -----------------------------------------------------------
 #
 # Rewrites the rendered HTML in docs/ so references to the package's own
-# documented topics link to its man page and get a hover tooltip with the
+# documented topics link to its reference page and get a hover tooltip with the
 # topic's signature and a one-line summary.
 #
-# downlit can't resolve the package's own (local, unpublished) functions on
-# an altdoc site, nor a name it can't statically dispatch (e.g. an S3 method
+# downlit can't resolve the package's own (local, unpublished) functions,
+# nor a name it can't statically dispatch (e.g. an S3 method
 # called by name), so any existing href on a matched reference is replaced.
 #
 # Two reference shapes are matched, each optionally already wrapped in a
@@ -22,15 +22,15 @@ tooltip_link_re <- paste0(
 )
 
 # Marks a processed page so a rerun of add_tooltips() skips it.
-tooltip_marker <- "<!-- altdown-tooltips -->"
+tooltip_marker <- "<!-- quartodown-tooltips -->"
 
 # Adds tooltips to every docs/**/*.html file. Returns, invisibly, how many
 # files and reference links were touched.
 add_tooltips <- function(path = ".", quiet = FALSE) {
   docs_dir <- file.path(path, "docs")
-  if (!dir.exists(file.path(docs_dir, "man"))) {
+  if (!dir.exists(file.path(docs_dir, "reference"))) {
     cli::cli_abort(
-      "No built site with a {.path man/} directory found at {.path {docs_dir}}."
+      "No built site with a {.path reference/} directory found at {.path {docs_dir}}."
     )
   }
 
@@ -97,23 +97,26 @@ add_tooltips <- function(path = ".", quiet = FALSE) {
   invisible(list(files = n_files, links = n_links))
 }
 
-# Relative path from a rendered page to docs/man/, e.g. "man/" from
-# docs/index.html or "../man/" one directory down.
+# Relative path from a rendered page to docs/reference/, e.g. "reference/"
+# from docs/index.html or "../reference/" one directory down.
 reference_href_prefix <- function(file, docs_dir) {
-  rel <- fs::path_rel(fs::path(docs_dir, "man"), start = fs::path_dir(file))
+  rel <- fs::path_rel(
+    fs::path(docs_dir, "reference"),
+    start = fs::path_dir(file)
+  )
   paste0(as.character(rel), "/")
 }
 
 # One pass over an HTML document: every `tooltip_link_re` match that
 # resolves in `index` is linked to `href_prefix`/<topic>.html and tagged
-# with `data-altdown-tip="<id>"`; everything else passes through unchanged.
+# with `data-quartodown-tip="<id>"`; everything else passes through unchanged.
 # `tips` collects one entry per unique resolved name (id -> {usage, brief,
 # topic, name}), the page's hidden tooltip payload. `pkg` is the package's
 # own name, so an inline `pkg::foo()` resolves like `foo()`.
 inject_tooltips_html <- function(
   html,
   index,
-  href_prefix = "man/",
+  href_prefix = "reference/",
   pkg = NULL
 ) {
   m <- gregexpr(tooltip_link_re, html, perl = TRUE)[[1]]
@@ -166,7 +169,7 @@ inject_tooltips_html <- function(
         tips[[id]] <- entry
       }
       link <- sprintf(
-        '<a class="altdown-tip-ref" data-altdown-tip="%s" href="%s%s.html">%s</a>',
+        '<a class="quartodown-tip-ref" data-quartodown-tip="%s" href="%s%s.html">%s</a>',
         id,
         href_prefix,
         entry$topic,
@@ -222,8 +225,7 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
       function(x) as.character(x[[1]]),
       character(1)
     )
-    # altdoc renders no page for \keyword{internal} topics, so there's
-    # nothing to link to.
+    # \keyword{internal} topics get no page, so there's nothing to link to.
     keywords <- vapply(
       rd[tags == "\\keyword"],
       function(x) trimws(as.character(x[[1]])),
@@ -412,7 +414,7 @@ tooltip_css_block <- function() {
     tooltip_marker,
     "\n",
     "<style>\n",
-    ".altdown-tip-float{display:none;position:fixed;z-index:10000;",
+    ".quartodown-tip-float{display:none;position:fixed;z-index:10000;",
     "min-width:220px;max-width:420px;",
     "background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);",
     "border:1px solid var(--bs-border-color,#444);",
@@ -420,19 +422,19 @@ tooltip_css_block <- function() {
     "line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);",
     "white-space:normal;text-align:left;font-weight:normal;",
     "font-style:normal;}\n",
-    ".altdown-tip-float .altdown-tip-sig{display:block;white-space:pre-wrap;",
+    ".quartodown-tip-float .quartodown-tip-sig{display:block;white-space:pre-wrap;",
     "font-family:ui-monospace,SFMono-Regular,Consolas,monospace;",
     "font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;",
     # undo Bootstrap's code{} background so this doesn't look boxed in dark mode
     "background-color:transparent;padding:0;border-radius:0;}\n",
-    ".altdown-tip-float .altdown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}\n",
-    "a.altdown-tip-ref{cursor:help;}\n",
+    ".quartodown-tip-float .quartodown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}\n",
+    "a.quartodown-tip-ref{cursor:help;}\n",
     "</style>\n"
   )
 }
 
 # `tips`: id -> list(usage, brief, name), rendered as a hidden payload the
-# script below reads via `data-for`/`data-altdown-tip`.
+# script below reads via `data-for`/`data-quartodown-tip`.
 tooltip_payload_html <- function(tips) {
   entries <- vapply(
     names(tips),
@@ -442,12 +444,12 @@ tooltip_payload_html <- function(tips) {
       brief_html <- if (!is.null(tip$brief)) {
         # `code` in the brief (kept from Rd \code{}) becomes <code>
         brief <- gsub("`([^`]+)`", "<code>\\1</code>", html_escape(tip$brief))
-        paste0("<span class=\"altdown-tip-brief\">", brief, "</span>")
+        paste0("<span class=\"quartodown-tip-brief\">", brief, "</span>")
       } else {
         ""
       }
       sprintf(
-        '<div data-for="%s"><code class="altdown-tip-sig">%s</code>%s</div>',
+        '<div data-for="%s"><code class="quartodown-tip-sig">%s</code>%s</div>',
         id,
         html_escape(sig),
         brief_html
@@ -457,7 +459,7 @@ tooltip_payload_html <- function(tips) {
   )
 
   paste0(
-    '<div class="altdown-tip-payload" hidden>',
+    '<div class="quartodown-tip-payload" hidden>',
     paste(entries, collapse = ""),
     "</div>\n"
   )
@@ -469,7 +471,7 @@ tooltip_script_block <- function() {
     "(function(){\n",
     "  var payload = document.currentScript.previousElementSibling;\n",
     "  var float = document.createElement('div');\n",
-    "  float.className = 'altdown-tip-float';\n",
+    "  float.className = 'quartodown-tip-float';\n",
     "  float.setAttribute('role', 'tooltip');\n",
     "  document.body.appendChild(float);\n",
     "  var hideTimer;\n",
@@ -485,7 +487,7 @@ tooltip_script_block <- function() {
     "    float.style.left = left + 'px';\n",
     "  }\n",
     "  function show(el){\n",
-    "    var key = el.getAttribute('data-altdown-tip');\n",
+    "    var key = el.getAttribute('data-quartodown-tip');\n",
     "    var tip = payload.querySelector('[data-for=\"' + key + '\"]');\n",
     "    if (!tip) return;\n",
     "    float.innerHTML = tip.innerHTML;\n",
@@ -495,7 +497,7 @@ tooltip_script_block <- function() {
     "  function hide(){ float.style.display = 'none'; }\n",
     "  function cancelHide(){ clearTimeout(hideTimer); }\n",
     "  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }\n",
-    "  var links = document.querySelectorAll('a.altdown-tip-ref');\n",
+    "  var links = document.querySelectorAll('a.quartodown-tip-ref');\n",
     "  for (var i = 0; i < links.length; i++) {\n",
     "    (function(el){\n",
     "      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });\n",

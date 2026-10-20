@@ -1,0 +1,134 @@
+---
+title: "Get started with quartodown"
+vignette: >
+  %\VignetteIndexEntry{Get started with quartodown}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+quartodown builds a pkgdown-style website for an R package with
+[Quarto](https://quarto.org/). This guide sets up a package, builds its site,
+and publishes it on GitHub Pages.
+
+## Set up
+
+From the root of your package, run:
+
+```r
+quartodown::use_quartodown()
+```
+
+This writes `_quartodown.yml` at the package root, the one configuration file
+you edit, and adds the files the build generates to `.gitignore` and
+`.Rbuildignore`. The configuration file is optional: without it, the site is
+built with the defaults.
+
+## Build the site
+
+```r
+quartodown::build_site()
+quartodown::preview_site()
+```
+
+`build_site()` builds the site into `docs/`, and `preview_site()` opens it in
+your browser.
+
+::: {.callout-important}
+Examples in the man pages and code in the vignettes run against the installed
+version of your package, so install it before building, e.g. with
+`devtools::install()`.
+:::
+
+The site is built from what's already in your package:
+
+- **Home page**: `README.md`, with a sidebar of links, the license, citation and
+  developers taken from `DESCRIPTION`. Badges between `<!-- badges: start -->`
+  and `<!-- badges: end -->` move into the sidebar.
+- **Reference**: one page per `man/*.Rd` file, and an index of them.
+- **Get started**: the vignette named after the package, like this one.
+- **Articles**: every other vignette, including those in `vignettes/articles/`.
+- **Changelog**: `NEWS.md`, with issues (`#123`) and GitHub users (`@user`)
+  linked.
+
+## Organize the reference index
+
+By default the reference index lists every function in one section. To group
+them, edit the `reference:` field in `_quartodown.yml`. It has the same shape as
+pkgdown's:
+
+```yaml
+reference:
+  - title: Setting up
+    contents:
+      - use_quartodown
+  - title: Building
+    contents:
+      - starts_with("build_")
+```
+
+`?build_site` lists the other fields: `articles:` sets the order of the
+"Articles" menu, and `quarto:` changes the Quarto configuration, e.g. to add
+navbar links.
+
+## Publish on GitHub Pages
+
+This GitHub Actions workflow builds the site and deploys it to the `gh-pages`
+branch on every push. Save it as `.github/workflows/quartodown.yaml`:
+
+```yaml
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+name: quartodown
+
+jobs:
+  quartodown:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: quartodown-${{ github.event_name != 'pull_request' || github.run_id }}
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::knitr, any::rmarkdown, github::BjarkeHautop/quartodown, local::.
+          needs: website
+
+      - name: Build site
+        run: quartodown::build_site()
+        shell: Rscript {0}
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          clean: false
+          branch: gh-pages
+          folder: docs
+```
+
+`local::.` installs your package, so examples and vignettes run against it.
+Then, on GitHub, set the repository to serve Pages from the `gh-pages` branch
+(*Settings* → *Pages*).
+
+## Learn more
+
+[Technical
+details](https://bjarkehautop.github.io/quartodown/vignettes/articles/technical.html)
+explains how a build works and how quartodown makes a Quarto site look like
+pkgdown.

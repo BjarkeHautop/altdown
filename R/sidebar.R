@@ -132,8 +132,8 @@ autolink_license <- function(license_field, has_license_file) {
   abbr <- ifelse(is.na(db$SSS), db$Abbrev, db$SSS)
   url <- db$URL
   if (has_license_file) {
-    abbr <- c(abbr, "LICENSE", "LICENCE")
-    url <- c(url, "LICENSE.html", "LICENSE.html")
+    abbr <- c(abbr, "LICENSE")
+    url <- c(url, "LICENSE-text.html")
   }
   keep <- !is.na(abbr)
   abbr <- abbr[keep]
@@ -157,10 +157,8 @@ data_sidebar_license <- function(path) {
     return(character())
   }
 
-  has_license_md <- file.exists(file.path(path, "LICENSE.md")) ||
-    file.exists(file.path(path, "LICENCE.md"))
-  has_license_file <- file.exists(file.path(path, "LICENSE")) ||
-    file.exists(file.path(path, "LICENCE"))
+  has_license_md <- file.exists(file.path(path, "LICENSE.md"))
+  has_license_file <- file.exists(file.path(path, "LICENSE"))
 
   link <- autolink_license(license_field, has_license_file)
   if (has_license_md) {
@@ -174,26 +172,17 @@ data_sidebar_license <- function(path) {
 }
 
 data_sidebar_community <- function(path) {
-  gh_url <- pkg_github_url(path)
-
-  # altdoc renders a top-level CODE_OF_CONDUCT.md into the site but nothing
-  # else here, so other files link to their source on GitHub (or are left
-  # out without a GitHub URL, rather than linking to a page that won't exist).
-  community_link <- function(text, file, rendered = FALSE) {
-    if (rendered && file.exists(file.path(path, file))) {
-      return(sprintf("[%s](%s.html)", text, fs::path_ext_remove(file)))
-    }
-    rel <- c(file, file.path(".github", file))
-    rel <- rel[file.exists(file.path(path, rel))]
-    if (length(rel) == 0 || is.na(gh_url)) {
+  # Each is rendered into the site, see import_markdown_files().
+  community_link <- function(text, file) {
+    if (is.null(community_file_source(path, file))) {
       return(character())
     }
-    sprintf("[%s](%s/blob/HEAD/%s)", text, gh_url, rel[[1]])
+    sprintf("[%s](%s)", text, sub("\\.md$", ".html", file))
   }
 
   links <- c(
     community_link("Contributing guide", "CONTRIBUTING.md"),
-    community_link("Code of conduct", "CODE_OF_CONDUCT.md", rendered = TRUE),
+    community_link("Code of conduct", "CODE_OF_CONDUCT.md"),
     community_link("Getting help", "SUPPORT.md")
   )
 

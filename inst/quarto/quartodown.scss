@@ -33,7 +33,7 @@ $web-font-path: false;
 // `.navbar-dark, .navbar[data-bs-theme=dark]` rule (which is what actually
 // applies here, since `<nav>` carries that attribute) outranks a plain
 // `.navbar` selector on specificity alone, regardless of source order.
-$altdown-navbar-toggler-icon-bg: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$body-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>"));
+$quartodown-navbar-toggler-icon-bg: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$body-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>"));
 
 // pkgdown deliberately avoids a bold, single-color navbar bar (bootstrap's
 // own assumption): "we prefer a mildly coloured navbar that's just
@@ -43,10 +43,10 @@ $altdown-navbar-toggler-icon-bg: escape-svg(url("data:image/svg+xml,<svg xmlns='
 // custom properties are exactly what's stuck in the hardcoded dark scope
 // here, we replicate the same two 95/5 mixes at Sass-compile time instead,
 // off the real `$body-bg`/`$primary`/`$body-color` for this variant.
-$altdown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
+$quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 
 .navbar {
-  background-color: $altdown-navbar-bg !important;
+  background-color: $quartodown-navbar-bg !important;
   // `darkly` (the dark theme variant) sets a taller `$navbar-padding-y`
   // than `default` (0.5rem vs 1rem) - pin it so the navbar doesn't visibly
   // grow/shrink when toggling between them.
@@ -58,7 +58,7 @@ $altdown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
   --bs-navbar-brand-color: #{$body-color} !important;
   --bs-navbar-brand-hover-color: #{$primary} !important;
   --bs-navbar-toggler-border-color: #{rgba($body-color, 0.15)} !important;
-  --bs-navbar-toggler-icon-bg: #{$altdown-navbar-toggler-icon-bg} !important;
+  --bs-navbar-toggler-icon-bg: #{$quartodown-navbar-toggler-icon-bg} !important;
 }
 
 // Bootstrap also redeclares `--bs-navbar-toggler-icon-bg` directly on
@@ -67,7 +67,7 @@ $altdown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 // inherited from an ancestor - `.navbar`'s `!important` above doesn't reach
 // past it.
 .navbar-toggler-icon {
-  --bs-navbar-toggler-icon-bg: #{$altdown-navbar-toggler-icon-bg} !important;
+  --bs-navbar-toggler-icon-bg: #{$quartodown-navbar-toggler-icon-bg} !important;
 }
 
 // `.quarto-navigation-tool` (the GitHub icon's wrapper, and the light/
@@ -209,10 +209,7 @@ $altdown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 // page structurally instead: it's the only page whose margin content (the
 // pkgdown-style Links/License/Citation/Developers sidebar, added by
 // build_site()) turns `#quarto-document-content` into a full-bleed
-// `page-full` grid. (Used to key off a `fullcontent` class Quarto put on
-// every *other* page's <body> - but enabling `toc: true` below adds a
-// margin sidebar, and thus drops that class, from every page, home
-// included, so it no longer distinguishes anything.)
+// `page-full` grid.
 #quarto-document-content.page-full {
   padding-top: 0 !important;
   margin-top: -10px !important;
@@ -270,7 +267,7 @@ pre code {
 // box. `var(--bs-tertiary-bg)` doesn't fix this either, for the same
 // reason - it's gated the same way and also stays stuck on its light
 // value. Bake a variant-appropriate background at Sass-compile time
-// instead, the same way `$altdown-navbar-bg` above works around the exact
+// instead, the same way `$quartodown-navbar-bg` above works around the exact
 // same gap. Fenced code blocks (`pre.sourceCode`/`div.sourceCode`) already
 // get proper light/dark backgrounds from Quarto's own syntax-highlighting
 // CSS and aren't affected.
@@ -279,9 +276,8 @@ code {
   background-color: mix($body-bg, $body-color, 92%);
 }
 
-// `tools::Rd2HTML()` (used by altdoc to render man pages) emits the Usage
-// section - and any other verbatim code in a topic's Rd - as plain
-// `<pre><code class="language-R">`. Quarto's own theme CSS un-styles those
+// `tools::Rd2HTML()` emits verbatim code in a topic's Rd as plain
+// `<pre><code>`. Quarto's own theme CSS un-styles those
 // on purpose, via `pre code:not(.sourceCode) { background-color: initial }`
 // (meant for raw `<pre>` blocks used as console/output text), which also strips the
 // background from these legitimate code blocks.
@@ -289,7 +285,7 @@ pre code:not(.sourceCode) {
   background-color: mix($body-bg, $body-color, 92%);
 }
 
-/* reference tables (man pages) ============================================== */
+/* reference pages ============================================================ */
 
 table {
   --bs-table-bg: transparent;
@@ -297,6 +293,13 @@ table {
 
 table code {
   white-space: nowrap;
+}
+
+// The \arguments{} and \value{} item tables `tools::Rd2HTML()` emits: each
+// name at the top of its row, clear of its description.
+table[role="presentation"] td:first-child {
+  vertical-align: top;
+  padding-right: 1rem;
 }
 
 /* reference index list (reference.qmd) ======================================

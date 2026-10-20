@@ -2,9 +2,9 @@
 % Please edit documentation in R/build_site.R
 \name{build_site}
 \alias{build_site}
-\title{Build an altdown-themed altdoc website}
+\title{Build the package website}
 \usage{
-build_site(path = ".", tooltips = TRUE, ...)
+build_site(path = ".", tooltips = TRUE, freeze = FALSE, quiet = TRUE)
 }
 \arguments{
 \item{path}{Path to the package root.}
@@ -14,20 +14,31 @@ build_site(path = ".", tooltips = TRUE, ...)
 tooltip showing the function's usage and the first sentence of its
 description?}
 
-\item{...}{Passed on to \code{\link[altdoc:render_docs]{altdoc::render_docs()}}, e.g. \code{freeze} or
-\code{parallel}.}
+\item{freeze}{Logical. Reuse the results of code that ran in an earlier
+build, for pages whose source hasn't changed since? Uses Quarto's
+\href{https://quarto.org/docs/projects/code-execution.html#freeze}{freeze},
+which keeps them in \verb{_quarto/_freeze/}.}
+
+\item{quiet}{Logical. Hide Quarto's rendering output?}
 }
 \value{
 Invisibly, the path to the built site.
 }
 \description{
-Builds the package website into \verb{docs/} with
-\code{\link[altdoc:render_docs]{altdoc::render_docs()}}, styled to mirror pkgdown.
+Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Quarto},
+styled to mirror pkgdown.
 }
 \details{
-Before rendering it generates, from the package sources and
-\code{altdoc/altdown.yml}:
+\code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
+package sources and \verb{_quartodown.yml}, then renders it:
 \itemize{
+\item a reference page per \verb{man/*.Rd} file, except \verb{\\keyword\{internal\}} ones,
+with its examples run;
+\item the vignettes, including those in \verb{vignettes/articles/};
+\item \code{NEWS.md} as the changelog, with issues (\verb{#123}) and GitHub users
+(\verb{@user}) linked;
+\item \code{LICENSE.md}, the \code{LICENSE} file, and \code{CODE_OF_CONDUCT.md},
+\code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/});
 \item the navbar, with a "Get started" link, the function reference, an
 "Articles" menu and the changelog;
 \item the home page, built from \code{README.md} plus a pkgdown-style sidebar
@@ -38,13 +49,11 @@ site's light/dark toggle;
 \item the grouped function reference index;
 \item the "Authors and Citation" page.
 }
-
-These generated files are written to \verb{altdoc/} (which altdoc copies into
-its Quarto project), so they're gitignored by \code{\link[=use_altdown]{use_altdown()}}.
 }
 \section{Configuration}{
 
-\code{altdoc/altdown.yml} (created by \code{\link[=use_altdown]{use_altdown()}}) can contain:
+\verb{_quartodown.yml}, at the package root, is optional; \code{\link[=use_quartodown]{use_quartodown()}}
+creates one. It can contain:
 \itemize{
 \item \code{reference}: groups the function reference index, in the same shape as
 pkgdown's \verb{reference:} field. \code{contents} entries can be a topic alias or
@@ -75,8 +84,8 @@ to the only top-level vignette if there is just one.
 
 \examples{
 \dontrun{
-use_altdown()
+use_quartodown()
 build_site()
-altdoc::preview_docs()
+preview_site()
 }
 }

@@ -1,8 +1,8 @@
 # ---- vignettes in the navbar --------------------------------------------------
 #
 # Vignettes are identified by their path relative to vignettes/, e.g.
-# "getting-started.qmd" or "articles/technical.qmd". altdoc renders both
-# top-level vignettes and those in vignettes/articles/.
+# "getting-started.qmd" or "articles/technical.qmd". Both top-level
+# vignettes and those in vignettes/articles/ are rendered.
 
 vignette_pattern <- "\\.(qmd|[Rr]md)$"
 
@@ -43,7 +43,7 @@ find_getting_started_vignette <- function(
   NULL
 }
 
-# `order` is the `articles:` field of altdown.yml: vignette paths relative to
+# `order` is the `articles:` field of quartodown.yml: vignette paths relative to
 # vignettes/, without extension.
 select_articles <- function(vignettes, order = NULL) {
   if (is.null(order)) {
@@ -55,7 +55,7 @@ select_articles <- function(vignettes, order = NULL) {
   unknown <- setdiff(order, keys)
   if (length(unknown) > 0) {
     cli::cli_abort(c(
-      "altdoc/altdown.yml `articles:` lists {.val {unknown}}, which {?is not a vignette/are not vignettes}.",
+      "_quartodown.yml `articles:` lists {.val {unknown}}, which {?is not a vignette/are not vignettes}.",
       "i" = "Known vignettes: {.val {keys}}."
     ))
   }
@@ -63,7 +63,7 @@ select_articles <- function(vignettes, order = NULL) {
   unlisted <- setdiff(keys, order)
   if (length(unlisted) > 0) {
     cli::cli_warn(
-      "{.val {unlisted}} {?is/are} not listed under `articles:` in altdoc/altdown.yml and won't appear in the navbar."
+      "{.val {unlisted}} {?is/are} not listed under `articles:` in _quartodown.yml and won't appear in the navbar."
     )
   }
 

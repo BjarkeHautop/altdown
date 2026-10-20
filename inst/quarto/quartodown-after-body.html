@@ -12,12 +12,10 @@ instead, on every page, after layout settles.
     // Links/License column), <main> itself becomes a "page-full"
     // grid spanning the whole viewport, so its own box tells us
     // nothing about where the visible text starts — look at the
-    // title/first heading instead. On every other page, main's own
-    // edge already sits flush with the text and is the more
-    // reliable target (man pages have no <h1>, only unnumbered
-    // <h2> titles, so this avoids depending on heading level).
+    // title instead. On every other page, main's own edge already
+    // sits flush with the text.
     if (main.classList.contains("page-full")) {
-      var heading = main.querySelector("h1, h2.unnumbered");
+      var heading = main.querySelector("h1");
       if (heading) return heading.getBoundingClientRect().left;
     }
     return main.getBoundingClientRect().left;
@@ -35,7 +33,7 @@ instead, on every page, after layout settles.
   // <version>" (see `website.title` in quarto_config()) -
   // Quarto gives us no way to style just the version at the YAML
   // level. Split it out into its own `<small>` here so
-  // altdown.scss can shrink it, pkgdown style.
+  // quartodown.scss can shrink it, pkgdown style.
   function shrinkNavbarVersion() {
     var title = document.querySelector(".navbar-title");
     if (!title || title.querySelector(".navbar-version")) return;

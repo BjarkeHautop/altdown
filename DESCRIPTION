@@ -1,31 +1,30 @@
-Package: altdown
-Title: A 'pkgdown'-Style Theme for 'altdoc' Websites
+Package: quartodown
+Title: 'pkgdown'-Style Package Websites Built with 'Quarto'
 Version: 0.0.0.9000
 Date: 2026-08-27
 Authors@R:
     person(given = "Bjarke", family = "Hautop Kristensen", email = "bjarke.hautop@gmail.com", role = c("aut", "cre"))
-Description: Provides a theme and helper functions for building package
-    websites with 'altdoc' and 'Quarto', styled to resemble 'pkgdown'.
-    Because the site is rendered by 'Quarto', all 'Quarto' features are
-    supported.
+Description: Builds package websites with 'Quarto', styled to resemble
+    'pkgdown'. Because the site is rendered by 'Quarto', all 'Quarto'
+    features are supported.
 License: MIT + file LICENSE
-URL: https://bjarkehautop.github.io/altdown/, https://github.com/bjarkehautop/altdown
-BugReports: https://github.com/bjarkehautop/altdown/issues
+URL: https://bjarkehautop.github.io/quartodown/, https://github.com/bjarkehautop/quartodown
+BugReports: https://github.com/bjarkehautop/quartodown/issues
 SystemRequirements: Quarto command line tool
     (<https://github.com/quarto-dev/quarto-cli>).
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:
-    altdoc,
     cli,
     desc,
     fs,
+    quarto,
     tools,
     utils,
     yaml
 Suggests:
     httr2,
-    quarto,
+    servr,
     testthat (>= 3.0.0),
     withr
 VignetteBuilder:

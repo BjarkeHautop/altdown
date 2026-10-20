@@ -4,25 +4,24 @@ format: gfm
 
 <!-- badges: start -->
 
-[![](https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bjarkehautop/altdown/actions/workflows/R-CMD-check.yaml)
-[![](https://codecov.io/gh/bjarkehautop/altdown/graph/badge.svg)](https://app.codecov.io/gh/bjarkehautop/altdown)
+[![](https://github.com/bjarkehautop/quartodown/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bjarkehautop/quartodown/actions/workflows/R-CMD-check.yaml)
+[![](https://codecov.io/gh/bjarkehautop/quartodown/graph/badge.svg)](https://app.codecov.io/gh/bjarkehautop/quartodown)
 <!-- badges: end -->
 
-# altdown <picture><source media="(prefers-color-scheme: dark)" srcset="man/figures/logo.png" /><img src="man/figures/logo-light.png" align="right" height="139" alt="altdown logo" /></picture>
+# quartodown <picture><source media="(prefers-color-scheme: dark)" srcset="man/figures/logo.png" /><img src="man/figures/logo-light.png" align="right" height="139" alt="quartodown logo" /></picture>
 
-altdown is an R package that provides a theme for
-[altdoc](https://altdoc.etiennebacher.com/) websites built with Quarto, styled
-to mirror the output of pkgdown (Bootstrap 5).
+quartodown is an R package that builds package websites with Quarto, styled to
+mirror the output of pkgdown (Bootstrap 5).
 
-## Why altdown?
+## Why quartodown?
 
 pkgdown can render Quarto vignettes, but it replaces Quarto's styling with its
 own (`theme: "none"`, `minimal: TRUE`). As a result, Quarto features such as
 callout blocks, code annotations and tabsets don't render correctly; callouts,
 for instance, become plain blockquotes.
 
-altdown builds on altdoc, which uses Quarto's own rendering, and adds a
-pkgdown-style layout on top. You get:
+quartodown renders the whole site with Quarto itself, and adds a pkgdown-style
+layout on top. You get:
 
 - full Quarto support;
 - a familiar pkgdown look;
@@ -33,7 +32,7 @@ pkgdown-style layout on top. You get:
 Install from GitHub:
 
 ```r
-pak::pak("https://github.com/BjarkeHautop/altdown")
+pak::pak("https://github.com/BjarkeHautop/quartodown")
 ```
 
 ## Usage
@@ -42,9 +41,9 @@ Browse around to see how it looks! If you like what you see, and want to use it
 for your own package, run:
 
 ```r
-altdown::use_altdown()
+quartodown::use_quartodown()
 ```
-This writes `altdoc/altdown.yml`, with a `reference:` field that lists your
+This writes `_quartodown.yml`, with a `reference:` field that lists your
 package's current functions in one section; edit it to group them however you'd
 like, in the same shape as pkgdown's `reference:` field. It also gitignores the
 files the build generates.
@@ -52,18 +51,18 @@ files the build generates.
 Then build the site:
 
 ```r
-altdown::build_site()
+quartodown::build_site()
 ```
-A preview can then be viewed using `altdoc::preview_docs()`.
+A preview can then be viewed using `quartodown::preview_site()`.
 
 The navbar is built from your vignettes: the one named after the package (or the
 only top-level one) becomes "Get started", and the rest, including those in
-`vignettes/articles/`, go under "Articles". See `?altdown::build_site` for
-everything `altdown.yml` can configure.
+`vignettes/articles/`, go under "Articles". See `?quartodown::build_site` for
+everything `quartodown.yml` can configure.
 
-## Packages using altdown
+## Packages using quartodown
 
 - [jlbind](https://bjarkehautop.github.io/jlbind/)
 
-Using altdown for your package? Feel free to open a pull request adding it to
+Using quartodown for your package? Feel free to open a pull request adding it to
 this list.

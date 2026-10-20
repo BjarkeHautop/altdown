@@ -1,0 +1,8 @@
+# Configuration for quartodown::build_site(). See ?quartodown::build_site.
+
+reference:
+  - title: All functions
+    contents:
+      - build_site
+      - preview_site
+      - use_quartodown
