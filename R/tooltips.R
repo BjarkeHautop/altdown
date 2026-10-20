@@ -246,7 +246,15 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
 
     sentence <- first_sentence(rd_section_text(rd, tags, "\\description"))
 
-    unmatched <- setdiff(aliases, names(usage_by_name))
+    # The alias matching the page's own \name (e.g. a shared topic like
+    # "graph-queries") names the page, not a function, so it has no usage.
+    rd_name_field <- rd[tags == "\\name"]
+    page_name <- if (length(rd_name_field) == 0) {
+      character(0)
+    } else {
+      as.character(rd_name_field[[1]][[1]])
+    }
+    unmatched <- setdiff(aliases, c(names(usage_by_name), page_name))
     if (!quiet && length(aliases) > 1 && length(unmatched) > 0) {
       cli::cli_warn(c(
         "{.file {rd_name}} documents {length(aliases)} aliases but no \\usage{{}} line matches {.val {unmatched}}.",
@@ -309,8 +317,13 @@ rd_usage_blocks <- function(usage_node) {
   blocks
 }
 
-# The alias a \usage{} block documents: the identifier before its first "(".
+# The alias a \usage{} block documents: the identifier before its first "(",
+# or the operator of an infix call such as "lhs %op% rhs".
 rd_usage_leading_name <- function(block) {
+  infix <- regmatches(block, regexec("^\\S+\\s+(%[^%]+%)\\s+\\S+$", block))[[1]]
+  if (length(infix) == 2) {
+    return(infix[[2]])
+  }
   name <- trimws(sub("\\(.*$", "", block, perl = TRUE))
   sub("^`(.*)`$", "\\1", name)
 }

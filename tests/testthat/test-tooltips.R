@@ -96,6 +96,60 @@ test_that("an alias with no matching \\usage{} block falls back to the whole blo
   expect_no_warning(build_topic_index(dir, quiet = TRUE))
 })
 
+test_that("a shared topic's own name doesn't need a \\usage{} block", {
+  dir <- withr::local_tempdir()
+  write_rd(
+    dir,
+    "foo-queries",
+    c(
+      "\\name{foo-queries}",
+      "\\alias{foo-queries}",
+      "\\alias{foo}",
+      "\\alias{bar}",
+      "\\title{Foo queries}",
+      "\\usage{",
+      "foo(x)",
+      "",
+      "bar(x)",
+      "}",
+      "\\description{",
+      "Queries a foo.",
+      "}"
+    )
+  )
+
+  expect_no_warning(index <- build_topic_index(dir))
+  expect_equal(index[["bar"]]$usage, "bar(x)")
+  expect_equal(index[["foo-queries"]]$usage, "foo(x)\n\nbar(x)")
+})
+
+test_that("an infix operator alias matches its \\usage{} block", {
+  dir <- withr::local_tempdir()
+  write_rd(
+    dir,
+    "ops",
+    c(
+      "\\name{ops}",
+      "\\alias{ops}",
+      "\\alias{\\%+-\\%}",
+      "\\alias{\\%-+\\%}",
+      "\\title{Operators}",
+      "\\usage{",
+      "lhs \\%+-\\% rhs",
+      "",
+      "lhs \\%-+\\% rhs",
+      "}",
+      "\\description{",
+      "Two operators.",
+      "}"
+    )
+  )
+
+  expect_no_warning(index <- build_topic_index(dir))
+  expect_equal(index[["%+-%"]]$usage, "lhs %+-% rhs")
+  expect_equal(index[["%-+%"]]$usage, "lhs %-+% rhs")
+})
+
 test_that("build_topic_index() errors without a man/ directory", {
   expect_error(build_topic_index(withr::local_tempdir()), "man/")
 })
