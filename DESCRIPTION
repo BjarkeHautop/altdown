@@ -2,8 +2,22 @@ Package: quartodown
 Title: 'pkgdown'-Style Package Websites Built with 'Quarto'
 Version: 0.0.0.9000
 Date: 2026-08-27
-Authors@R:
-    person(given = "Bjarke", family = "Hautop Kristensen", email = "bjarke.hautop@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Bjarke", "Hautop Kristensen", email = "bjarke.hautop@gmail.com",
+           role = c("aut", "cre")),
+    person("Hadley", "Wickham", role = c("ctb"),
+           comment = "Code adapted from pkgdown"),
+    person("Jay", "Hesselberth", role = c("ctb"),
+           comment = "Code adapted from pkgdown"),
+    person("Maëlle", "Salmon", role = c("ctb"),
+           comment = "Code adapted from pkgdown"),
+    person("Olivier", "Roy", role = c("ctb"),
+           comment = "Code adapted from pkgdown"),
+    person("Salim", "Brüggemann", role = c("ctb"),
+           comment = "Code adapted from pkgdown"),
+    person("Posit Software, PBC", role = "cph",
+           comment = "Copyright holder of pkgdown")
+  )
 Description: Builds package websites with 'Quarto'. The whole site,
     help pages and vignettes included, is rendered by 'Quarto', so every
     'Quarto' feature works, from callouts to code annotations. Functions
