@@ -174,34 +174,28 @@ data_sidebar_license <- function(path) {
 }
 
 data_sidebar_community <- function(path) {
-  has_file <- function(...) any(file.exists(file.path(path, ...)))
+  gh_url <- pkg_github_url(path)
 
-  links <- character()
-  if (has_file("CONTRIBUTING.md") || has_file(".github", "CONTRIBUTING.md")) {
-    contributing_rel <- if (file.exists(file.path(path, "CONTRIBUTING.md"))) {
-      "CONTRIBUTING.md"
-    } else {
-      ".github/CONTRIBUTING.md"
+  # altdoc renders a top-level CODE_OF_CONDUCT.md into the site but nothing
+  # else here, so other files link to their source on GitHub (or are left
+  # out without a GitHub URL, rather than linking to a page that won't exist).
+  community_link <- function(text, file, rendered = FALSE) {
+    if (rendered && file.exists(file.path(path, file))) {
+      return(sprintf("[%s](%s.html)", text, fs::path_ext_remove(file)))
     }
-    gh_url <- pkg_github_url(path)
-    contributing_url <- if (is.na(gh_url)) {
-      contributing_rel
-    } else {
-      sprintf("%s/blob/HEAD/%s", gh_url, contributing_rel)
+    rel <- c(file, file.path(".github", file))
+    rel <- rel[file.exists(file.path(path, rel))]
+    if (length(rel) == 0 || is.na(gh_url)) {
+      return(character())
     }
-    links <- c(
-      links,
-      sprintf("[Contributing guide](%s)", contributing_url)
-    )
+    sprintf("[%s](%s/blob/HEAD/%s)", text, gh_url, rel[[1]])
   }
-  if (
-    has_file("CODE_OF_CONDUCT.md") || has_file(".github", "CODE_OF_CONDUCT.md")
-  ) {
-    links <- c(links, "[Code of conduct](CODE_OF_CONDUCT.html)")
-  }
-  if (has_file("SUPPORT.md") || has_file(".github", "SUPPORT.md")) {
-    links <- c(links, "[Getting help](SUPPORT.html)")
-  }
+
+  links <- c(
+    community_link("Contributing guide", "CONTRIBUTING.md"),
+    community_link("Code of conduct", "CODE_OF_CONDUCT.md", rendered = TRUE),
+    community_link("Getting help", "SUPPORT.md")
+  )
 
   sidebar_section("Community", links)
 }

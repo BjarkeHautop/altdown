@@ -72,6 +72,57 @@ test_that("build_topic_index() narrows a multi-alias \\usage{} block by name", {
   expect_equal(index[["foo"]]$topic, "print.foo")
 })
 
+test_that("build_topic_index() matches a \\usage{} block wrapped over several lines", {
+  dir <- withr::local_tempdir()
+  write_rd(
+    dir,
+    "glue",
+    c(
+      "\\name{glue}",
+      "\\alias{glue}",
+      "\\alias{glue_data}",
+      "\\title{Format a string}",
+      "\\usage{",
+      "glue_data(",
+      "  .x,",
+      "  ...",
+      ")",
+      "",
+      "glue(...)",
+      "}",
+      "\\description{",
+      "Formats a string.",
+      "}"
+    )
+  )
+
+  expect_no_warning(index <- build_topic_index(dir))
+  expect_equal(index$glue_data$usage, "glue_data(\n  .x,\n  ...\n)")
+  expect_equal(index$glue$usage, "glue(...)")
+})
+
+test_that("build_topic_index() skips internal topics, which altdoc doesn't render", {
+  dir <- withr::local_tempdir()
+  write_rd(
+    dir,
+    "helper",
+    c(
+      "\\name{helper}",
+      "\\alias{helper}",
+      "\\title{Helper}",
+      "\\usage{",
+      "helper()",
+      "}",
+      "\\description{",
+      "Helps.",
+      "}",
+      "\\keyword{internal}"
+    )
+  )
+
+  expect_length(build_topic_index(dir), 0)
+})
+
 test_that("an alias with no matching \\usage{} block falls back to the whole block and warns", {
   dir <- withr::local_tempdir()
   write_rd(

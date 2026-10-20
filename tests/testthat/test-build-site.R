@@ -370,6 +370,40 @@ test_that("data_sidebar_citation() links to the authors.html #citation anchor", 
   expect_true(any(grepl("authors.html#citation", bullets, fixed = TRUE)))
 })
 
+test_that("data_sidebar_community() links to GitHub for files altdoc doesn't render", {
+  dir <- new_pkg()
+  desc::desc_set(URL = "https://github.com/jane/examplepkg", file = dir)
+  dir.create(file.path(dir, ".github"))
+  writeLines("x", file.path(dir, ".github", "CODE_OF_CONDUCT.md"))
+  writeLines("x", file.path(dir, ".github", "SUPPORT.md"))
+  writeLines("x", file.path(dir, "CONTRIBUTING.md"))
+
+  bullets <- data_sidebar_community(dir)
+  gh <- "https://github.com/jane/examplepkg/blob/HEAD/"
+  expect_true(any(grepl(
+    paste0(gh, ".github/CODE_OF_CONDUCT.md"),
+    bullets,
+    fixed = TRUE
+  )))
+  expect_true(any(grepl(
+    paste0(gh, ".github/SUPPORT.md"),
+    bullets,
+    fixed = TRUE
+  )))
+  expect_true(any(grepl(paste0(gh, "CONTRIBUTING.md"), bullets, fixed = TRUE)))
+
+  # A top-level CODE_OF_CONDUCT.md is rendered into the site by altdoc.
+  writeLines("x", file.path(dir, "CODE_OF_CONDUCT.md"))
+  bullets <- data_sidebar_community(dir)
+  expect_true(any(grepl("(CODE_OF_CONDUCT.html)", bullets, fixed = TRUE)))
+
+  # Without a GitHub URL, unrendered files are left out instead of linked.
+  desc::desc_del("URL", file = dir)
+  bullets <- data_sidebar_community(dir)
+  expect_false(any(grepl("SUPPORT", bullets)))
+  expect_false(any(grepl("CONTRIBUTING", bullets)))
+})
+
 test_that("build_authors_qmd() writes an Authors and Citation page with all authors and a fenced BibTeX code block", {
   dir <- withr::local_tempdir()
   dir.create(file.path(dir, "altdoc"))
@@ -519,12 +553,31 @@ test_that("build_reference_qmd() supports starts_with()/-exclude/has_concept()/h
 
   expect_true(any(grepl("str_foo()", lines, fixed = TRUE)))
   expect_true(any(grepl("str_bar()", lines, fixed = TRUE)))
-  expect_true(any(grepl("num_add()", lines, fixed = TRUE)))
+})
 
-  strings_start <- grep("^## Strings$", lines)
-  internal_start <- grep("^## Internal$", lines)
-  strings_block <- lines[strings_start:(internal_start - 1)]
-  expect_false(any(grepl("num_add()", strings_block, fixed = TRUE)))
+test_that("build_reference_qmd() leaves out internal topics, which altdoc doesn't render", {
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo")
+  write_rd(dir, "examplepkg-package", usage = NULL, keyword = "internal")
+
+  expect_no_warning(build_reference_qmd(dir))
+  lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
+  expect_true(any(grepl("foo()", lines, fixed = TRUE)))
+  expect_false(any(grepl("examplepkg-package", lines, fixed = TRUE)))
+
+  config <- reference_config(c(
+    "reference:",
+    "  - title: Main",
+    "    contents:",
+    "      - foo",
+    "  - title: Internal",
+    "    contents:",
+    "      - examplepkg-package"
+  ))
+  expect_no_warning(build_reference_qmd(dir, config))
+  lines <- readLines(file.path(dir, "altdoc", "reference.qmd"))
+  expect_false("## Internal" %in% lines)
+  expect_false(any(grepl("examplepkg-package", lines, fixed = TRUE)))
 })
 
 test_that("build_reference_qmd() lists every topic in one section without `reference:`", {

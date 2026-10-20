@@ -327,21 +327,35 @@ select_topics <- function(match_strings, topics) {
 build_reference_qmd <- function(path, config = list()) {
   out_path <- file.path(path, "altdoc", "reference.qmd")
   topics <- rd_topics(path)
+  # altdoc renders no page for \keyword{internal} topics, so (like pkgdown)
+  # they never appear in the index, even when a `reference:` entry matches.
+  internal <- vapply(
+    topics,
+    function(t) "internal" %in% t$keywords,
+    logical(1)
+  )
 
   # Without a `reference:` field, list every topic in one section.
   if (is.null(config$reference)) {
     config$reference <- list(list(
       title = "All functions",
-      contents = vapply(topics, function(t) t$alias[[1]], character(1))
+      contents = vapply(
+        topics[!internal],
+        function(t) t$alias[[1]],
+        character(1)
+      )
     ))
   }
 
   block_indexes <- lapply(
     config$reference,
-    function(block) select_topics(as.character(block$contents), topics)
+    function(block) {
+      idx <- select_topics(as.character(block$contents), topics)
+      idx[!internal[idx]]
+    }
   )
 
-  unlisted <- setdiff(seq_along(topics), unique(unlist(block_indexes)))
+  unlisted <- setdiff(which(!internal), unique(unlist(block_indexes)))
   if (length(unlisted) > 0) {
     unlisted_names <- vapply(
       topics[unlisted],
@@ -355,6 +369,10 @@ build_reference_qmd <- function(path, config = list()) {
 
   sections <- Map(
     function(block, idx) {
+      # Drop a section whose contents were all internal topics.
+      if (length(idx) == 0 && length(block$contents) > 0) {
+        return(NULL)
+      }
       entries <- vapply(
         idx,
         function(i) {

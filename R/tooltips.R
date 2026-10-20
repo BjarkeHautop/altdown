@@ -222,7 +222,14 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
       function(x) as.character(x[[1]]),
       character(1)
     )
-    if (length(aliases) == 0) {
+    # altdoc renders no page for \keyword{internal} topics, so there's
+    # nothing to link to.
+    keywords <- vapply(
+      rd[tags == "\\keyword"],
+      function(x) trimws(as.character(x[[1]])),
+      character(1)
+    )
+    if (length(aliases) == 0 || "internal" %in% keywords) {
       next
     }
 
@@ -324,7 +331,7 @@ rd_usage_leading_name <- function(block) {
   if (length(infix) == 2) {
     return(infix[[2]])
   }
-  name <- trimws(sub("\\(.*$", "", block, perl = TRUE))
+  name <- trimws(sub("(?s)\\(.*$", "", block, perl = TRUE))
   sub("^`(.*)`$", "\\1", name)
 }
 
