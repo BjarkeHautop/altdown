@@ -7,7 +7,11 @@
 # Every man/*.Rd as a topic: its file's basename, title, aliases, concepts
 # and keywords.
 rd_topics <- function(path) {
-  rd_files <- fs::dir_ls(file.path(path, "man"), regexp = "\\.Rd$")
+  man_dir <- file.path(path, "man")
+  if (!dir.exists(man_dir)) {
+    return(list())
+  }
+  rd_files <- fs::dir_ls(man_dir, regexp = "\\.Rd$")
   macros <- rd_macros(path)
 
   lapply(rd_files, function(rd_file) {

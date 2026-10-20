@@ -416,7 +416,8 @@ test_that("build_authors_qmd() shows author comments without ORCID/ROR, and the 
       "Authors@R: c(",
       "    person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\"),",
       "           comment = c(ORCID = \"0000-0001-2345-6789\", \"See <https://example.com>\")),",
-      "    person(\"John\", \"Smith\", role = \"aut\"))"
+      "    person(\"John\", \"Smith\", role = \"aut\"),",
+      "    person(\"Org\", role = \"fnd\"))"
     ),
     file.path(dir, "DESCRIPTION")
   )
@@ -436,6 +437,11 @@ test_that("build_authors_qmd() shows author comments without ORCID/ROR, and the 
   )))
   expect_true(any(grepl(
     "<li><p><strong>John Smith</strong>. Author.</p></li>",
+    lines,
+    fixed = TRUE
+  )))
+  expect_true(any(grepl(
+    "<li><p><strong>Org</strong>. Funder.</p></li>",
     lines,
     fixed = TRUE
   )))

@@ -11,10 +11,11 @@ write_man_pages <- function(path, config = list()) {
 
   topics <- rd_topics(path)
   topics <- topics[has_page(topics, config)]
-  rd_files <- file.path(
-    path,
-    "man",
-    paste0(vapply(topics, `[[`, character(1), "basename"), ".Rd")
+  # Not paste0(<basenames>, ".Rd"), which is ".Rd" without topics.
+  rd_files <- vapply(
+    topics,
+    function(x) file.path(path, "man", paste0(x$basename, ".Rd")),
+    character(1)
   )
   macros <- rd_macros(path)
   pkg <- desc::desc_get_field("Package", file = path)

@@ -30,7 +30,8 @@ pkg_authors <- function(path, roles = NULL) {
 }
 
 author_name <- function(x) {
-  paste(trimws(paste(x$given, collapse = " ")), x$family)
+  given <- trimws(paste(x$given, collapse = " "))
+  if (is.null(x$family)) given else paste(given, x$family)
 }
 
 author_roles_text <- function(x) {

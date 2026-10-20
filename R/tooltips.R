@@ -187,7 +187,7 @@ inject_tooltips_html <- function(
 build_topic_index <- function(path = ".", quiet = FALSE) {
   man_dir <- file.path(path, "man")
   if (!dir.exists(man_dir)) {
-    cli::cli_abort("No {.path man/} directory found at {.path {path}}.")
+    return(list())
   }
 
   macros <- rd_macros(path)

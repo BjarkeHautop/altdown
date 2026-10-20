@@ -328,6 +328,17 @@ test_that("write_man_pages() writes a page per Rd file, except unlisted internal
   expect_setequal(list.files(reference_dir), c("foo.qmd", "reexports.qmd"))
 })
 
+test_that("write_man_pages() and build_topic_index() handle no or an empty man/", {
+  dir <- new_pkg()
+  expect_message(write_man_pages(dir), "0 man pages")
+  expect_length(build_topic_index(dir), 0)
+
+  dir.create(file.path(dir, "man"))
+  expect_message(write_man_pages(dir), "0 man pages")
+  expect_length(build_topic_index(dir), 0)
+  expect_length(list.files(file.path(dir, "_quarto", "reference")), 0)
+})
+
 test_that("write_man_pages() names the Rd file it failed to convert", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")

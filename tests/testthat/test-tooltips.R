@@ -264,10 +264,6 @@ test_that("a lifecycle badge is left out of the brief", {
   expect_equal(build_topic_index(dir)$foo$brief, "Does a thing.")
 })
 
-test_that("build_topic_index() errors without a man/ directory", {
-  expect_error(build_topic_index(withr::local_tempdir()), "man/")
-})
-
 test_that("a description longer than 200 characters warns and clips with '...'", {
   dir <- withr::local_tempdir()
   # no sentence boundary at all
