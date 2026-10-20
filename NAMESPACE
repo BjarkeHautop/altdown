@@ -3,3 +3,4 @@
 export(build_site)
 export(preview_site)
 export(use_quartodown)
+export(use_quartodown_action)

@@ -17,10 +17,9 @@ From the root of your package, run:
 quartodown::use_quartodown()
 ```
 
-This writes `_quartodown.yml` at the package root, the one configuration file
-you edit, and adds the files the build generates to `.gitignore` and
-`.Rbuildignore`. The configuration file is optional: without it, the site is
-built with the defaults.
+This writes `_quartodown.yml` at the package root, the configuration file you
+can edit, and adds the files the build generates to `.gitignore` and
+`.Rbuildignore`.
 
 ## Build the site
 
@@ -30,25 +29,25 @@ quartodown::preview_site()
 ```
 
 `build_site()` builds the site into `docs/`, and `preview_site()` opens it in
-your browser.
+your browser. Examples and vignettes run against your package's current source.
+While iterating, `build_site(devel = TRUE)` is faster because it loads the
+package with `pkgload::load_all()` instead of installing it.
 
-::: {.callout-tip}
-Examples in the man pages and code in the vignettes run against your package's
-current source: `build_site()` installs it into a temporary library first. To
-skip the install while iterating, use `build_site(devel = TRUE)`, which loads it
-with `pkgload::load_all()` instead.
-:::
+The following is added to your site:
 
-The site is built from what's already in your package:
-
-- **Home page**: `README.md`, with a sidebar of links, the license, citation and
-  developers taken from `DESCRIPTION`. Badges between `<!-- badges: start -->`
-  and `<!-- badges: end -->` move into the sidebar.
-- **Reference**: one page per `man/*.Rd` file, and an index of them.
-- **Get started**: the vignette named after the package, like this one.
-- **Articles**: every other vignette, including those in `vignettes/articles/`.
-- **Changelog**: `NEWS.md`, with issues (`#123`) and GitHub users (`@user`)
-  linked.
+- **Home page**: your `README.md`. Next to it, a sidebar links to the source
+  code, the bug tracker and CRAN (if the package is there), and shows the
+  license, citation and authors from `DESCRIPTION`. Any badges in your README
+  (between `<!-- badges: start -->` and `<!-- badges: end -->`) are moved into
+  the sidebar.
+- **Reference**: a page for each help topic in `man/`, plus an index page
+  listing them all.
+- **Get started**: the vignette with the same name as your package, like this
+  one.
+- **Articles**: all your other vignettes, including any in
+  `vignettes/articles/`.
+- **Changelog**: your `NEWS.md`. Issue numbers like `#123` and GitHub usernames
+  like `@user` become links.
 
 ## Organize the reference index
 
@@ -66,65 +65,20 @@ reference:
       - starts_with("build_")
 ```
 
-`?build_site` lists the other fields: `articles:` sets the order of the
-"Articles" menu, and `quarto:` changes the Quarto configuration, e.g. to add
-navbar links.
+See `?build_site` for the other fields.
 
 ## Publish on GitHub Pages
 
-This GitHub Actions workflow builds the site and deploys it to the `gh-pages`
-branch on every push. Save it as `.github/workflows/quartodown.yaml`:
+To build the site and deploy it to the `gh-pages` branch on every push, add a
+GitHub Actions workflow:
 
-```yaml
-on:
-  push:
-    branches: [main, master]
-  pull_request:
-  release:
-    types: [published]
-  workflow_dispatch:
-
-name: quartodown
-
-jobs:
-  quartodown:
-    runs-on: ubuntu-latest
-    concurrency:
-      group: quartodown-${{ github.event_name != 'pull_request' || github.run_id }}
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: quarto-dev/quarto-actions/setup@v2
-
-      - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::knitr, any::rmarkdown, github::BjarkeHautop/quartodown, local::.
-          needs: website
-
-      - name: Build site
-        run: quartodown::build_site()
-        shell: Rscript {0}
-
-      - name: Deploy to GitHub Pages
-        if: github.event_name != 'pull_request'
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          clean: false
-          branch: gh-pages
-          folder: docs
+```r
+quartodown::use_quartodown_action()
 ```
 
-`local::.` installs your package's dependencies, which its examples and
-vignettes need. Then, on GitHub, set the repository to serve Pages from the
-`gh-pages` branch (*Settings* → *Pages*).
+This writes `.github/workflows/quartodown.yaml`. Commit and push it. Once its
+first run has created the `gh-pages` branch, go to the *Pages* section of your
+repository's settings on GitHub and choose to deploy from that branch.
 
 ## Learn more
 

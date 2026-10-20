@@ -6,3 +6,4 @@ reference:
       - build_site
       - preview_site
       - use_quartodown
+      - use_quartodown_action

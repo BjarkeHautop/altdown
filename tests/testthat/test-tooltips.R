@@ -383,6 +383,17 @@ test_that("references qualified with the package's own namespace resolve, others
   expect_equal(result$html, html)
 })
 
+test_that("a help-operator reference like ?foo or ?pkg::foo resolves", {
+  html <- sample_html("<p><code>?foo</code> and <code>?p::foo</code></p>")
+  result <- inject_tooltips_html(html, foo_index, "reference/", pkg = "p")
+  expect_equal(result$n, 2L)
+  expect_match(
+    result$html,
+    'href="reference/foo.html">?p::foo</a></code>',
+    fixed = TRUE
+  )
+})
+
 test_that("references to names not in the index are left untouched", {
   html <- sample_html(paste0(
     "<span class=\"fu\"><a href=\"https://rdrr.io/r/base/library.html\">library</a></span>",

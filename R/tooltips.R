@@ -145,10 +145,12 @@ inject_tooltips_html <- function(
     is_block <- cap_starts[i, 1] != 0L # span (fu/va) vs. inline <code>
     name_html <- capture(i, if (is_block) 2L else 3L)
     name <- html_unescape(name_html)
-    # strip a trailing call, e.g. "foo(1, 2)" -> "foo", the package's own
-    # namespace, e.g. "pkg::foo" -> "foo", and a wrapping backtick pair
-    # from a literal `` `name<-`() `` in prose
+    # strip a trailing call, e.g. "foo(1, 2)" -> "foo", a leading help
+    # operator, e.g. "?foo" -> "foo", the package's own namespace, e.g.
+    # "pkg::foo" -> "foo", and a wrapping backtick pair from a literal
+    # `` `name<-`() `` in prose
     lookup <- sub("\\(.*$", "", name, perl = TRUE)
+    lookup <- sub("^\\?", "", lookup)
     if (!is.null(pkg)) {
       lookup <- sub(paste0("^", pkg, ":::?"), "", lookup)
     }

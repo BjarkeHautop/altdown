@@ -10,7 +10,9 @@ It generates a Quarto website project in `_quarto/` from the package sources,
 renders it into `docs/` with `quarto::quarto_render()`, then post-processes the
 HTML. Configuration is the optional `_quartodown.yml` at the package root. The
 exported API is `use_quartodown()` (one-time setup, writes `_quartodown.yml` and
-gitignore entries), `build_site()` and `preview_site()`.
+gitignore entries), `use_quartodown_action()` (writes the GitHub Pages workflow
+from [inst/templates/quartodown.yaml](inst/templates/quartodown.yaml)),
+`build_site()` and `preview_site()`.
 
 ## Commands
 
