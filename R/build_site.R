@@ -126,7 +126,9 @@ build_site <- function(
 theme_files <- c(
   "quartodown.scss",
   "quartodown-header.html",
-  "quartodown-after-body.html"
+  "quartodown-after-body.html",
+  "orcid.svg",
+  "ror.svg"
 )
 
 config_file <- "_quartodown.yml"

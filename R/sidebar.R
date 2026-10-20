@@ -202,15 +202,19 @@ data_sidebar_authors <- function(path, roles = default_roles()) {
     authors,
     function(x) {
       sprintf(
-        "%s\\\n<small>%s</small>",
+        "%s\\\n<small>%s</small>%s",
         author_name(x),
-        author_roles_text(x)
+        author_roles_text(x),
+        author_id_links(x)
       )
     },
     character(1)
   )
 
-  if (length(pkg_authors(path)) != length(authors)) {
+  # As pkgdown, also when authors.html shows something the sidebar doesn't.
+  all_authors <- pkg_authors(path)
+  has_comment <- any(lengths(lapply(all_authors, author_comment)) > 0)
+  if (length(all_authors) != length(authors) || has_comment) {
     bullets <- c(bullets, "[More about authors...](authors.html)")
   }
 

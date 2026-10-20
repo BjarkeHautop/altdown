@@ -405,6 +405,51 @@ test_that("build_authors_qmd() writes an Authors and Citation page with all auth
   expect_true(any(grepl("@Manual\\{", bibtex_block)))
 })
 
+test_that("build_authors_qmd() shows author comments without ORCID/ROR, and the sidebar links to them", {
+  dir <- withr::local_tempdir()
+  dir.create(file.path(dir, "_quarto"))
+  writeLines(
+    c(
+      "Package: examplepkg",
+      "Version: 1.0.0",
+      "Title: Example Package",
+      "Authors@R: c(",
+      "    person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\"),",
+      "           comment = c(ORCID = \"0000-0001-2345-6789\", \"See <https://example.com>\")),",
+      "    person(\"John\", \"Smith\", role = \"aut\"))"
+    ),
+    file.path(dir, "DESCRIPTION")
+  )
+
+  build_authors_qmd(dir)
+  lines <- readLines(file.path(dir, "_quarto", "authors.qmd"))
+
+  expect_true(any(grepl(
+    "<br /><small>See &lt;<a href='https://example.com'>https://example.com</a>&gt;</small></p></li>",
+    lines,
+    fixed = TRUE
+  )))
+  expect_true(any(grepl(
+    "Author, maintainer. <a href='https://orcid.org/0000-0001-2345-6789'><img src='orcid.svg' class='orcid' alt='ORCID'></a>\n<br /><small>See",
+    paste(lines, collapse = "\n"),
+    fixed = TRUE
+  )))
+  expect_true(any(grepl(
+    "<li><p><strong>John Smith</strong>. Author.</p></li>",
+    lines,
+    fixed = TRUE
+  )))
+
+  bullets <- data_sidebar_authors(dir)
+  expect_true(any(grepl("More about authors", bullets, fixed = TRUE)))
+  expect_false(any(grepl("example.com", bullets, fixed = TRUE)))
+  expect_true(any(grepl(
+    "</small> <a href='https://orcid.org/0000-0001-2345-6789'>",
+    bullets,
+    fixed = TRUE
+  )))
+})
+
 test_that("build_authors_qmd() prefers an inst/CITATION file and links the Source note to it", {
   dir <- withr::local_tempdir()
   dir.create(file.path(dir, "_quarto"))

@@ -302,6 +302,17 @@ dl.ref-index dd {
   }
 }
 
+/* authors ==================================================================== */
+
+// ORCID/ROR icons after an author's roles (authors page and home sidebar),
+// sized like pkgdown's.
+img.orcid,
+img.ror {
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
 /* footer ===================================================================== */
 
 .nav-footer {

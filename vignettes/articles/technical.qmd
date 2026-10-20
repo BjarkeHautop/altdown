@@ -38,7 +38,8 @@ _quarto/
 ├── NEWS.md                       # changelog, with issues and users linked
 ├── quartodown.scss               # theme on top of Quarto's HTML
 ├── quartodown-header.html        # dark-mode default
-└── quartodown-after-body.html    # navbar alignment
+├── quartodown-after-body.html    # navbar alignment
+└── orcid.svg, ror.svg            # icons for authors' ORCID/ROR ids
 ```
 
 Reference pages are served at `reference/<topic>.html`, and `docs/pkgdown.yml`
