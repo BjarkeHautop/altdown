@@ -1,8 +1,9 @@
 # ---- reference/index.qmd generation ------------------------------------------
 #
-# `_quartodown.yml`'s `reference:` groups the index as in pkgdown, with the
-# same `contents:` selectors. An internal topic is listed only when named, or
-# selected with `internal = TRUE`, and then gets a page too.
+# `_quartodown.yml`'s `reference:` groups the index into sections (the format
+# of pkgdown's `reference:`, selectors included). An internal topic is listed
+# only when named, or selected with `internal = TRUE`, and then gets a page
+# too.
 
 # Every man/*.Rd as a topic: its file's basename, title, aliases, concepts
 # and keywords.
@@ -383,7 +384,7 @@ build_reference_qmd <- function(path, config = list()) {
         },
         character(1)
       )
-      # As in pkgdown, `title:` is a section heading and `subtitle:` a
+      # `title:` is a section heading and `subtitle:` a
       # heading one level down; either may stand alone with no contents.
       c(
         if (!is.null(block$title)) c(paste0("## ", block$title), ""),

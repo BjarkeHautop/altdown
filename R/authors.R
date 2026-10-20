@@ -36,7 +36,7 @@ citation_source_note <- function(path) {
   sprintf('<p><small class="dont-index">Source: %s</small></p>', source)
 }
 
-# A person()'s comment without the ORCID/ROR identifiers, as in pkgdown.
+# A person()'s comment without the ORCID/ROR identifiers, which are shown as icons.
 author_comment <- function(x) {
   comment <- x$comment
   if (is.null(comment) || is.null(names(comment))) {
@@ -46,7 +46,7 @@ author_comment <- function(x) {
 }
 
 # Icon links for a person()'s ORCID/ROR, each after a space, shipped as theme
-# files since Quarto has no Font Awesome for pkgdown's ORCID icon.
+# files since Quarto ships no Font Awesome ORCID icon.
 author_id_links <- function(x) {
   comment <- x$comment
   orcid <- unname(comment[names(comment) %in% "ORCID"])

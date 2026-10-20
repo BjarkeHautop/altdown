@@ -32,8 +32,7 @@
     title.appendChild(document.createTextNode(" "));
     title.appendChild(version);
   }
-  // Leave `#>` output lines out of what the copy button copies, as pkgdown
-  // does. clipboard.js copies synchronously in its click handler, so a copy
+  // Leave `#>` output lines out of what the copy button copies. clipboard.js copies synchronously in its click handler, so a copy
   // event during a copy-button click is its.
   function stripOutputOnCopy() {
     var fromButton = false;

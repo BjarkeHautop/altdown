@@ -47,8 +47,7 @@ quartodown::use_quartodown()
 ```
 This writes `_quartodown.yml`, with a `reference:` field that lists your
 package's current functions in one section; edit it to group them however you'd
-like, in the same shape as pkgdown's `reference:` field. It also gitignores the
-files the build generates.
+like. It also gitignores the files the build generates.
 
 Then build the site:
 

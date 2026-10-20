@@ -108,8 +108,9 @@ use_quartodown <- function(path = ".") {
     "# all fields, including `articles:` (navbar order) and `quarto:` (extra",
     "# Quarto settings).",
     "",
-    "# Groups the function reference index, in the same shape as pkgdown's",
-    "# `reference:` field.",
+    "# Groups the function reference index into sections, each with a `title:`",
+    "# and the `contents:` it lists (topic names or selectors such as",
+    "# starts_with(\"read_\")). See ?quartodown::build_site for the details.",
     .starter_reference_yml(path)
   )
 }

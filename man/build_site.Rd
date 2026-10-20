@@ -55,10 +55,10 @@ with its examples run, except \verb{\\keyword\{internal\}} ones not listed under
 "Articles" menu and the changelog;
 \item the home page, built from \code{README.md} plus a sidebar (links, license,
 citation, developers and badges);
-\item code output printed in the code's block, each line prefixed with \verb{#>},
-as in pkgdown (the copy button leaves those lines out);
+\item code output printed in the code's block, each line prefixed with \verb{#>}
+(the copy button leaves those lines out);
 \item function calls in R code, and inline code like \code{mean()}, linked to their
-documentation with \href{https://downlit.r-lib.org/}{downlit}, as in pkgdown;
+documentation with \href{https://downlit.r-lib.org/}{downlit};
 \item the "Authors and Citation" page.
 }
 }
@@ -67,14 +67,42 @@ documentation with \href{https://downlit.r-lib.org/}{downlit}, as in pkgdown;
 \verb{_quartodown.yml}, at the package root, is optional; \code{\link[=use_quartodown]{use_quartodown()}}
 creates one. It can contain:
 \itemize{
-\item \code{reference}: groups the function reference index, in the same shape as
-pkgdown's \verb{reference:} field. \code{contents} entries can be a topic alias or
-a selector: \code{starts_with()}, \code{ends_with()}, \code{contains()}, \code{matches()},
-\code{has_concept()}, \code{has_keyword()}, \code{-} to exclude, and \code{c()} to combine.
-Without it, every topic is listed in one section. Internal topics
-(\verb{\\keyword\{internal\}}) are left out unless named or selected with
+\item \code{reference}: groups the function reference index into sections. It is a
+list of sections, each with any of:
+\itemize{
+\item \code{title}: the section heading;
+\item \code{subtitle}: a heading one level below it;
+\item \code{desc}: Markdown text shown under the heading(s);
+\item \code{contents}: the topics listed, in order.
+}
+
+For example:
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{reference:
+  - title: Read and write
+    desc: Functions for getting data in and out.
+    contents:
+      - read_data
+      - starts_with("write_")
+  - title: Helpers
+    contents:
+      - has_concept("helpers")
+      - -internal_helper
+}\if{html}{\out{</div>}}
+
+Each \code{contents} entry is a topic (an \verb{\\alias} or Rd file name) or a
+selector: \code{starts_with()}, \code{ends_with()}, \code{contains()} and \code{matches()}
+(a regular expression) match aliases, and \code{has_concept()} and
+\code{has_keyword()} match \verb{\\concept}s and \verb{\\keyword}s. \code{c()} combines
+selectors, and a leading \code{-} removes topics from those selected by the
+entries above it (or, as the first entry, from all topics). Topics not
+listed in any section get a warning and are left off the index.
+
+Without \code{reference}, every topic is listed in one section. Internal
+topics (\verb{\\keyword\{internal\}}) are left out unless named or selected with
 \code{internal = TRUE}, e.g. \code{starts_with("dev_", internal = TRUE)}; then they
-get a page too.
+get a page too. The format is the same as pkgdown's \verb{reference:} field,
+so an existing one can be copied over.
 \item \code{articles}: the order of the "Articles" navbar menu, as vignette paths
 relative to \verb{vignettes/} without extension (e.g. \code{articles/details}).
 Without it, every vignette other than the "Get started" one is listed,

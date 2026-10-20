@@ -348,9 +348,9 @@ code_span <- function(code) {
 
 # ---- Examples ---------------------------------------------------------------------
 #
-# Like pkgdown, examples run with `#>` output in the same block, except that
-# `\dontrun{}` code is shown but not run, `\dontshow{}` code is run but not
-# shown, and `@examplesIf` examples run only if the condition is TRUE.
+# Examples run with `#>` output in the same block, except that `\dontrun{}`
+# code is shown but not run, `\dontshow{}` code is run but not shown, and
+# `@examplesIf` examples run only if the condition is TRUE.
 
 example_chunk_header <- "```{r, collapse=TRUE, comment=\"#>\"}"
 

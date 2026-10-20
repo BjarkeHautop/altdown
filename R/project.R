@@ -59,7 +59,7 @@ community_file_source <- function(path, name) {
 
 # NEWS.md and the community files keep their name; LICENSE.md is the full
 # license, and a plain LICENSE file (e.g. the "YEAR:/COPYRIGHT HOLDER:" stub
-# of "MIT + file LICENSE") becomes LICENSE-text.md, as in pkgdown.
+# of "MIT + file LICENSE") becomes LICENSE-text.md.
 import_markdown_files <- function(path) {
   out <- project_dir(path)
   read <- function(file) readLines(file, warn = FALSE, encoding = "UTF-8")
@@ -95,8 +95,8 @@ import_markdown_files <- function(path) {
   invisible()
 }
 
-# Links issues and pull requests (`#123`) and GitHub users (`@user`), as
-# pkgdown does. Code blocks are left alone.
+# Links issues and pull requests (`#123`) and GitHub users (`@user`). Code
+# blocks are left alone.
 link_news <- function(lines, gh_url) {
   if (is.na(gh_url)) {
     return(lines)

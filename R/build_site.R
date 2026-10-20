@@ -17,24 +17,52 @@
 #'   "Articles" menu and the changelog;
 #' * the home page, built from `README.md` plus a sidebar (links, license,
 #'   citation, developers and badges);
-#' * code output printed in the code's block, each line prefixed with `#>`,
-#'   as in pkgdown (the copy button leaves those lines out);
+#' * code output printed in the code's block, each line prefixed with `#>`
+#'   (the copy button leaves those lines out);
 #' * function calls in R code, and inline code like `mean()`, linked to their
-#'   documentation with [downlit](https://downlit.r-lib.org/), as in pkgdown;
+#'   documentation with [downlit](https://downlit.r-lib.org/);
 #' * the "Authors and Citation" page.
 #'
 #' @section Configuration:
 #' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]
 #' creates one. It can contain:
 #'
-#' * `reference`: groups the function reference index, in the same shape as
-#'   pkgdown's `reference:` field. `contents` entries can be a topic alias or
-#'   a selector: `starts_with()`, `ends_with()`, `contains()`, `matches()`,
-#'   `has_concept()`, `has_keyword()`, `-` to exclude, and `c()` to combine.
-#'   Without it, every topic is listed in one section. Internal topics
-#'   (`\keyword{internal}`) are left out unless named or selected with
+#' * `reference`: groups the function reference index into sections. It is a
+#'   list of sections, each with any of:
+#'
+#'   * `title`: the section heading;
+#'   * `subtitle`: a heading one level below it;
+#'   * `desc`: Markdown text shown under the heading(s);
+#'   * `contents`: the topics listed, in order.
+#'
+#'   For example:
+#'
+#'   ```yaml
+#'   reference:
+#'     - title: Read and write
+#'       desc: Functions for getting data in and out.
+#'       contents:
+#'         - read_data
+#'         - starts_with("write_")
+#'     - title: Helpers
+#'       contents:
+#'         - has_concept("helpers")
+#'         - -internal_helper
+#'   ```
+#'
+#'   Each `contents` entry is a topic (an `\alias` or Rd file name) or a
+#'   selector: `starts_with()`, `ends_with()`, `contains()` and `matches()`
+#'   (a regular expression) match aliases, and `has_concept()` and
+#'   `has_keyword()` match `\concept`s and `\keyword`s. `c()` combines
+#'   selectors, and a leading `-` removes topics from those selected by the
+#'   entries above it (or, as the first entry, from all topics). Topics not
+#'   listed in any section get a warning and are left off the index.
+#'
+#'   Without `reference`, every topic is listed in one section. Internal
+#'   topics (`\keyword{internal}`) are left out unless named or selected with
 #'   `internal = TRUE`, e.g. `starts_with("dev_", internal = TRUE)`; then they
-#'   get a page too.
+#'   get a page too. The format is the same as pkgdown's `reference:` field,
+#'   so an existing one can be copied over.
 #' * `articles`: the order of the "Articles" navbar menu, as vignette paths
 #'   relative to `vignettes/` without extension (e.g. `articles/details`).
 #'   Without it, every vignette other than the "Get started" one is listed,
@@ -185,8 +213,8 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
         )
       )
     ),
-    # As in pkgdown (and the reference examples), output goes in the code's
-    # block, each line prefixed with `#>`.
+    # As in the reference examples, output goes in the code's block, each
+    # line prefixed with `#>`.
     knitr = list(opts_chunk = list(collapse = TRUE, comment = "#>")),
     format = list(
       html = list(

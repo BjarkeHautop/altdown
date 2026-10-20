@@ -42,7 +42,7 @@ author_roles_text <- function(x) {
 
 # ---- sidebar section builders (mirrors pkgdown's data_home_sidebar_*()) ---
 
-# A heading and bullet list, or nothing without bullets, as in pkgdown.
+# A heading and bullet list, or nothing without bullets.
 sidebar_section <- function(heading, bullets) {
   if (length(bullets) == 0) {
     return(character())
@@ -212,7 +212,8 @@ data_sidebar_authors <- function(path, roles = default_roles()) {
     character(1)
   )
 
-  # As pkgdown, also when authors.html shows something the sidebar doesn't.
+  # Also when authors.html shows something the sidebar doesn't, such as a
+  # comment.
   all_authors <- pkg_authors(path)
   has_comment <- any(lengths(lapply(all_authors, author_comment)) > 0)
   if (length(all_authors) != length(authors) || has_comment) {
