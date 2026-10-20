@@ -204,25 +204,32 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 }
 
 /* Tighten the main body container in landing page */
-// Quarto doesn't expose the page's root-relative offset as a body attribute
-// (that only exists as a <meta> tag for the JS side), so target the landing
-// page structurally instead: it's the only page whose margin content (the
-// pkgdown-style Links/License/Citation/Developers sidebar, added by
-// build_site()) turns `#quarto-document-content` into a full-bleed
-// `page-full` grid.
-#quarto-document-content.page-full {
+// The home page's margin content (the pkgdown-style Links/License/Citation/
+// Developers sidebar, added by build_site()) turns `#quarto-document-content`
+// into a full-bleed `page-full` grid. Any other page with margin content
+// (e.g. `.column-margin`) does too, so match the home page by the
+// `.quartodown-home` div build_site() wraps it in.
+#quarto-document-content.page-full:has(.quartodown-home) {
   padding-top: 0 !important;
   margin-top: -10px !important;
+}
+
+// A logo floated right in the README title (`<img align="right">`) gets no
+// margin from the browser, so the wrapped text would run right up to it.
+// Give it pkgdown's breathing room.
+.quartodown-home h1 img {
+  margin-left: 2rem;
+  margin-bottom: 1rem;
 }
 
 // The "On this page" jump-around nav belongs on Get started/reference/man
 // pages, pkgdown style, but not on the home page - only the home page has
 // its own bespoke pkgdown-style margin sidebar (Links/License/Citation/
-// Developers). `page-full` (see above) is what marks that page, but it's
-// on `#quarto-document-content`, a *sibling* of `#quarto-margin-sidebar`
-// (both live under `#quarto-content`) - `:has()` on their shared parent is
-// what lets us reach across to the TOC nav from here.
-#quarto-content:has(#quarto-document-content.page-full) {
+// Developers). `.quartodown-home` is inside `#quarto-document-content`, a
+// *sibling* of `#quarto-margin-sidebar` (both live under `#quarto-content`) -
+// `:has()` on their shared parent is what lets us reach across to the TOC
+// nav from here.
+#quarto-content:has(.quartodown-home) {
   #quarto-margin-sidebar nav#TOC,
   #quarto-toc-toggle {
     display: none !important;
@@ -277,12 +284,39 @@ code {
 }
 
 // `tools::Rd2HTML()` emits verbatim code in a topic's Rd as plain
-// `<pre><code>`. Quarto's own theme CSS un-styles those
+// `<pre><code>`, as does code output. Quarto's own theme CSS un-styles those
 // on purpose, via `pre code:not(.sourceCode) { background-color: initial }`
 // (meant for raw `<pre>` blocks used as console/output text), which also strips the
-// background from these legitimate code blocks.
-pre code:not(.sourceCode) {
+// background from these legitimate code blocks. Color the `<pre>`, not the
+// `<code>`, so the background covers the `<pre>`'s padding too, rather than
+// sitting inset inside it.
+pre:has(> code:not(.sourceCode)) {
   background-color: mix($body-bg, $body-color, 92%);
+}
+
+pre > code:not(.sourceCode) {
+  background-color: transparent;
+}
+
+// Quarto moves the copy button clear of an annotated block's markers with
+// `.code-annotated .code-copy-button`, but the button is a sibling of
+// `pre.code-annotated` (inside `.code-copy-outer-scaffold`), not a
+// descendant, so that rule never matches and the button covers marker 1.
+// Drop this once https://github.com/quarto-dev/quarto-cli/issues/13444 is
+// fixed.
+.code-copy-outer-scaffold:has(pre.code-annotated) > .code-copy-button {
+  margin-right: 1.25em;
+  margin-top: 0;
+  padding-bottom: 0;
+  padding-top: 3px;
+}
+
+// A tab's last block (often nested in a cell or code wrapper) keeps its
+// bottom margin, which adds to the panel's own padding.
+.tab-pane > :last-child,
+.tab-pane > :last-child > :last-child,
+.tab-pane > :last-child > :last-child > :last-child {
+  margin-bottom: 0;
 }
 
 /* reference pages ============================================================ */

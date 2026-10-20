@@ -32,10 +32,12 @@ Roxygen: list(markdown = TRUE)
 Imports:
     cli,
     desc,
+    downlit,
     fs,
     quarto,
     tools,
     utils,
+    xml2,
     yaml
 Suggests:
     httr2,

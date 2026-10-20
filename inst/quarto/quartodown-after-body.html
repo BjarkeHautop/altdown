@@ -54,6 +54,32 @@ instead, on every page, after layout settles.
   // Run once immediately, then keep "load"/"resize" as safety nets
   // in case something later shifts the layout (e.g. a web font
   // swap, though this theme doesn't use one).
+  // Code output is printed in the code's block as `#>` lines. Quarto's copy
+  // button (clipboard.js) copies the block's whole text, so drop those lines
+  // from what it copies, as pkgdown does. clipboard.js copies synchronously
+  // in its click handler, so a copy event during a copy-button click is its.
+  function stripOutputOnCopy() {
+    var fromButton = false;
+    window.addEventListener("click", function (e) {
+      if (!e.target.closest || !e.target.closest(".code-copy-button")) return;
+      fromButton = true;
+      setTimeout(function () { fromButton = false; }, 0);
+    }, true);
+    document.addEventListener("copy", function (e) {
+      if (!fromButton || !e.clipboardData) return;
+      // clipboard.js copies from a hidden <textarea>, whose selection
+      // window.getSelection() doesn't report in every browser.
+      var text = e.target instanceof HTMLTextAreaElement ?
+        e.target.value : String(window.getSelection());
+      var code = text.split("\n").filter(function (line) {
+        return !/^#>/.test(line);
+      }).join("\n");
+      if (code === text) return;
+      e.clipboardData.setData("text/plain", code);
+      e.preventDefault();
+    }, true);
+  }
+  stripOutputOnCopy();
   shrinkNavbarVersion();
   alignNavbarToContent();
   window.addEventListener("load", alignNavbarToContent);

@@ -2,29 +2,27 @@
 title: "Technical details"
 ---
 
-quartodown builds the site in three stages: it generates a
-[Quarto](https://quarto.org/) website project from the package sources, renders
-it with Quarto, and adds hover tooltips to the result. The man pages, vignettes
-and the generated pages around them are all Quarto pages, so every Quarto
-feature works.
+quartodown generates a [Quarto](https://quarto.org/) website project from the
+package sources, so the man pages, vignettes and generated pages are all Quarto
+pages, and every Quarto feature works.
 
 ## How a build works
 
 `quartodown::build_site()` runs in three stages:
 
-1. **Before rendering**, it writes a Quarto project into `_quarto/`: a reference
-   page per man page, the vignettes, the changelog, license and community files,
-   and the generated pages and theme files below.
+1. **Before rendering**, it writes a Quarto project into `_quarto/`.
 2. **During rendering**, Quarto renders `_quarto/` into `docs/`, running the
-   examples and vignette code. Quarto runs each page's code in a new R process,
-   which loads the package from the library, so `build_site()` first installs
-   the package into a temporary library and puts it first on that process's
-   library path. With `build_site(devel = TRUE)`, it skips the install and has
-   each process load the package from source with `pkgload::load_all()`.
-3. **After rendering**, it adds hover tooltips to the HTML in `docs/`.
+   examples and vignette code against the package installed into a temporary
+   library. With `build_site(devel = TRUE)`, the package is loaded from source
+   with `pkgload::load_all()` instead.[^devel]
+3. **After rendering**, it links code to its documentation and adds hover
+   tooltips.
 
-The only file you edit is `_quartodown.yml`. Everything in `_quarto/` is
-rewritten on every build, and gitignored by `quartodown::use_quartodown()`:
+[^devel]: `devel = TRUE` may not work if your examples or vignettes start other
+    R processes, for example with callr or parallel.
+
+The only file you edit is `_quartodown.yml`. `_quarto/` is rewritten on every
+build, and gitignored by `quartodown::use_quartodown()`:
 
 ```text
 _quarto/
@@ -42,26 +40,23 @@ _quarto/
 └── quartodown-after-body.html    # navbar alignment
 ```
 
-As in [pkgdown](https://pkgdown.r-lib.org/), the reference pages are served at
-`reference/<topic>.html`, and `docs/pkgdown.yml` tells other sites'
-[downlit](https://downlit.r-lib.org/) links where to find them.
+Reference pages are served at `reference/<topic>.html`, and `docs/pkgdown.yml`
+lets [downlit](https://downlit.r-lib.org/) on other sites link to them.
 
 ## Before rendering
 
 ### The home page
 
 `index.md` holds the README next to a sidebar with links, the license, the
-citation, the developers and the README's badges. On narrow screens the sidebar
-moves below the content.
+citation, the developers and the README's badges.
 
-A README `<picture>` with a light and a dark version (GitHub's
-`prefers-color-scheme` convention) becomes one `<img>` per theme, switched by
-the site's light/dark toggle.
+A README `<picture>` with light and dark versions shows the one matching the
+site's theme.
 
 ### The reference index
 
-To group and order the function index, `_quartodown.yml` has a `reference:`
-field in the same shape as pkgdown's:
+To group and order the function index, use the `reference:` field in
+`_quartodown.yml`:
 
 ```yaml
 reference:
@@ -69,16 +64,15 @@ reference:
     desc: >                        # <2>
       Set up a package, then build its site.
     contents:
-      - use_quartodown                # <3>
+      - use_quartodown             # <3>
       - starts_with("build_")      # <4>
 ```
 
 1. Each entry becomes a section of the index, with this heading.
 2. An optional description, shown under the heading.
 3. A topic, by any of its `\alias{}` names.
-4. A selector, as in pkgdown: `starts_with()`, `ends_with()`, `contains()`,
-   `matches()`, `has_concept()`, `has_keyword()`, `-` to exclude and `c()` to
-   combine.
+4. A selector: `starts_with()`, `ends_with()`, `contains()`, `matches()`,
+   `has_concept()`, `has_keyword()`, `-` to exclude and `c()` to combine.
 
 ### The navbar and footer
 
@@ -86,10 +80,15 @@ The navbar links the "Get started" vignette, the reference index, the other
 vignettes under "Articles" and the changelog. The footer has a "Developed by
 ..." line, built from `Authors@R`.
 
+### Code output
+
+R output is shown in the same block as the code, prefixed with `#>`. To show a
+chunk's output in a block of its own, set `#| collapse: false` on it.
+
 ::: {.callout-tip}
 ## Changing the Quarto configuration
 
-A `quarto:` field in `quartodown.yml` is merged over the generated
+A `quarto:` field in `_quartodown.yml` is merged over the generated
 configuration. Lists, like the navbar's items, are appended to; any other
 setting is replaced, and `~` removes it. For example, to add a navbar link and
 fold code blocks:
@@ -109,36 +108,32 @@ quarto:
 
 ## The man pages
 
-Each `man/*.Rd` file, except `\keyword{internal}` ones, becomes
-`_quarto/reference/<name>.qmd`. It's rendered to HTML with `tools::Rd2HTML()`,
-as R's help does, and then adjusted for the site:
+Each `man/*.Rd` file, except `\keyword{internal}` ones, becomes a reference
+page, rendered with the package's Rd macros (such as Rdpack's `\insertRef{}`):
 
-- **Rd macros** work: the package's own (`RdMacros:` in `DESCRIPTION`, or
-  `man/macros/`), such as Rdpack's `\insertRef{}`, and build-time `\Sexpr{}`s
-  such as `\doi{}`.
 - **Usage**, and code blocks with a language, such as roxygen's
   ```` ```yaml ````, are syntax-highlighted with a copy button.
-- **Inline code** is rendered as Markdown code spans, so quotes and backslashes
-  survive Pandoc, and `\eqn{}`/`\deqn{}` render as math.
-- **Examples** run, with their output in the same block, prefixed with `#>`.
-  `\dontrun{}` code is shown but not run, `\dontshow{}` code is run but not
-  shown, and `@examplesIf` examples run only if their condition holds. A page
-  whose examples all are in `\dontrun{}` renders without starting an R session.
+- **Math** in `\eqn{}` and `\deqn{}` is rendered.
+- **Examples** run, with their output in the same block. `\dontrun{}` code is
+  shown but not run, `\dontshow{}` code is run but not shown, and `@examplesIf`
+  examples run only if their condition holds.
 
-## After rendering: hover tooltips
+## After rendering
 
-After rendering, `build_site()` links every reference to one of the package's
-functions, in code blocks or inline code, to its man page. Hovering shows a
-tooltip with its usage and the first sentence of its description. Try it: hover
-over `build_site()` or `use_quartodown()`.
+[downlit](https://downlit.r-lib.org/) links function calls in R code blocks, and
+inline code like `mean()`, to their documentation. In blocks with [code
+annotations](showcase.html#code-annotations), only function calls are linked.
 
-The sentence is cut off at 200 characters, and `build_site()` warns when one is
-longer. To build without tooltips, use `build_site(tooltips = FALSE)`.
+References to the package's own functions also get a hover tooltip with their
+usage and the first sentence of their description. Try it: hover over
+`build_site()` or `use_quartodown()`. `build_site()` warns when a first sentence
+is longer than 200 characters, since the tooltip cuts it off. To build without
+tooltips, use `build_site(tooltips = FALSE)`.
 
 ## The theme
 
-`quartodown.scss`, written for Quarto's HTML (and originally adapted from
-pkgdown's stylesheet), is layered on top of Quarto's own themes:
+The site uses Quarto's `default` theme in light mode and `darkly` in dark mode,
+with `quartodown.scss` on top of each:
 
 ```yaml
 theme:
@@ -146,14 +141,11 @@ theme:
   dark: [darkly, quartodown.scss]
 ```
 
-`darkly` normally uses the Lato web font and larger headings, so text would
-reflow when toggling between light and dark. `quartodown.scss` therefore sets
-Bootstrap's system font stack and heading sizes for both themes.
+`quartodown.scss` gives both modes the same font and heading sizes, so switching
+modes doesn't shift the text. `quartodown-header.html` and
+`quartodown-after-body.html` also:
 
-Two things need JavaScript:
-
-- **Dark mode by default.** `quartodown-header.html` starts new visitors on the
-  dark theme if their system prefers it.
-- **Aligning the navbar title with the body text.** The body's left edge differs
-  between the home page and other pages, so `quartodown-after-body.html`
-  measures it and adjusts the navbar's padding.
+- show the dark theme to new visitors whose system is set to dark mode,
+- line up the navbar title with the page text,
+- show the version number smaller next to the package name,
+- leave `#>` output lines out when copying code.

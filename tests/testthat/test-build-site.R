@@ -114,7 +114,11 @@ test_that("write_quarto_config() writes a complete _quarto/_quarto.yml", {
   settings <- yaml::read_yaml(out_path)
   expect_identical(settings$website$title, "examplepkg 1.0.0")
   expect_identical(settings$project$`output-dir`, "../docs/")
-  expect_true(settings$format$html$`code-link`)
+  expect_null(settings$format$html$`code-link`)
+  expect_identical(
+    settings$knitr$opts_chunk,
+    list(collapse = TRUE, comment = "#>")
+  )
   expect_null(settings$website$navbar$right)
   expect_match(settings$website$`page-footer`$left, "Jane Doe")
 })
@@ -192,7 +196,7 @@ quarto:
     list(text = "Blog", href = "https://example.com")
   )
   expect_false("toc" %in% names(settings$format$html))
-  expect_true(settings$format$html$`code-link`)
+  expect_null(settings$format$html$`code-link`)
 })
 
 test_that("build_website_readme() moves badges into the sidebar and keeps the body", {

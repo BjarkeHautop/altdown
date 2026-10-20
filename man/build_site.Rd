@@ -58,6 +58,10 @@ with light and dark versions, given as a \verb{<picture>} with a
 \verb{<source media="(prefers-color-scheme: dark)">} as on GitHub, follows the
 site's light/dark toggle;
 \item the grouped function reference index;
+\item code output printed in the code's block, each line prefixed with \verb{#>},
+as in pkgdown (the copy button leaves those lines out);
+\item function calls in R code, and inline code like \code{mean()}, linked to their
+documentation with \href{https://downlit.r-lib.org/}{downlit}, as in pkgdown;
 \item the "Authors and Citation" page.
 }
 }

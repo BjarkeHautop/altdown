@@ -76,11 +76,16 @@ quartodown::preview_site()
    all downlit reads). The name is fixed: downlit fetches
    `<site URL>/pkgdown.yml` to link other packages' code to this site, so it
    must not be renamed.
-3. **After rendering** — `add_tooltips()` ([R/tooltips.R](R/tooltips.R))
-   regex-rewrites every `docs/**/*.html`, linking references to the package's
-   own topics (`<span class="fu|va">` in code blocks and `<code>name()</code>`
-   inline) to their reference page with a hover tooltip. Pages are marked with
-   `<!-- quartodown-tooltips -->` so reruns skip them.
+3. **After rendering** — `link_code()` ([R/code-link.R](R/code-link.R)) runs
+   downlit over every `docs/**/*.html` (replacing Quarto's `code-link`, which
+   would wipe code annotations). `pre.code-annotated` blocks are hidden from
+   downlit and their `span.fu` tokens linked one by one with
+   `downlit::autolink_url()` instead. Then `add_tooltips()`
+   ([R/tooltips.R](R/tooltips.R)) regex-rewrites every `docs/**/*.html`, linking
+   references to the package's own topics (`<span class="fu|va">` in code blocks
+   and `<code>name()</code>` inline) to their reference page with a hover
+   tooltip. Pages are marked with `<!-- quartodown-tooltips -->` so reruns skip
+   them.
 
 ### Navbar / articles
 

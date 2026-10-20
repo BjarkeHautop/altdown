@@ -52,8 +52,7 @@ The following is added to your site:
 ## Organize the reference index
 
 By default the reference index lists every function in one section. To group
-them, edit the `reference:` field in `_quartodown.yml`. It has the same shape as
-pkgdown's:
+them, edit the `reference:` field in `_quartodown.yml`:
 
 ```yaml
 reference:
@@ -81,6 +80,11 @@ first run has created the `gh-pages` branch, go to the *Pages* section of your
 repository's settings on GitHub and choose to deploy from that branch.
 
 ## Learn more
+
+[Quarto
+features](https://bjarkehautop.github.io/quartodown/vignettes/articles/showcase.html)
+shows Quarto's authoring features, such as callouts, tabsets and footnotes, on a
+quartodown site.
 
 [Technical
 details](https://bjarkehautop.github.io/quartodown/vignettes/articles/technical.html)

@@ -20,6 +20,10 @@
 #'   `<source media="(prefers-color-scheme: dark)">` as on GitHub, follows the
 #'   site's light/dark toggle;
 #' * the grouped function reference index;
+#' * code output printed in the code's block, each line prefixed with `#>`,
+#'   as in pkgdown (the copy button leaves those lines out);
+#' * function calls in R code, and inline code like `mean()`, linked to their
+#'   documentation with [downlit](https://downlit.r-lib.org/), as in pkgdown;
 #' * the "Authors and Citation" page.
 #'
 #' @section Configuration:
@@ -99,6 +103,7 @@ build_site <- function(
 
   render_project(path, quiet = quiet, devel = devel)
   write_pkgdown_yml(path)
+  link_code(path)
 
   if (isTRUE(tooltips)) {
     add_tooltips(path)
@@ -167,13 +172,15 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
         )
       )
     ),
+    # As in pkgdown (and the reference examples), output goes in the code's
+    # block, each line prefixed with `#>`.
+    knitr = list(opts_chunk = list(collapse = TRUE, comment = "#>")),
     format = list(
       html = list(
         theme = list(
           light = c("default", "quartodown.scss"),
           dark = c("darkly", "quartodown.scss")
         ),
-        `code-link` = TRUE,
         toc = TRUE,
         `include-in-header` = "quartodown-header.html",
         `include-after-body` = "quartodown-after-body.html"

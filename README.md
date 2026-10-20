@@ -35,8 +35,10 @@ pak::pak("https://github.com/BjarkeHautop/quartodown")
 
 ## Usage
 
-Browse around to see how it looks! If you like what you see, and want to
-use it for your own package, run:
+Browse around to see how it looks! [Quarto
+features](https://bjarkehautop.github.io/quartodown/vignettes/articles/showcase.html)
+shows callouts, tabsets, footnotes and more on a quartodown site. If you
+like what you see, and want to use it for your own package, run:
 
 ``` r
 quartodown::use_quartodown()
