@@ -26,6 +26,8 @@
 #'   is the same as pkgdown's.
 #' * `navbar`: the items on the navbar's `left` and `right`: keywords such as
 #'   `reference` and `articles`, vignettes, and Quarto navbar items and menus.
+#'   With `style: sidebar`, the `left` items go in a sidebar instead, with a
+#'   link to every reference page.
 #' * `home`: `file`, the `.md` or `.qmd` file the home page shows instead of
 #'   `README.md`, and `sidebar: false` to show it as written, without the
 #'   sidebar.
@@ -215,6 +217,14 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
 
   navbar <- list(search = TRUE)
   items <- navbar_items(path, config)
+  sidebar <- NULL
+  if (navbar_style(config) == "sidebar") {
+    sidebar <- list(
+      style = "docked",
+      contents = sidebar_contents(path, config, items$left)
+    )
+    items$left <- NULL
+  }
   for (side in names(items)) {
     if (length(items[[side]]) > 0) navbar[[side]] <- items[[side]]
   }
@@ -255,6 +265,8 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
   if (file.exists(file.path(path, extra_css))) {
     settings$format$html$css <- extra_css
   }
+
+  settings$website$sidebar <- sidebar
 
   # For the sitemap, among others.
   url <- site_url(path, config)

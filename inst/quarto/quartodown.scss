@@ -118,6 +118,14 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
   .quarto-navbar-tools {
     order: 4 !important;
   }
+
+  // Without links on the left (`navbar: style: sidebar`), nothing takes up
+  // the free space, so the items spread out. Keep the title on the left and
+  // the search box and icons on the right. Specific enough to beat Quarto's
+  // `!important` margins on the title.
+  .navbar .navbar-container:not(:has(.navbar-nav.me-auto)) > .navbar-brand-container {
+    margin-right: auto !important;
+  }
 }
 
 // No magnifying glass in the search box, like pkgdown.
@@ -155,6 +163,21 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
   #quarto-toc-toggle {
     display: none !important;
   }
+}
+
+/* sidebar (`navbar: style: sidebar`) ========================================= */
+
+// Reference pages are listed by function name, in the code font.
+.sidebar-section a[href*="reference/"] .menu-text {
+  font-family: $font-family-monospace;
+  font-size: 0.875em;
+}
+
+// Some themes, such as darkly, put Bootstrap breadcrumbs on a colored bar.
+// Quarto's page breadcrumbs are a quiet trail above the title instead.
+.quarto-page-breadcrumbs .breadcrumb {
+  background: none;
+  padding: 0;
 }
 
 /* typography ================================================================ */

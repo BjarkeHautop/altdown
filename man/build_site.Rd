@@ -69,6 +69,8 @@ each lists, by name or with selectors such as \code{starts_with()}. The format
 is the same as pkgdown's.
 \item \code{navbar}: the items on the navbar's \code{left} and \code{right}: keywords such as
 \code{reference} and \code{articles}, vignettes, and Quarto navbar items and menus.
+With \code{style: sidebar}, the \code{left} items go in a sidebar instead, with a
+link to every reference page.
 \item \code{home}: \code{file}, the \code{.md} or \code{.qmd} file the home page shows instead of
 \code{README.md}, and \code{sidebar: false} to show it as written, without the
 sidebar.

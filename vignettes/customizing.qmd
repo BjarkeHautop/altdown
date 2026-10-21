@@ -133,6 +133,20 @@ R only builds top-level vignettes into the package, so vignettes in subfolders
 are website-only.
 :::
 
+### A sidebar instead
+
+With `style: sidebar`, the `left` items move into a sidebar beside every page,
+and the navbar keeps the site's title, the search box and the `right` items:
+
+```yaml
+navbar:
+  style: sidebar
+```
+
+Menus become sections of the sidebar, and "Reference" lists every reference page
+by function name, with a section for each titled group of
+[`reference:`](#the-reference-index).
+
 ## The home page
 
 The home page shows `README.md`, or, if there is none, the package's description

@@ -141,6 +141,13 @@ builds the navbar from the `left:` and `right:` lists under `_quartodown.yml`'s
 
 The default is `left: [intro, reference, articles, news]`, `right: [github]`.
 
+With `navbar: style: sidebar`, `quarto_config()` moves the resolved `left` items
+into a docked `website: sidebar:` (`sidebar_contents()`): menus become sections,
+and the reference item becomes a section listing every topic the index lists
+(`sidebar_reference()`, one sub-section per titled group). Labels are plain
+text, not code spans, since `add_tooltips()` would nest a link in the sidebar
+link; `quartodown.scss` sets them in the code font.
+
 ## Repo layout notes
 
 - `_quartodown/_quartodown.yml` configures this package's *own* site

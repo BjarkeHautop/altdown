@@ -15,10 +15,10 @@ default_navbar <- list(
 # A list of `left` and `right` Quarto navbar items.
 navbar_items <- function(path, config = list()) {
   layout <- default_navbar
-  for (side in names(config$navbar)) {
+  for (side in setdiff(names(config$navbar), "style")) {
     if (!side %in% names(default_navbar)) {
       cli::cli_abort(
-        "_quartodown.yml `navbar:` has {.field {side}}, but only {.field left} and {.field right}."
+        "_quartodown.yml `navbar:` has {.field {side}}, but only {.field left}, {.field right} and {.field style}."
       )
     }
     layout[[side]] <- as.list(config$navbar[[side]])
@@ -142,4 +142,90 @@ match_folder <- function(folder, vignettes) {
     )
   }
   hit
+}
+
+# ---- sidebar ------------------------------------------------------------------
+#
+# With `navbar: style: sidebar`, the navbar keeps the title, search and its
+# `right` items, and its `left` items go in a docked sidebar on every page,
+# menus as sections. The reference index's entry lists every reference page,
+# grouped as on the index.
+
+navbar_style <- function(config = list()) {
+  style <- config$navbar$style
+  if (is.null(style)) {
+    return("top")
+  }
+  if (!identical(style, "top") && !identical(style, "sidebar")) {
+    cli::cli_abort(
+      "_quartodown.yml `navbar: style:` must be {.val top} or {.val sidebar}."
+    )
+  }
+  style
+}
+
+# `items` are the navbar's `left` items, from navbar_items().
+sidebar_contents <- function(path, config, items) {
+  lapply(items, function(item) {
+    if (identical(item$file, "reference/index.qmd")) {
+      contents <- sidebar_reference(path, config)
+      if (length(contents) > 0) {
+        return(list(section = item$text, href = item$file, contents = contents))
+      }
+    }
+    sidebar_item(item)
+  })
+}
+
+# A Quarto navbar item as a sidebar item: a menu becomes a section.
+sidebar_item <- function(item) {
+  if (!is.null(item$menu)) {
+    return(list(
+      section = item$text,
+      contents = lapply(item$menu, sidebar_item)
+    ))
+  }
+  if (!is.null(item$file)) {
+    item$href <- item$file
+    item$file <- NULL
+  }
+  item
+}
+
+# Every topic the reference index lists, by its first name (`f()`), under a
+# section per titled group of the index. With a single group, they're listed
+# without one.
+sidebar_reference <- function(path, config) {
+  topics <- rd_topics(path)
+  blocks <- reference_blocks(config, topics)
+  groups <- Map(
+    function(block, idx) {
+      entries <- lapply(unname(topics[idx]), function(topic) {
+        list(
+          text = topic_label(topic),
+          href = paste0("reference/", topic$basename, ".qmd")
+        )
+      })
+      label <- if (is.null(block$subtitle)) block$title else block$subtitle
+      if (length(entries) == 0 || is.null(label) || length(blocks) == 1) {
+        entries
+      } else {
+        list(list(section = label, contents = entries))
+      }
+    },
+    blocks,
+    reference_block_topics(blocks, topics)
+  )
+  unlist(groups, recursive = FALSE)
+}
+
+# A topic's first name from its usage, as plain text: inline code would get
+# a tooltip link inside the sidebar's link (see add_tooltips()), so
+# quartodown.scss sets it in the code font instead.
+topic_label <- function(topic) {
+  label <- gsub("<[^>]+>", "", topic$names[[1]])
+  label <- gsub("&lt;", "<", label, fixed = TRUE)
+  label <- gsub("&gt;", ">", label, fixed = TRUE)
+  label <- gsub("&#96;", "`", label, fixed = TRUE)
+  gsub("&amp;", "&", label, fixed = TRUE)
 }

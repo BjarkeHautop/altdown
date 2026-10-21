@@ -186,6 +186,96 @@ test_that("`navbar:` warns about vignettes it leaves out, and rejects unknowns",
   expect_error(navbar_items(dir, list(navbar = list(top = "news"))), "top")
 })
 
+test_that("`navbar: style: sidebar` moves the left items into a docked sidebar", {
+  dir <- new_pkg(articles = "a")
+  dir.create(file.path(dir, "man"))
+  write_rd(dir, "foo", usage = "foo(x)")
+  write_rd(dir, "bar", usage = "bar(x)")
+  writeLines("# News", file.path(dir, "NEWS.md"))
+
+  settings <- quarto_config(dir, list(navbar = list(style = "sidebar")))
+  expect_null(settings$website$navbar$left)
+  expect_true(settings$website$navbar$search)
+  expect_identical(settings$website$sidebar$style, "docked")
+
+  contents <- settings$website$sidebar$contents
+  expect_identical(
+    contents[[1]],
+    list(
+      section = "Reference",
+      href = "reference/index.qmd",
+      # One group, so no section per group.
+      contents = list(
+        list(text = "bar()", href = "reference/bar.qmd"),
+        list(text = "foo()", href = "reference/foo.qmd")
+      )
+    )
+  )
+  expect_identical(contents[[2]]$section, "Articles")
+  expect_identical(contents[[2]]$contents[[1]]$href, "vignettes/articles/a.qmd")
+  expect_identical(contents[[3]], list(text = "Changelog", href = "NEWS.md"))
+
+  expect_null(quarto_config(dir)$website$sidebar)
+})
+
+test_that("the sidebar's Reference section has a section per titled group", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "man"))
+  write_rd(dir, "foo", usage = "foo(x)")
+  write_rd(dir, "bar", usage = "bar(x)")
+  config <- list(
+    navbar = list(style = "sidebar", left = list("reference")),
+    reference = list(
+      list(title = "Foo", contents = list("foo")),
+      list(subtitle = "Bar", contents = list("bar"))
+    )
+  )
+  reference <- quarto_config(dir, config)$website$sidebar$contents[[1]]
+  expect_identical(
+    reference$contents,
+    list(
+      list(
+        section = "Foo",
+        contents = list(list(text = "foo()", href = "reference/foo.qmd"))
+      ),
+      list(
+        section = "Bar",
+        contents = list(list(text = "bar()", href = "reference/bar.qmd"))
+      )
+    )
+  )
+})
+
+test_that("the sidebar's Reference entry is a plain link without topics", {
+  dir <- new_pkg()
+  config <- list(navbar = list(style = "sidebar", left = list("reference")))
+  expect_identical(
+    quarto_config(dir, config)$website$sidebar$contents,
+    list(list(text = "Reference", href = "reference/index.qmd"))
+  )
+})
+
+test_that("navbar_style() accepts only `top` and `sidebar`", {
+  expect_identical(navbar_style(), "top")
+  expect_identical(
+    navbar_style(list(navbar = list(style = "sidebar"))),
+    "sidebar"
+  )
+  expect_error(
+    navbar_style(list(navbar = list(style = "left"))),
+    "top.*sidebar"
+  )
+})
+
+test_that("topic_label() turns a usage name into plain text", {
+  expect_identical(topic_label(list(names = "foo()")), "foo()")
+  expect_identical(topic_label(list(names = "&#96;%&gt;%&#96;")), "`%>%`")
+  expect_identical(
+    topic_label(list(names = "print(<i>&lt;foo&gt;</i>)")),
+    "print(<foo>)"
+  )
+})
+
 test_that("write_quarto_config() writes a complete _quarto/_quarto.yml", {
   dir <- new_pkg()
   write_vignette(dir, "examplepkg.qmd")
