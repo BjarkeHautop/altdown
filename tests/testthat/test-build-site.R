@@ -236,6 +236,19 @@ test_that("quarto_config() turns on social cards with the title and logo", {
   expect_identical(quarto_config(dir)$website$image, "/man/figures/logo.png")
 })
 
+test_that("quarto_config() uses the logo as favicon, preferring the PNG", {
+  dir <- new_pkg()
+  expect_null(quarto_config(dir)$website$favicon)
+
+  figures <- file.path(dir, "man", "figures")
+  dir.create(figures, recursive = TRUE)
+  file.create(file.path(figures, "logo.svg"))
+  expect_identical(quarto_config(dir)$website$favicon, "man/figures/logo.svg")
+
+  file.create(file.path(figures, "logo.png"))
+  expect_identical(quarto_config(dir)$website$favicon, "man/figures/logo.png")
+})
+
 test_that("quarto_config() links GitHub and merges `quarto:` overrides", {
   dir <- new_pkg()
   write(

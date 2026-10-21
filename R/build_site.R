@@ -204,6 +204,11 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
     settings$website$`site-url` <- url
   }
   settings$website <- c(settings$website, social_cards(path))
+  logos <- c("man/figures/logo.png", "man/figures/logo.svg")
+  logos <- logos[file.exists(file.path(path, logos))]
+  if (length(logos) > 0) {
+    settings$website$favicon <- logos[[1]]
+  }
 
   if (isTRUE(freeze)) {
     # Reruns a page's code only when its source changed.
