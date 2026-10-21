@@ -164,20 +164,34 @@ script's title alignment, so the title sits above the sidebar.
 
 ## Repo layout notes
 
+- `build_site()` parses `man/*.Rd` once with `rd_topics()` (each topic keeps its
+  parsed `rd`) and passes the topics to `write_man_pages()`,
+  `build_reference_qmd()`, `quarto_config()` and `add_tooltips()`; their
+  `topics = rd_topics(path)` default is for tests. Use `has_page()` for whether
+  a topic has a page.
+
+- Shared helpers live in [R/utils.R](R/utils.R): `html_escape()`/
+  `html_unescape()`, `split_lines()`, `code_block_lines()` (Markdown code
+  fences) and `split_front_matter()`. Use them rather than re-deriving.
+
 - `_quartodown/_quartodown.yml` configures this package's *own* site
   (dogfooding); `_quarto/` and `docs/` are build outputs.
+
 - Tests create throwaway packages in temp dirs (see `new_pkg()` helper in
   [tests/testthat/helper-pkg.R](tests/testthat/helper-pkg.R)) and test the
   generation functions directly rather than running a full Quarto render.
+
 - [vignettes/articles/technical.qmd](vignettes/articles/technical.qmd) is a
   user-facing overview of the build (stages, `_quarto/` layout, man pages, code
   links, theme); configuration belongs in `customizing.qmd`. Keep it in sync
   when changing build behavior.
+
 - [vignettes/articles/gallery.qmd](vignettes/articles/gallery.qmd) shows
   screenshots of this site built with each entry in
   `vignettes/articles/gallery/` (its `config.yml` and `_quartodown/` files,
   shown on the page too). Rerun `Rscript tools/gallery.R [entry ...]` (needs
   Quarto and Chrome) after changing the styling.
+
 - Roxygen with markdown. [vignettes/customizing.qmd](vignettes/customizing.qmd)
   is the user-facing reference for `_quartodown.yml`; `@section Configuration:`
   in `build_site()` summarizes each field in a line. Update both when adding

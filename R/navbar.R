@@ -168,10 +168,10 @@ navbar_style <- function(config = list()) {
 }
 
 # `items` are the navbar's `left` items, from navbar_items().
-sidebar_contents <- function(path, config, items) {
+sidebar_contents <- function(path, config, items, topics = rd_topics(path)) {
   lapply(items, function(item) {
     if (identical(item$file, "reference/index.qmd")) {
-      contents <- sidebar_reference(path, config)
+      contents <- sidebar_reference(config, topics)
       if (length(contents) > 0) {
         return(list(section = item$text, href = item$file, contents = contents))
       }
@@ -198,8 +198,7 @@ sidebar_item <- function(item) {
 # Every topic the reference index lists, by its first name (`f()`), under a
 # section per titled group of the index. With a single group, they're listed
 # without one.
-sidebar_reference <- function(path, config) {
-  topics <- rd_topics(path)
+sidebar_reference <- function(config, topics) {
   blocks <- reference_blocks(config, topics)
   groups <- Map(
     function(block, idx) {
@@ -226,9 +225,5 @@ sidebar_reference <- function(path, config) {
 # a tooltip link inside the sidebar's link (see add_tooltips()), so
 # quartodown.scss sets it in the code font instead.
 topic_label <- function(topic) {
-  label <- gsub("<[^>]+>", "", topic$names[[1]])
-  label <- gsub("&lt;", "<", label, fixed = TRUE)
-  label <- gsub("&gt;", ">", label, fixed = TRUE)
-  label <- gsub("&#96;", "`", label, fixed = TRUE)
-  gsub("&amp;", "&", label, fixed = TRUE)
+  html_unescape(gsub("<[^>]+>", "", topic$names[[1]]))
 }

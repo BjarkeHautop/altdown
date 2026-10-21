@@ -14,7 +14,8 @@ role_lookup <- function(abbr) {
     ths = "thesis advisor",
     trl = "translator"
   )
-  unname(roles[abbr])
+  # Any other code as is, rather than "NA".
+  ifelse(abbr %in% names(roles), roles[abbr], abbr)
 }
 
 # Default roles shown in the sidebar/footer.

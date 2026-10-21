@@ -73,6 +73,31 @@ test_that("link_news() links issues and users, but not in code or existing links
     link_news(lines, list(issue = NA_character_, user = NA_character_)),
     lines
   )
+
+  # `~~~` blocks, and a ``` line inside a longer fence, are code too.
+  code <- c("~~~", "#5", "~~~", "````", "```", "#6", "````", "#7")
+  expect_identical(
+    link_news(code, list(issue = "i/", user = NA_character_)),
+    c(utils::head(code, -1), "[#7](i/7)")
+  )
+})
+
+test_that("code_block_lines() finds fences, closed by one at least as long", {
+  expect_identical(
+    code_block_lines(c("a", "````r", "```", "`````", "~~~", "x", "~~~")),
+    c("", "open", "code", "close", "open", "code", "close")
+  )
+})
+
+test_that("split_front_matter() splits off the YAML front matter", {
+  expect_identical(
+    split_front_matter(c("---", "a: 1", "---", "text")),
+    list(front_matter = c("---", "a: 1", "---"), body = "text")
+  )
+  expect_identical(
+    split_front_matter(c("text", "---", "x", "---")),
+    list(front_matter = character(), body = c("text", "---", "x", "---"))
+  )
 })
 
 test_that("pkg_repo() reads the repository from DESCRIPTION's URL", {

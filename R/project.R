@@ -56,13 +56,9 @@ copy_vignettes <- function(path, config = list()) {
 # `lines` with `insert` after the YAML front matter (`---` to `---` or `...`),
 # or at the top if there's none.
 insert_after_front_matter <- function(lines, insert) {
-  first <- which(nzchar(trimws(lines)))[1]
-  end <- 0L
-  if (!is.na(first) && trimws(lines[first]) == "---") {
-    close <- grep("^(---|\\.\\.\\.)\\s*$", lines[-seq_len(first)])[1]
-    if (!is.na(close)) end <- first + close
-  }
-  append(lines, c(if (end > 0) "", insert), after = end)
+  parts <- split_front_matter(lines)
+  front_matter <- parts$front_matter
+  c(front_matter, if (length(front_matter) > 0) "", insert, parts$body)
 }
 
 # man/figures/ holds the images README.md and `\figure{}` use. README.Rmd's
@@ -138,22 +134,17 @@ import_markdown_files <- function(path, config = list()) {
 # blocks are left alone.
 github_markdown_to_quarto <- function(lines, mermaid = FALSE) {
   alert_pattern <- "^\\s*>\\s*\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]\\s*$"
+  kinds <- code_block_lines(lines)
   out <- character()
-  fence <- NULL # The open code block's fence, if any.
   i <- 1L
   while (i <= length(lines)) {
     line <- lines[[i]]
+    kind <- kinds[[i]]
     i <- i + 1L
-    if (!is.null(fence)) {
-      if (grepl(paste0("^\\s*", fence, "\\s*$"), line)) {
-        fence <- NULL
-      }
+    if (kind == "open" && mermaid) {
+      line <- sub("^(\\s*(```+|~~~+))\\s*mermaid\\s*$", "\\1{mermaid}", line)
       out <- c(out, line)
-    } else if (grepl("^\\s*(```+|~~~+)", line)) {
-      fence <- sub("^\\s*(```+|~~~+).*$", "\\1", line)
-      if (mermaid) {
-        line <- sub("^(\\s*(```+|~~~+))\\s*mermaid\\s*$", "\\1{mermaid}", line)
-      }
+    } else if (nzchar(kind)) {
       out <- c(out, line)
     } else if (grepl(alert_pattern, line, ignore.case = TRUE)) {
       type <- tolower(sub(alert_pattern, "\\1", line, ignore.case = TRUE))
@@ -173,8 +164,7 @@ github_markdown_to_quarto <- function(lines, mermaid = FALSE) {
 # Links issues and pull requests (`#123`) and users (`@user`) to `repo`'s
 # (see pkg_repo()). Code blocks are left alone.
 link_news <- function(lines, repo) {
-  is_fence <- grepl("^\\s*```", lines)
-  text <- !(cumsum(is_fence) %% 2 == 1 | is_fence)
+  text <- !nzchar(code_block_lines(lines))
   if (!is.na(repo$issue)) {
     lines[text] <- gsub(
       "(?<![\\w\\[/&#])#(\\d+)\\b",

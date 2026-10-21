@@ -4,8 +4,9 @@
 # listing topics by name or selector. An internal topic is listed only when
 # named, or selected with `internal = TRUE`, and then gets a page too.
 
-# Every man/*.Rd as a topic: its file's basename, title, aliases, concepts
-# and keywords.
+# Every man/*.Rd as a topic: the parsed `rd`, its file's basename, `\name`,
+# title, aliases, concepts and keywords. build_site() parses them once, and
+# passes them to everything else that needs them.
 rd_topics <- function(path) {
   man_dir <- file.path(path, "man")
   if (!dir.exists(man_dir)) {
@@ -16,7 +17,7 @@ rd_topics <- function(path) {
 
   lapply(rd_files, function(rd_file) {
     rd <- tools::parse_Rd(rd_file, macros = macros)
-    tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
+    tags <- rd_tags(rd)
     tag_text <- function(tag) {
       trimws(vapply(
         rd[tags == tag],
@@ -29,7 +30,9 @@ rd_topics <- function(path) {
     names <- usage_names(rd[tags == "\\usage"])
     keywords <- tag_text("\\keyword")
     list(
+      rd = rd,
       basename = fs::path_ext_remove(basename(rd_file)),
+      name = tag_text("\\name"),
       title = trimws(paste(unlist(rd[tags == "\\title"]), collapse = "")),
       alias = alias,
       names = if (length(names) > 0) names else alias,
@@ -38,6 +41,11 @@ rd_topics <- function(path) {
       internal = "internal" %in% keywords
     )
   })
+}
+
+# The tag of each top-level element of the parsed Rd `rd`, e.g. "\\alias".
+rd_tags <- function(rd) {
+  vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
 }
 
 # ---- index names from \usage ------------------------------------------------
@@ -145,14 +153,8 @@ usage_type <- function(x) {
   out
 }
 
-escape_html <- function(x) {
-  x <- gsub("&", "&amp;", x, fixed = TRUE)
-  x <- gsub("<", "&lt;", x, fixed = TRUE)
-  gsub(">", "&gt;", x, fixed = TRUE)
-}
-
 short_name <- function(u) {
-  name <- escape_html(u$name)
+  name <- html_escape(u$name)
   if (make.names(u$name) != u$name) {
     # As an entity: Pandoc would take a literal backtick for a code span,
     # even inside the raw HTML `<code>`, and show "&lt;" in `units<-` as is.
@@ -165,7 +167,7 @@ short_name <- function(u) {
     paste0(
       name,
       "(",
-      paste0("<i>&lt;", escape_html(u$signature), "&gt;</i>", collapse = ","),
+      paste0("<i>&lt;", html_escape(u$signature), "&gt;</i>", collapse = ","),
       ")"
     )
   )
@@ -336,11 +338,14 @@ select_topics <- function(match_strings, topics) {
   sel
 }
 
-build_reference_qmd <- function(path, config = list()) {
+build_reference_qmd <- function(
+  path,
+  config = list(),
+  topics = rd_topics(path)
+) {
   out_dir <- file.path(project_dir(path), "reference")
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   out_path <- file.path(out_dir, "index.qmd")
-  topics <- rd_topics(path)
   internal <- vapply(topics, `[[`, logical(1), "internal")
   blocks <- reference_blocks(config, topics)
   block_indexes <- reference_block_topics(blocks, topics)

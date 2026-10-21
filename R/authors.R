@@ -64,7 +64,7 @@ author_id_links <- function(x) {
 
 # Links <doi:...>, <arXiv:...> and <http...> in escaped text.
 linkify <- function(text) {
-  text <- escape_html(text)
+  text <- html_escape(text)
   text <- gsub(
     "&lt;doi:([^&]+)&gt;",
     "&lt;<a href='https://doi.org/\\1'>doi:\\1</a>&gt;",

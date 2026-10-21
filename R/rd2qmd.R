@@ -5,41 +5,30 @@
 # rebuilt from `tools::Rd2ex()` (see example_blocks()) and the rest stays HTML
 # (see rd_html_to_markdown()).
 
-write_man_pages <- function(path, config = list()) {
+write_man_pages <- function(path, config = list(), topics = rd_topics(path)) {
   out_dir <- file.path(project_dir(path), "reference")
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-  topics <- rd_topics(path)
   topics <- topics[has_page(topics, config)]
-  # Not paste0(<basenames>, ".Rd"), which is ".Rd" without topics.
-  rd_files <- vapply(
-    topics,
-    function(x) file.path(path, "man", paste0(x$basename, ".Rd")),
-    character(1)
-  )
-  macros <- rd_macros(path)
   pkg <- desc::desc_get_field("Package", file = path)
   pages <- topic_pages(topics)
   source <- pkg_repo(path, config)$source
-  n <- 0L
-  for (rd_file in rd_files) {
-    rd <- tools::parse_Rd(rd_file, macros = macros)
+  for (topic in topics) {
+    rd_file <- file.path(path, "man", paste0(topic$basename, ".Rd"))
     note <- source_note(rd_source_files(rd_file), source)
     lines <- tryCatch(
-      rd_to_qmd(rd, pkg, pages, note),
+      rd_to_qmd(topic$rd, pkg, pages, note),
       error = function(e) {
         cli::cli_abort("Failed to convert {.file {rd_file}}.", parent = e)
       }
     )
-    topic <- sub("\\.Rd$", "", basename(rd_file))
     writeLines(
       enc2utf8(lines),
-      file.path(out_dir, paste0(topic, ".qmd")),
+      file.path(out_dir, paste0(topic$basename, ".qmd")),
       useBytes = TRUE
     )
-    n <- n + 1L
   }
-  cli::cli_alert_success("Converted {n} man page{?s}.")
+  cli::cli_alert_success("Converted {length(topics)} man page{?s}.")
   invisible()
 }
 
@@ -77,9 +66,7 @@ rd_to_qmd <- function(rd, pkg, pages = character(), note = NULL) {
   names <- sub("^<h3>(.*)</h3>$", "\\1", html[heads])
   ends <- c(heads[-1] - 1L, length(html))
   # Rd2HTML() puts \examples{} last, after any custom \section{Examples}{}.
-  has_examples <- any(
-    vapply(rd, function(x) attr(x, "Rd_tag"), character(1)) == "\\examples"
-  )
+  has_examples <- "\\examples" %in% rd_tags(rd)
   examples_at <- if (has_examples) utils::tail(which(names == "Examples"), 1)
 
   sections <- lapply(seq_along(heads), function(i) {
@@ -235,15 +222,6 @@ rd_file_name <- function(rd) {
   if (is.null(file)) "" else file.path("man", basename(file))
 }
 
-# Undoes the HTML-escaping `tools::Rd2HTML()` applies.
-unescape_rd2html <- function(x) {
-  x <- gsub("&lt;", "<", x, fixed = TRUE)
-  x <- gsub("&gt;", ">", x, fixed = TRUE)
-  x <- gsub("&quot;", "\"", x, fixed = TRUE)
-  x <- gsub("&#39;", "'", x, fixed = TRUE)
-  gsub("&amp;", "&", x, fixed = TRUE) # must come last
-}
-
 # ---- Usage ----------------------------------------------------------------------
 
 usage_block <- function(body) {
@@ -257,7 +235,7 @@ usage_block <- function(body) {
     return(rd_html_to_markdown(body))
   }
   code <- substr(text, m[2], m[2] + attr(m, "match.length")[2] - 1L)
-  code <- unescape_rd2html(gsub("&#8288;", "", code, fixed = TRUE))
+  code <- html_unescape(gsub("&#8288;", "", code, fixed = TRUE))
   c("```r", trim_blank_lines(strsplit(code, "\n", fixed = TRUE)[[1]]), "```")
 }
 
@@ -327,23 +305,23 @@ rd_html_to_markdown <- function(lines) {
       pieces,
       rd_html_text(substr(text, pos, starts[i] - 1L)),
       if (!is.na(lang) && nzchar(lang)) {
-        code <- split_lines(unescape_rd2html(capture(i, 2)))
+        code <- split_lines(html_unescape(capture(i, 2)))
         fenced <- c(paste0("```", tolower(lang)), trim_blank_lines(code), "```")
         paste(c("", fenced, ""), collapse = "\n")
       } else if (startsWith(token, "<pre")) {
         token
       } else if (!is.na(capture(i, 3))) {
-        paste0("\n\n$$", unescape_rd2html(capture(i, 3)), "$$\n\n")
+        paste0("\n\n$$", html_unescape(capture(i, 3)), "$$\n\n")
       } else if (!is.na(capture(i, 6))) {
         sprintf(
           "[%s](%s)",
-          code_span(unescape_rd2html(capture(i, 7))),
+          code_span(html_unescape(capture(i, 7))),
           capture(i, 6)
         )
       } else if (grepl("class=\"reqn\"", token, fixed = TRUE)) {
-        paste0("$", unescape_rd2html(capture(i, 5)), "$")
+        paste0("$", html_unescape(capture(i, 5)), "$")
       } else {
-        code_span(unescape_rd2html(capture(i, 5)))
+        code_span(html_unescape(capture(i, 5)))
       }
     )
     pos <- ends[i] + 1L
@@ -357,11 +335,6 @@ rd_html_text <- function(x) {
   x <- gsub("$", "\\$", x, fixed = TRUE)
   x <- gsub("<p>", "", x, fixed = TRUE)
   gsub("</p>", "", x, fixed = TRUE)
-}
-
-split_lines <- function(text) {
-  # The sentinel keeps trailing empty lines, which strsplit() would drop.
-  utils::head(strsplit(paste0(text, "\n."), "\n", fixed = TRUE)[[1]], -1)
 }
 
 code_span <- function(code) {

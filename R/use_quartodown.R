@@ -119,32 +119,8 @@ use_quartodown <- function(path = ".") {
 
 # Every public topic, sorted, in a single "All functions" section.
 .starter_reference_yml <- function(path) {
-  man_dir <- file.path(path, "man")
-  rd_files <- if (dir.exists(man_dir)) {
-    sort(list.files(man_dir, pattern = "\\.Rd$", full.names = TRUE))
-  } else {
-    character()
-  }
-
-  macros <- rd_macros(path)
-  names <- vapply(
-    rd_files,
-    function(rd_file) {
-      rd <- tools::parse_Rd(rd_file, macros = macros)
-      tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-      keywords <- vapply(
-        rd[tags == "\\keyword"],
-        function(x) trimws(as.character(x[[1]])),
-        character(1)
-      )
-      if ("internal" %in% keywords) {
-        return(NA_character_)
-      }
-      as.character(rd[tags == "\\name"][[1]][[1]])
-    },
-    character(1)
-  )
-  names <- names[!is.na(names)]
+  topics <- Filter(function(t) !t$internal, rd_topics(path))
+  names <- sort(vapply(topics, function(t) t$name, character(1)))
 
   c(
     "reference:",

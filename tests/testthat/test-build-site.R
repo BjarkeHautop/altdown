@@ -11,6 +11,26 @@ test_that("vignette_title() reads the YAML title, falling back to the filename",
   no_frontmatter <- file.path(dir, "plain.qmd")
   writeLines("just content", no_frontmatter)
   expect_identical(vignette_title(no_frontmatter), "plain")
+
+  quoted <- file.path(dir, "quoted.qmd")
+  writeLines(c("---", "title: 'It''s here'", "---"), quoted)
+  expect_identical(vignette_title(quoted), "It's here")
+
+  long <- file.path(dir, "long.qmd")
+  writeLines(c("---", paste0("a", 1:50, ": 1"), "title: Late", "---"), long)
+  expect_identical(vignette_title(long), "Late")
+
+  # A horizontal rule pair in the text isn't front matter.
+  ruled <- file.path(dir, "ruled.qmd")
+  writeLines(c("text", "---", "title: No", "---"), ruled)
+  expect_identical(vignette_title(ruled), "ruled")
+})
+
+test_that("author_roles_text() keeps role codes it doesn't know", {
+  expect_identical(
+    author_roles_text(list(role = c("aut", "rth"))),
+    "Author, rth"
+  )
 })
 
 test_that("find_vignettes() lists top-level vignettes, then subfolders", {

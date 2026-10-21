@@ -21,7 +21,12 @@ tooltip_marker <- "<!-- quartodown-tooltips -->"
 
 # Adds tooltips to every docs/**/*.html file. Returns, invisibly, how many
 # files and reference links were touched.
-add_tooltips <- function(path = ".", quiet = FALSE) {
+add_tooltips <- function(
+  path = ".",
+  config = list(),
+  topics = rd_topics(path),
+  quiet = FALSE
+) {
   docs_dir <- file.path(path, "docs")
   if (!dir.exists(file.path(docs_dir, "reference"))) {
     cli::cli_abort(
@@ -29,7 +34,7 @@ add_tooltips <- function(path = ".", quiet = FALSE) {
     )
   }
 
-  index <- build_topic_index(path, quiet = quiet)
+  index <- build_topic_index(path, config, topics, quiet = quiet)
   if (length(index) == 0) {
     return(invisible(list(files = 0L, links = 0L)))
   }
@@ -184,42 +189,22 @@ inject_tooltips_html <- function(
 # Each alias gets the \usage{} block that calls it; the topic's \name gets the
 # whole \usage{}, and any other alias none.
 
-build_topic_index <- function(path = ".", quiet = FALSE) {
-  man_dir <- file.path(path, "man")
-  if (!dir.exists(man_dir)) {
-    return(list())
-  }
-
-  macros <- rd_macros(path)
+build_topic_index <- function(
+  path = ".",
+  config = list(),
+  topics = rd_topics(path),
+  quiet = FALSE
+) {
   index <- list()
-  for (rd_file in fs::dir_ls(man_dir, regexp = "\\.Rd$")) {
-    rd <- tryCatch(
-      tools::parse_Rd(rd_file, macros = macros),
-      error = function(e) NULL
-    )
-    if (is.null(rd)) {
-      next
-    }
-    topic <- fs::path_ext_remove(fs::path_file(rd_file))
+  # Only topics with a page (see has_page()) have something to link to.
+  for (t in topics[has_page(topics, config)]) {
+    rd <- t$rd
+    topic <- t$basename
+    aliases <- t$alias
     # Relative, so the {.file} link in the warning below resolves.
-    rd_name <- fs::path_rel(rd_file)
+    rd_name <- fs::path_rel(file.path(path, "man", paste0(topic, ".Rd")))
 
-    tags <- vapply(rd, function(x) attr(x, "Rd_tag"), character(1))
-    aliases <- vapply(
-      rd[tags == "\\alias"],
-      function(x) as.character(x[[1]]),
-      character(1)
-    )
-    # \keyword{internal} topics get no page, so there's nothing to link to.
-    keywords <- vapply(
-      rd[tags == "\\keyword"],
-      function(x) trimws(as.character(x[[1]])),
-      character(1)
-    )
-    if (length(aliases) == 0 || "internal" %in% keywords) {
-      next
-    }
-
+    tags <- rd_tags(rd)
     usage_node <- rd[tags == "\\usage"]
     usage_blocks <- if (length(usage_node) == 0) {
       character(0)
@@ -233,13 +218,6 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
     }
 
     sentence <- first_sentence(rd_section_text(rd, tags, "\\description"))
-
-    rd_name_field <- rd[tags == "\\name"]
-    page_name <- if (length(rd_name_field) == 0) {
-      character(0)
-    } else {
-      as.character(rd_name_field[[1]][[1]])
-    }
     if (!quiet && sentence$clipped) {
       cli::cli_warn(c(
         "The tooltip summary for {.file {rd_name}} is longer than 200 characters and got truncated mid-word.",
@@ -251,7 +229,7 @@ build_topic_index <- function(path = ".", quiet = FALSE) {
       match_idx <- match(alias, names(usage_blocks))
       usage <- if (!is.na(match_idx)) {
         usage_blocks[[match_idx]]
-      } else if (alias %in% page_name) {
+      } else if (alias %in% t$name) {
         usage_whole
       }
       index[[alias]] <- list(
@@ -395,21 +373,6 @@ first_sentence <- function(text, max_chars = 200) {
     sentence <- paste0(trimws(substr(sentence, 1, max_chars)), "...")
   }
   list(text = sentence, clipped = clipped)
-}
-
-html_escape <- function(text) {
-  text <- gsub("&", "&amp;", text, fixed = TRUE)
-  text <- gsub("<", "&lt;", text, fixed = TRUE)
-  text <- gsub(">", "&gt;", text, fixed = TRUE)
-  gsub("\"", "&quot;", text, fixed = TRUE)
-}
-
-html_unescape <- function(text) {
-  text <- gsub("&lt;", "<", text, fixed = TRUE)
-  text <- gsub("&gt;", ">", text, fixed = TRUE)
-  text <- gsub("&quot;", "\"", text, fixed = TRUE)
-  text <- gsub("&#39;", "'", text, fixed = TRUE)
-  gsub("&amp;", "&", text, fixed = TRUE)
 }
 
 # ---- tooltip assets -----------------------------------------------------------

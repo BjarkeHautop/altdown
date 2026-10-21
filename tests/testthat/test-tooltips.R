@@ -121,6 +121,10 @@ test_that("build_topic_index() skips internal topics, which get no page", {
   )
 
   expect_length(build_topic_index(dir), 0)
+
+  # Unless the reference index lists it, which gives it a page.
+  config <- list(reference = list(list(contents = "helper")))
+  expect_identical(build_topic_index(dir, config)$helper$topic, "helper")
 })
 
 test_that("an alias with no \\usage{} block of its own gets no signature", {

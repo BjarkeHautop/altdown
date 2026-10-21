@@ -106,17 +106,18 @@ build_site <- function(
     install_envvars(path, scratch)
   }
 
+  topics <- with_libpaths(envvars, rd_topics(path))
   reset_project(path, freeze = freeze)
   copy_vignettes(path, config)
   copy_figures(path)
-  with_libpaths(envvars, write_man_pages(path, config))
+  with_libpaths(envvars, write_man_pages(path, config, topics))
   import_markdown_files(path, config)
   copy_theme_files(path)
   copy_site_files(path)
   write_home(path, config)
-  build_reference_qmd(path, config)
+  build_reference_qmd(path, config, topics)
   build_authors_qmd(path, config)
-  settings <- write_quarto_config(path, config, freeze = freeze)
+  settings <- write_quarto_config(path, config, freeze, topics)
   write_404(path, settings$website$`site-url`)
 
   render_project(path, envvars, quiet = quiet)
@@ -126,7 +127,7 @@ build_site <- function(
   ansi_to_html(path)
 
   if (isTRUE(tooltips)) {
-    add_tooltips(path)
+    add_tooltips(path, config, topics)
   }
   write_redirects(path, config)
 
@@ -254,7 +255,12 @@ copy_theme_files <- function(path) {
 
 # ---- Quarto configuration -----------------------------------------------------
 
-quarto_config <- function(path, config = list(), freeze = FALSE) {
+quarto_config <- function(
+  path,
+  config = list(),
+  freeze = FALSE,
+  topics = rd_topics(path)
+) {
   pkg_name <- desc::desc_get_field("Package", file = path)
   version <- desc::desc_get_field("Version", default = "", file = path)
 
@@ -264,7 +270,7 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
   if (navbar_style(config) == "sidebar") {
     sidebar <- list(
       style = "docked",
-      contents = sidebar_contents(path, config, items$left)
+      contents = sidebar_contents(path, config, items$left, topics)
     )
     items$left <- NULL
   }
@@ -397,8 +403,13 @@ merge_quarto_config <- function(x, val) {
 }
 
 # Returns, invisibly, the settings written.
-write_quarto_config <- function(path, config = list(), freeze = FALSE) {
-  settings <- quarto_config(path, config, freeze = freeze)
+write_quarto_config <- function(
+  path,
+  config = list(),
+  freeze = FALSE,
+  topics = rd_topics(path)
+) {
+  settings <- quarto_config(path, config, freeze = freeze, topics = topics)
   yaml::write_yaml(
     settings,
     file.path(project_dir(path), "_quarto.yml"),
@@ -505,18 +516,13 @@ description_home <- function(path) {
 # written, only made to render like on GitHub.
 build_website_readme <- function(lines, path = ".", config = list()) {
   # A .qmd's front matter stays at the top.
-  front_matter <- character()
-  ends <- which(lines == "---")
-  if (length(lines) > 0 && lines[[1]] == "---" && length(ends) >= 2) {
-    front_matter <- lines[seq_len(ends[[2]])]
-    lines <- lines[-seq_len(ends[[2]])]
-  }
-  lines <- github_markdown_to_quarto(lines, mermaid = TRUE)
+  parts <- split_front_matter(lines)
+  lines <- github_markdown_to_quarto(parts$body, mermaid = TRUE)
   lines <- theme_pictures_to_images(lines)
   if (!isFALSE(config$home$sidebar)) {
     lines <- home_page_with_sidebar(lines, path, config)
   }
-  c(front_matter, lines)
+  c(parts$front_matter, lines)
 }
 
 home_page_with_sidebar <- function(lines, path, config = list()) {
@@ -528,8 +534,7 @@ home_page_with_sidebar <- function(lines, path, config = list()) {
   )
 
   # Not a `# comment` in a code block.
-  is_fence <- grepl("^\\s*(```|~~~)", lines)
-  in_code <- cumsum(is_fence) %% 2 == 1 | is_fence
+  in_code <- nzchar(code_block_lines(lines))
   title_idx <- which(grepl("^# ", lines) & !in_code)[1]
   if (is.na(title_idx)) {
     title <- character()
@@ -588,8 +593,7 @@ theme_pictures_to_images <- function(lines) {
   regmatches(text, m) <- lapply(regmatches(text, m), function(pictures) {
     vapply(pictures, theme_picture_to_images, character(1), USE.NAMES = FALSE)
   })
-  # The sentinel keeps trailing empty lines, which strsplit() would drop.
-  utils::head(strsplit(paste0(text, "\n."), "\n", fixed = TRUE)[[1]], -1)
+  split_lines(text)
 }
 
 theme_picture_to_images <- function(picture) {

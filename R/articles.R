@@ -50,17 +50,12 @@ strip_ext <- function(x) sub("\\.[^./]*$", "", x)
 vignette_title <- function(vignette_path) {
   fallback <- strip_ext(basename(vignette_path))
 
-  lines <- readLines(vignette_path, warn = FALSE, n = 40)
-  fence <- which(lines == "---")
-  if (length(fence) < 2) {
-    return(fallback)
-  }
-
-  header <- lines[(fence[1] + 1):(fence[2] - 1)]
-  title_line <- grep("^title:", header, value = TRUE)
-  if (length(title_line) == 0) {
-    return(fallback)
-  }
-
-  gsub('^title:\\s*"?|"?\\s*$', "", trimws(title_line[1]))
+  lines <- readLines(vignette_path, warn = FALSE, encoding = "UTF-8")
+  front_matter <- split_front_matter(lines)$front_matter
+  yaml <- tryCatch(
+    yaml::yaml.load(paste(utils::head(front_matter[-1], -1), collapse = "\n")),
+    error = function(e) NULL
+  )
+  title <- if (is.list(yaml)) yaml$title
+  if (is.character(title) && length(title) == 1) title else fallback
 }
