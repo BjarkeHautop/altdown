@@ -66,6 +66,8 @@ vignette links to its source file under the title.
 inline code like `mean()`, to their documentation. `docs/pkgdown.yml` lets
 downlit on other sites link to your reference pages in turn.
 
+That file needs the site's address, which is chosen as the first `URL` in `DESCRIPTION` that isn't a GitHub, GitLab or Codeberg repository.
+
 References to the package's own functions also get a hover tooltip with their
 usage and the first sentence of their description. `build_site()` warns when a
 first sentence is longer than 200 characters, since the tooltip cuts it off. To

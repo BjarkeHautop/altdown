@@ -207,6 +207,20 @@ test_that("quarto_config() turns on Quarto's freeze when asked", {
   expect_identical(quarto_config(dir, freeze = TRUE)$execute$freeze, "auto")
 })
 
+test_that("quarto_config() sets the site URL from DESCRIPTION's URL", {
+  dir <- new_pkg()
+  expect_null(quarto_config(dir)$website$`site-url`)
+
+  desc::desc_set(
+    URL = "https://github.com/someuser/examplepkg, https://someuser.github.io/examplepkg/",
+    file = dir
+  )
+  expect_identical(
+    quarto_config(dir)$website$`site-url`,
+    "https://someuser.github.io/examplepkg"
+  )
+})
+
 test_that("quarto_config() links GitHub and merges `quarto:` overrides", {
   dir <- new_pkg()
   write(

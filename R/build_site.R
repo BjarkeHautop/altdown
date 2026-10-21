@@ -198,6 +198,12 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
     )
   )
 
+  # For the sitemap, among others.
+  url <- site_url(path)
+  if (!is.na(url)) {
+    settings$website$`site-url` <- url
+  }
+
   if (isTRUE(freeze)) {
     # Reruns a page's code only when its source changed.
     settings$execute <- list(freeze = "auto")
