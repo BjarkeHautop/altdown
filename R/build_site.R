@@ -29,6 +29,9 @@
 #' * `home`: `file`, the `.md` or `.qmd` file the home page shows instead of
 #'   `README.md`, and `sidebar: false` to show it as written, without the
 #'   sidebar.
+#' * `theme`: the `light` and `dark` themes: names of Quarto's built-in
+#'   themes, such as `flatly` and `darkly`, or `.scss` files in
+#'   `_quartodown/`. By default, `default` and `darkly`.
 #' * `quarto`: settings merged over the generated Quarto configuration.
 #'
 #' `_quartodown/extra.scss` and `_quartodown/extra.css`, if they exist, style
@@ -130,6 +133,7 @@ build_site <- function(
 
 theme_files <- c(
   "quartodown.scss",
+  "quartodown-fonts.scss",
   "quartodown-header.html",
   "quartodown-after-body.html",
   "orcid.svg",
@@ -158,10 +162,13 @@ read_config <- function(path) {
   }
   warn_unknown_fields(
     names(config),
-    c("url", "reference", "navbar", "home", "quarto")
+    c("url", "reference", "navbar", "home", "theme", "quarto")
   )
   if (is.list(config$home)) {
     warn_unknown_fields(names(config$home), c("file", "sidebar"), "home")
+  }
+  if (is.list(config$theme)) {
+    warn_unknown_fields(names(config$theme), c("light", "dark"), "theme")
   }
   config
 }
@@ -236,10 +243,7 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
     knitr = list(opts_chunk = list(collapse = TRUE, comment = "#>")),
     format = list(
       html = list(
-        theme = list(
-          light = c("default", "quartodown.scss"),
-          dark = c("darkly", "quartodown.scss")
-        ),
+        theme = quarto_theme(path, config),
         toc = TRUE,
         `include-in-header` = "quartodown-header.html",
         `include-after-body` = "quartodown-after-body.html"
@@ -247,15 +251,6 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
     )
   )
 
-  # After quartodown.scss, so they override it.
-  extra_scss <- file.path(config_dir, "extra.scss")
-  if (file.exists(file.path(path, extra_scss))) {
-    theme <- settings$format$html$theme
-    settings$format$html$theme <- list(
-      light = c(theme$light, extra_scss),
-      dark = c(theme$dark, extra_scss)
-    )
-  }
   extra_css <- file.path(config_dir, "extra.css")
   if (file.exists(file.path(path, extra_css))) {
     settings$format$html$css <- extra_css
@@ -282,6 +277,38 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
     settings <- merge_quarto_config(settings, config$quarto)
   }
   settings
+}
+
+# _quartodown.yml's `theme:` (Quarto's `default` and `darkly` unless set), with
+# quartodown's SCSS on top, then the package's _quartodown/extra.scss so it
+# overrides quartodown's.
+quarto_theme <- function(path, config = list()) {
+  if (!is.null(config$theme) && !is.list(config$theme)) {
+    cli::cli_abort(c(
+      "_quartodown.yml `theme:` must list a {.field light} and/or {.field dark} theme.",
+      "i" = "For example, {.code theme: {{light: flatly, dark: darkly}}}."
+    ))
+  }
+  theme <- list(light = "default", dark = "darkly")
+  for (mode in names(theme)) {
+    value <- config$theme[[mode]]
+    if (is.null(value)) {
+      next
+    }
+    if (!is.character(value) || length(value) != 1) {
+      cli::cli_abort(
+        "_quartodown.yml `theme: {mode}:` must be a single theme name."
+      )
+    }
+    theme[[mode]] <- value
+  }
+  extra_scss <- file.path(config_dir, "extra.scss")
+  layers <- c(
+    if (theme$light == "default") "quartodown-fonts.scss",
+    "quartodown.scss",
+    if (file.exists(file.path(path, extra_scss))) extra_scss
+  )
+  list(light = c(theme$light, layers), dark = c(theme$dark, layers))
 }
 
 # The preview of a link to the site on social media and chat apps: the

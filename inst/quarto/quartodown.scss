@@ -1,11 +1,3 @@
-/*-- scss:defaults --*/
-// Bootstrap's system fonts and heading sizes in both themes, not darkly's.
-$font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-$h1-font-size: 2.5rem;
-$h2-font-size: 2rem;
-$h3-font-size: 1.75rem;
-$web-font-path: false;
-
 /*-- scss:rules --*/
 // Styled after pkgdown's BS5/assets/pkgdown.scss, adapted to Quarto's DOM.
 
@@ -131,6 +123,18 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 // No magnifying glass in the search box, like pkgdown.
 #quarto-search.type-textbox .aa-InputWrapperPrefix {
   display: none;
+}
+
+// Quarto gives the search box the theme's input colors, which are white in
+// dark themes such as darkly. Use the page's instead.
+#quarto-search .aa-Form {
+  background-color: $body-bg;
+  color: $body-color;
+}
+
+#quarto-search .aa-Input,
+#quarto-search .aa-Input::placeholder {
+  color: $body-color;
 }
 
 // Tighten the top of the home page.

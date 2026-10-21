@@ -72,6 +72,9 @@ is the same as pkgdown's.
 \item \code{home}: \code{file}, the \code{.md} or \code{.qmd} file the home page shows instead of
 \code{README.md}, and \code{sidebar: false} to show it as written, without the
 sidebar.
+\item \code{theme}: the \code{light} and \code{dark} themes: names of Quarto's built-in
+themes, such as \code{flatly} and \code{darkly}, or \code{.scss} files in
+\verb{_quartodown/}. By default, \code{default} and \code{darkly}.
 \item \code{quarto}: settings merged over the generated Quarto configuration.
 }
 

@@ -304,7 +304,7 @@ test_that("quarto_config() links GitHub and merges `quarto:` overrides", {
   )
   expect_identical(
     settings$format$html$theme$dark,
-    c("darkly", "quartodown.scss")
+    c("darkly", "quartodown-fonts.scss", "quartodown.scss")
   )
   expect_true(settings$format$html$toc)
 })
@@ -575,7 +575,6 @@ test_that("copy_site_files() copies _quartodown/ into _quarto/, if there is one"
 test_that("quarto_config() adds _quartodown/extra.scss and extra.css when present", {
   dir <- new_pkg()
   html <- quarto_config(dir)$format$html
-  expect_identical(html$theme$light, c("default", "quartodown.scss"))
   expect_null(html$css)
 
   dir.create(file.path(dir, "_quartodown"))
@@ -583,13 +582,62 @@ test_that("quarto_config() adds _quartodown/extra.scss and extra.css when presen
   html <- quarto_config(dir)$format$html
   expect_identical(
     html$theme$light,
-    c("default", "quartodown.scss", "_quartodown/extra.scss")
+    c(
+      "default",
+      "quartodown-fonts.scss",
+      "quartodown.scss",
+      "_quartodown/extra.scss"
+    )
   )
   expect_identical(
     html$theme$dark,
-    c("darkly", "quartodown.scss", "_quartodown/extra.scss")
+    c(
+      "darkly",
+      "quartodown-fonts.scss",
+      "quartodown.scss",
+      "_quartodown/extra.scss"
+    )
   )
   expect_identical(html$css, "_quartodown/extra.css")
+})
+
+test_that("quarto_theme() uses `theme:`, with quartodown's fonts only on `default`", {
+  dir <- new_pkg()
+  expect_identical(
+    quarto_theme(dir),
+    list(
+      light = c("default", "quartodown-fonts.scss", "quartodown.scss"),
+      dark = c("darkly", "quartodown-fonts.scss", "quartodown.scss")
+    )
+  )
+  expect_identical(
+    quarto_theme(dir, list(theme = list(dark = "cyborg")))$dark,
+    c("cyborg", "quartodown-fonts.scss", "quartodown.scss")
+  )
+  expect_identical(
+    quarto_theme(dir, list(theme = list(light = "flatly", dark = "darkly"))),
+    list(
+      light = c("flatly", "quartodown.scss"),
+      dark = c("darkly", "quartodown.scss")
+    )
+  )
+})
+
+test_that("quarto_theme() rejects a `theme:` that isn't light/dark names", {
+  dir <- new_pkg()
+  expect_error(quarto_theme(dir, list(theme = "flatly")), "light.*dark")
+  expect_error(
+    quarto_theme(dir, list(theme = list(light = c("a", "b")))),
+    "single theme name"
+  )
+})
+
+test_that("read_config() warns about unknown fields under `theme:`", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "_quartodown"))
+  config_path <- file.path(dir, "_quartodown", "_quartodown.yml")
+  writeLines("theme: {ligth: flatly}", config_path)
+  expect_warning(read_config(dir), "under `theme:`.*Did you mean.*light")
 })
 
 test_that("data_sidebar_authors() links to authors.html only when a non-default-role author exists", {

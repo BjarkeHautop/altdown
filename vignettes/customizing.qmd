@@ -10,13 +10,14 @@ vignette: >
 If you want to customize your site, you can do so by editing
 `_quartodown/_quartodown.yml`, which `quartodown::use_quartodown()` creates. The
 `_quartodown/` folder at the package root also holds the files that [style the
-site](#styling-and-layout). `_quartodown.yml` has five fields, all optional:
+site](#styling-and-layout). `_quartodown.yml` has six fields, all optional:
 
 - `url:` is the site's address, if it isn't the first non-GitHub `URL` in
   `DESCRIPTION`.
 - `reference:` groups and orders the function reference index.
 - `navbar:` lays out the navbar.
 - `home:` picks the home page's source.
+- `theme:` picks the light and dark themes.
 - `quarto:` changes any other Quarto setting.
 
 ## The reference index
@@ -204,6 +205,42 @@ format:
 To change a single code chunk, use a chunk option such as `#| code-fold: true`.
 
 ## Styling and layout
+
+The site uses Quarto's `default` theme in light mode and `darkly` in dark mode.
+`theme:` picks others from Quarto's [built-in
+themes](https://quarto.org/docs/output-formats/html-themes.html) (the Bootswatch
+themes, as in pkgdown's `template: bootswatch:`), with quartodown's styling on
+top:
+
+```yaml
+theme:
+  light: flatly
+  dark: darkly
+```
+
+Either can be left out to keep its default. A theme can also be your own `.scss`
+file in `_quartodown/`, such as `light: _quartodown/brand.scss`. To adjust a
+built-in theme you can use `extra.scss`, an example is given below.
+
+::: {.callout-tip collapse="true"}
+## A crowded navbar
+
+Some themes space the navbar's items further apart or capitalize them. With
+`lux`, for example, "Get started" wraps onto two lines and the version is cut
+off. Bringing the items closer in `_quartodown/extra.scss` fixes it:
+
+```scss
+/*-- scss:rules --*/
+.navbar .nav-item {
+  margin-right: 0.25rem;
+}
+
+.navbar .nav-link,
+.navbar-brand {
+  white-space: nowrap;
+}
+```
+:::
 
 To restyle every page, add `_quartodown/extra.scss`. It is compiled on top of
 quartodown's theme, once for the light theme and once for the dark one, and has
