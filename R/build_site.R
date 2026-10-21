@@ -3,25 +3,11 @@
 #' Builds the package website into `docs/` with [Quarto](https://quarto.org/).
 #'
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
-#' package sources and `_quartodown.yml`, then renders it:
-#'
-#' * the function reference: a grouped index, and a page per `man/*.Rd` file
-#'   with its examples run, except `\keyword{internal}` ones not listed under
-#'   `reference:`;
-#' * the vignettes, including those in `vignettes/articles/`;
-#' * `NEWS.md` as the changelog, with issues (`#123`) and GitHub users
-#'   (`@user`) linked;
-#' * `LICENSE.md`, the `LICENSE` file, and `CODE_OF_CONDUCT.md`,
-#'   `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`);
-#' * the navbar, with a "Get started" link, the function reference, an
-#'   "Articles" menu and the changelog;
-#' * the home page, built from `README.md` plus a sidebar (links, license,
-#'   citation, developers and badges);
-#' * code output printed in the code's block, each line prefixed with `#>`
-#'   (the copy button leaves those lines out);
-#' * function calls in R code, and inline code like `mean()`, linked to their
-#'   documentation with [downlit](https://downlit.r-lib.org/);
-#' * the "Authors and Citation" page.
+#' package sources and `_quartodown.yml`, then renders it. It uses
+#' `README.md`, `man/`, the vignettes (including `vignettes/articles/`),
+#' `NEWS.md`, `LICENSE`/`LICENSE.md`, and `CODE_OF_CONDUCT.md`,
+#' `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`). See
+#' `vignette("quartodown")` for what the site contains.
 #'
 #' @section Configuration:
 #' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]

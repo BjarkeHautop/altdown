@@ -56,10 +56,7 @@ quartodown::build_site()
 ```
 A preview can then be viewed using `quartodown::preview_site()`.
 
-The navbar is built from your vignettes: the one named after the package (or the
-only top-level one) becomes "Get started", and the rest, including those in
-`vignettes/articles/`, go under "Articles". See `?quartodown::build_site` for
-everything `quartodown.yml` can configure.
+See `?quartodown::build_site` for everything `_quartodown.yml` can configure.
 
 ## Packages using quartodown
 

@@ -41,26 +41,11 @@ Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Qua
 }
 \details{
 \code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
-package sources and \verb{_quartodown.yml}, then renders it:
-\itemize{
-\item the function reference: a grouped index, and a page per \verb{man/*.Rd} file
-with its examples run, except \verb{\\keyword\{internal\}} ones not listed under
-\verb{reference:};
-\item the vignettes, including those in \verb{vignettes/articles/};
-\item \code{NEWS.md} as the changelog, with issues (\verb{#123}) and GitHub users
-(\verb{@user}) linked;
-\item \code{LICENSE.md}, the \code{LICENSE} file, and \code{CODE_OF_CONDUCT.md},
-\code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/});
-\item the navbar, with a "Get started" link, the function reference, an
-"Articles" menu and the changelog;
-\item the home page, built from \code{README.md} plus a sidebar (links, license,
-citation, developers and badges);
-\item code output printed in the code's block, each line prefixed with \verb{#>}
-(the copy button leaves those lines out);
-\item function calls in R code, and inline code like \code{mean()}, linked to their
-documentation with \href{https://downlit.r-lib.org/}{downlit};
-\item the "Authors and Citation" page.
-}
+package sources and \verb{_quartodown.yml}, then renders it. It uses
+\code{README.md}, \verb{man/}, the vignettes (including \verb{vignettes/articles/}),
+\code{NEWS.md}, \code{LICENSE}/\code{LICENSE.md}, and \code{CODE_OF_CONDUCT.md},
+\code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/}). See
+\code{vignette("quartodown")} for what the site contains.
 }
 \section{Configuration}{
 
