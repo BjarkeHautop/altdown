@@ -13,3 +13,4 @@
 ^jarl\.toml$
 ^\.pre-commit-config\.yaml$
 ^vignettes/articles$
+^tools$

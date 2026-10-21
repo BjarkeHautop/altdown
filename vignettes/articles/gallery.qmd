@@ -1,0 +1,114 @@
+---
+title: "Gallery"
+lightbox: true
+---
+
+````{r}
+#| label: setup
+#| include: false
+
+# Each entry in gallery/ holds its settings (config.yml, merged into
+# _quartodown/_quartodown.yml, and any files for _quartodown/) and
+# screenshots of this site built with them, made by tools/gallery.R.
+gallery_entry <- function(name) {
+  dir <- file.path("gallery", name)
+  images <- sprintf(
+    '![](%s/%s.png){.%s-content .border .rounded fig-alt="This site with the %s settings, in %s mode"}',
+    dir,
+    c("light", "dark"),
+    c("light", "dark"),
+    name,
+    c("light", "dark")
+  )
+  config <- readLines(file.path(dir, "config.yml"))
+  files <- setdiff(list.files(dir), c("config.yml", "light.png", "dark.png"))
+  blocks <- c(
+    if (!all(startsWith(config, "#"))) {
+      code_block("_quartodown/_quartodown.yml", "yaml", config)
+    },
+    unlist(lapply(files, function(file) {
+      code_block(
+        file.path("_quartodown", file),
+        tools::file_ext(file),
+        readLines(file.path(dir, file))
+      )
+    }))
+  )
+  cat(images, sep = "\n\n")
+  if (length(blocks) > 0) {
+    cat(
+      "",
+      "::: {.callout-note collapse=\"true\"}",
+      "## The settings",
+      "",
+      blocks,
+      ":::",
+      sep = "\n"
+    )
+  }
+}
+
+code_block <- function(file, lang, lines) {
+  c(paste0("`", file, "`:"), "", paste0("```", lang), lines, "```", "")
+}
+````
+
+This site uses quartodown's defaults. Each screenshot below shows the same site
+built with the settings under it; click one to enlarge it. The screenshots
+follow your light or dark mode. See [Customizing your site](../customizing.qmd)
+for every setting.
+
+## The default
+
+Quarto's `default` theme in light mode and `darkly` in dark mode, with the
+navbar at the top.
+
+```{r}
+#| label: gallery-default
+#| echo: false
+#| output: asis
+
+gallery_entry("default")
+```
+
+## A built-in theme
+
+`theme:` picks any of Quarto's [built-in
+themes](https://quarto.org/docs/output-formats/html-themes.html), here `cosmo`
+in light mode and `superhero` in dark mode. A theme can also be your own `.scss`
+file in `_quartodown/`.
+
+```{r}
+#| label: gallery-theme
+#| echo: false
+#| output: asis
+
+gallery_entry("theme")
+```
+
+## A sidebar
+
+`navbar: style: sidebar` moves the navigation into a sidebar beside every page,
+listing every function on the reference.
+
+```{r}
+#| label: gallery-sidebar
+#| echo: false
+#| output: asis
+
+gallery_entry("sidebar")
+```
+
+## A custom look
+
+`_quartodown/extra.scss` restyles any part of the site, on top of the theme:
+here a navbar in the accent color, serif headings, rounder code blocks and the
+function reference as cards.
+
+```{r}
+#| label: gallery-custom
+#| echo: false
+#| output: asis
+
+gallery_entry("custom")
+```

@@ -161,6 +161,11 @@ script's title alignment, so the title sits above the sidebar.
   user-facing overview of the build (stages, `_quarto/` layout, man pages, code
   links, theme); configuration belongs in `customizing.qmd`. Keep it in sync
   when changing build behavior.
+- [vignettes/articles/gallery.qmd](vignettes/articles/gallery.qmd) shows
+  screenshots of this site built with each entry in
+  `vignettes/articles/gallery/` (its `config.yml` and `_quartodown/` files,
+  shown on the page too). Rerun `Rscript tools/gallery.R [entry ...]` (needs
+  Quarto and Chrome) after changing the styling.
 - Roxygen with markdown. [vignettes/customizing.qmd](vignettes/customizing.qmd)
   is the user-facing reference for `_quartodown.yml`; `@section Configuration:`
   in `build_site()` summarizes each field in a line. Update both when adding
