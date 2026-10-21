@@ -32,6 +32,12 @@
 #'   `README.md`; `sidebar`, the sidebar's `structure` (its sections, in
 #'   order) and `components` (sections of your own), or `false` to show the
 #'   page as written, without it; and `links`, added to the sidebar's links.
+#' * `authors`: by a person's name, an `href` to link it and `html` to
+#'   replace it; and under `sidebar` and `footer`, the `roles` shown, with
+#'   `before`/`after` text in the sidebar and `text` in the footer.
+#' * `repo`: the repository's `url`s (`home`, and the prefixes of links to a
+#'   file, `source`; an issue, `issue`; and a user, `user`) and `branch`, if
+#'   not from DESCRIPTION's GitHub or GitLab `URL`.
 #' * `theme`: the `light` and `dark` themes: names of Quarto's built-in
 #'   themes, such as `flatly` and `darkly`, or `.scss` files in
 #'   `_quartodown/`. By default, `default` and `darkly`.
@@ -101,15 +107,15 @@ build_site <- function(
   }
 
   reset_project(path, freeze = freeze)
-  copy_vignettes(path)
+  copy_vignettes(path, config)
   copy_figures(path)
   with_libpaths(envvars, write_man_pages(path, config))
-  import_markdown_files(path)
+  import_markdown_files(path, config)
   copy_theme_files(path)
   copy_site_files(path)
   write_home(path, config)
   build_reference_qmd(path, config)
-  build_authors_qmd(path)
+  build_authors_qmd(path, config)
   settings <- write_quarto_config(path, config, freeze = freeze)
   write_404(path, settings$website$`site-url`)
 
@@ -168,7 +174,17 @@ read_config <- function(path) {
   }
   warn_unknown_fields(
     names(config),
-    c("url", "reference", "navbar", "home", "theme", "redirects", "quarto")
+    c(
+      "url",
+      "reference",
+      "navbar",
+      "home",
+      "authors",
+      "repo",
+      "theme",
+      "redirects",
+      "quarto"
+    )
   )
   if (is.list(config$home)) {
     warn_unknown_fields(
@@ -180,6 +196,23 @@ read_config <- function(path) {
   }
   if (is.list(config$theme)) {
     warn_unknown_fields(names(config$theme), c("light", "dark"), "theme")
+  }
+  if (is.list(config$repo)) {
+    warn_unknown_fields(names(config$repo), c("url", "branch"), "repo")
+    warn_unknown_fields(
+      names(config$repo$url),
+      c("home", "source", "issue", "user"),
+      "repo: url"
+    )
+  }
+  # Any other field of `authors:` is a person, by name.
+  for (where in intersect(names(config$authors), c("sidebar", "footer"))) {
+    fields <- if (where == "sidebar") c("before", "after") else "text"
+    warn_unknown_fields(
+      names(config$authors[[where]]),
+      c("roles", fields),
+      paste("authors:", where)
+    )
   }
   config_redirects(config) # Checks it before the slow render.
   config
@@ -251,7 +284,7 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
       search = list(location = "navbar", type = "textbox"),
       navbar = navbar,
       `page-footer` = list(
-        left = data_developed_by(path),
+        left = data_developed_by(path, config),
         right = paste(
           "Site built with [quartodown](https://github.com/BjarkeHautop/quartodown)",
           "and [Quarto](https://quarto.org/)."
@@ -400,7 +433,7 @@ write_home <- function(path, config = list()) {
     readLines(file.path(path, file), warn = FALSE, encoding = "UTF-8")
   }
   writeLines(
-    enc2utf8(build_website_readme(lines, path, home = config$home)),
+    enc2utf8(build_website_readme(lines, path, config)),
     file.path(project_dir(path), "index.qmd"),
     useBytes = TRUE
   )
@@ -468,9 +501,9 @@ description_home <- function(path) {
   c(paste("#", pkg), "", trimws(gsub("\\s+", " ", description)))
 }
 
-# `home` is _quartodown.yml's `home:`. With `sidebar: false`, the page is
-# `lines` as written, only made to render like on GitHub.
-build_website_readme <- function(lines, path = ".", home = list()) {
+# With _quartodown.yml's `home: sidebar: false`, the page is `lines` as
+# written, only made to render like on GitHub.
+build_website_readme <- function(lines, path = ".", config = list()) {
   # A .qmd's front matter stays at the top.
   front_matter <- character()
   ends <- which(lines == "---")
@@ -480,13 +513,13 @@ build_website_readme <- function(lines, path = ".", home = list()) {
   }
   lines <- github_markdown_to_quarto(lines, mermaid = TRUE)
   lines <- theme_pictures_to_images(lines)
-  if (!isFALSE(home$sidebar)) {
-    lines <- home_page_with_sidebar(lines, path, home)
+  if (!isFALSE(config$home$sidebar)) {
+    lines <- home_page_with_sidebar(lines, path, config)
   }
   c(front_matter, lines)
 }
 
-home_page_with_sidebar <- function(lines, path, home = list()) {
+home_page_with_sidebar <- function(lines, path, config = list()) {
   badges <- extract_readme_badges(lines)
   lines <- remove_marker_block(
     lines,
@@ -511,7 +544,7 @@ home_page_with_sidebar <- function(lines, path, home = list()) {
     lines[seq(first_nonblank, length(lines))]
   }
 
-  sidebar <- build_sidebar_markdown(path, badges = badges, home = home)
+  sidebar <- build_sidebar_markdown(path, badges = badges, config = config)
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {

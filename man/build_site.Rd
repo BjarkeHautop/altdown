@@ -75,6 +75,12 @@ link to every reference page.
 \code{README.md}; \code{sidebar}, the sidebar's \code{structure} (its sections, in
 order) and \code{components} (sections of your own), or \code{false} to show the
 page as written, without it; and \code{links}, added to the sidebar's links.
+\item \code{authors}: by a person's name, an \code{href} to link it and \code{html} to
+replace it; and under \code{sidebar} and \code{footer}, the \code{roles} shown, with
+\code{before}/\code{after} text in the sidebar and \code{text} in the footer.
+\item \code{repo}: the repository's \code{url}s (\code{home}, and the prefixes of links to a
+file, \code{source}; an issue, \code{issue}; and a user, \code{user}) and \code{branch}, if
+not from DESCRIPTION's GitHub or GitLab \code{URL}.
 \item \code{theme}: the \code{light} and \code{dark} themes: names of Quarto's built-in
 themes, such as \code{flatly} and \code{darkly}, or \code{.scss} files in
 \verb{_quartodown/}. By default, \code{default} and \code{darkly}.

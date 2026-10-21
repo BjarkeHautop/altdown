@@ -17,8 +17,7 @@ role_lookup <- function(abbr) {
   unname(roles[abbr])
 }
 
-# Default roles shown in the sidebar/footer, matching pkgdown's
-# `default_roles()`.
+# Default roles shown in the sidebar/footer.
 default_roles <- function() c("aut", "cre", "fnd")
 
 pkg_authors <- function(path, roles = NULL) {
@@ -34,13 +33,33 @@ author_name <- function(x) {
   if (is.null(x$family)) given else paste(given, x$family)
 }
 
+# A person's name as shown on the site. _quartodown.yml's `authors:` can, by
+# the name, link it (`href`) or replace it with HTML (`html`), such as a logo.
+author_display <- function(x, config = list()) {
+  name <- author_name(x)
+  meta <- config$authors[[name]]
+  text <- if (is.null(meta$html)) name else meta$html
+  if (is.null(meta$href)) {
+    text
+  } else {
+    sprintf("<a href='%s'>%s</a>", meta$href, text)
+  }
+}
+
+# The roles shown in the sidebar or footer (`where`): _quartodown.yml's
+# `authors: <where>: roles:`, else the default ones.
+author_roles <- function(config, where) {
+  roles <- config$authors[[where]]$roles
+  if (is.null(roles)) default_roles() else unlist(roles)
+}
+
 author_roles_text <- function(x) {
   roles <- paste0(role_lookup(x$role), collapse = ", ")
   substr(roles, 1, 1) <- toupper(substr(roles, 1, 1))
   roles
 }
 
-# ---- sidebar section builders (mirrors pkgdown's data_home_sidebar_*()) ---
+# ---- sidebar section builders ------------------------------------------------
 
 # A heading and bullet list, or nothing without bullets.
 sidebar_section <- function(heading, bullets) {
@@ -83,21 +102,63 @@ cran_url_if_available <- function(pkg_name) {
   url
 }
 
-pkg_github_url <- function(path) {
-  gh_url <- tryCatch(
-    Filter(function(u) grepl("github\\.com", u), desc::desc_get_urls(path)),
-    error = function(e) character()
+# Where the package's source lives, from the first GitHub or GitLab URL in
+# DESCRIPTION, with _quartodown.yml's `repo:` over it: `home`,
+# the repository's page, and the prefixes of the links to a file (`source`),
+# an issue (`issue`) and a user (`user`). A URL into a folder,
+# `<repo>/tree/<branch>/<folder>`, is a package in that folder of that
+# branch. Each is NA if unknown.
+pkg_repo <- function(path, config = list()) {
+  urls <- tryCatch(desc::desc_get_urls(path), error = function(e) character())
+  url <- urls[grepl("^https?://(www\\.)?(github|gitlab)\\.com/", urls)][1]
+  repo <- list(
+    home = NA_character_,
+    source = NA_character_,
+    issue = NA_character_,
+    user = NA_character_
   )
-  if (length(gh_url) == 0) NA_character_ else sub("/+$", "", gh_url[[1]])
+  branch <- "HEAD"
+  folder <- ""
+  if (!is.na(url)) {
+    url <- sub("/+$", "", url)
+    repo$home <- url
+    tree <- regmatches(url, regexec("^(.*?)(/-)?/tree/([^/]+)(/.*)?$", url))[[
+      1
+    ]]
+    if (length(tree) > 0) {
+      url <- tree[[2]]
+      branch <- tree[[4]]
+      folder <- sub("^/", "", paste0(tree[[5]], "/"))
+    }
+    host <- regmatches(url, regexpr("^https?://[^/]+/", url))
+    # GitLab's pages are under `/-/`.
+    sep <- if (grepl("gitlab", host)) "/-/" else "/"
+    repo$issue <- paste0(url, sep, "issues/")
+    repo$user <- host
+  }
+  if (!is.null(config$repo$branch)) {
+    branch <- config$repo$branch
+  }
+  if (!is.na(url)) {
+    repo$source <- paste0(url, sep, "blob/", branch, "/", folder)
+  }
+  for (field in names(repo)) {
+    value <- config$repo$url[[field]]
+    if (!is.null(value)) {
+      repo[[field]] <- if (field == "home") sub("/+$", "", value) else value
+    }
+  }
+  repo
 }
 
 # A "Source: <files>" line for a page made from `files` (relative to the
 # package root). The files aren't part of the site, so each links to the
-# GitHub repository `gh_url`, if there is one. `class` is the `<p>`'s.
-source_note <- function(files, gh_url = NA_character_, class = NULL) {
+# repository, under `source` (see pkg_repo()), if known. `class` is the
+# `<p>`'s.
+source_note <- function(files, source = NA_character_, class = NULL) {
   links <- sprintf("<code>%s</code>", files)
-  if (!is.na(gh_url)) {
-    links <- sprintf('<a href="%s/blob/HEAD/%s">%s</a>', gh_url, files, links)
+  if (!is.na(source)) {
+    links <- sprintf('<a href="%s%s">%s</a>', source, files, links)
   }
   sprintf(
     '<p%s><small class="dont-index">Source: %s</small></p>',
@@ -108,9 +169,8 @@ source_note <- function(files, gh_url = NA_character_, class = NULL) {
 
 # `links` are _quartodown.yml's `home: links:`, each with `text` and `href`,
 # listed after the package's own.
-data_sidebar_links <- function(path, links = list()) {
-  gh_url <- pkg_github_url(path)
-  gh_url <- if (is.na(gh_url)) character() else gh_url
+data_sidebar_links <- function(path, links = list(), config = list()) {
+  home <- pkg_repo(path, config)$home
   bug_reports <- tryCatch(
     desc::desc_get_field("BugReports", default = NA, file = path),
     error = function(e) NA
@@ -130,8 +190,8 @@ data_sidebar_links <- function(path, links = list()) {
   if (!is.na(cran_url)) {
     links <- c(links, sprintf("[View on CRAN](%s)", cran_url))
   }
-  if (length(gh_url) > 0) {
-    links <- c(links, sprintf("[Browse source code](%s)", gh_url[[1]]))
+  if (!is.na(home)) {
+    links <- c(links, sprintf("[Browse source code](%s)", home))
   }
   if (!is.na(bug_reports)) {
     links <- c(links, sprintf("[Report a bug](%s)", bug_reports))
@@ -149,7 +209,7 @@ data_sidebar_devstatus <- function(badges) {
   sidebar_section("Dev status", bullets)
 }
 
-# R's license database, as pkgdown reads it.
+# R's license database.
 autolink_license <- function(license_field, has_license_file) {
   db_path <- file.path(R.home("share"), "licenses", "license.db")
   db <- as.data.frame(read.dcf(db_path), stringsAsFactors = FALSE)
@@ -225,8 +285,10 @@ data_sidebar_citation <- function(path) {
   )
 }
 
-data_sidebar_authors <- function(path, roles = default_roles()) {
-  authors <- pkg_authors(path, roles)
+# With _quartodown.yml's `authors: sidebar: before:` and `after:`, Markdown
+# shown above and below the list.
+data_sidebar_authors <- function(path, config = list()) {
+  authors <- pkg_authors(path, author_roles(config, "sidebar"))
   if (length(authors) == 0) {
     return(character())
   }
@@ -236,7 +298,7 @@ data_sidebar_authors <- function(path, roles = default_roles()) {
     function(x) {
       sprintf(
         "%s\\\n<small>%s</small>%s",
-        author_name(x),
+        author_display(x, config),
         author_roles_text(x),
         author_id_links(x)
       )
@@ -252,7 +314,11 @@ data_sidebar_authors <- function(path, roles = default_roles()) {
     bullets <- c(bullets, "[More about authors...](authors.html)")
   }
 
-  sidebar_section("Developers", bullets)
+  sidebar <- config$authors$sidebar
+  sidebar_section(
+    "Developers",
+    c(trimws(sidebar$before), bullets, trimws(sidebar$after))
+  )
 }
 
 sidebar_sections <- c(
@@ -264,29 +330,33 @@ sidebar_sections <- c(
   "dev"
 )
 
-# `home` is _quartodown.yml's `home:`. Its `sidebar: structure:` orders the
-# sections, which are those above or `sidebar: components:` of its own, each
-# with a `title` and Markdown `text`. pkgdown's `toc` is accepted but left out:
-# with the sidebar, the home page has no table of contents.
-build_sidebar_markdown <- function(path, badges = character(), home = list()) {
+# _quartodown.yml's `home: sidebar: structure:` orders the sections, which
+# are those above or `sidebar: components:` of its own, each with a `title`
+# and Markdown `text`.
+build_sidebar_markdown <- function(
+  path,
+  badges = character(),
+  config = list()
+) {
+  home <- config$home
   sidebar <- if (is.list(home$sidebar)) home$sidebar else list()
   components <- sidebar$components
   structure <- sidebar$structure
   if (is.null(structure)) {
     structure <- c(sidebar_sections, names(components))
   }
-  sections <- lapply(setdiff(unlist(structure), "toc"), function(name) {
+  sections <- lapply(unlist(structure), function(name) {
     component <- components[[name]]
     if (!is.null(component)) {
       return(sidebar_section(component$title, trimws(component$text)))
     }
     switch(
       name,
-      links = data_sidebar_links(path, home$links),
+      links = data_sidebar_links(path, home$links, config),
       license = data_sidebar_license(path),
       community = data_sidebar_community(path),
       citation = data_sidebar_citation(path),
-      authors = data_sidebar_authors(path),
+      authors = data_sidebar_authors(path, config),
       dev = data_sidebar_devstatus(badges),
       cli::cli_abort(c(
         "_quartodown.yml `home: sidebar: structure:` has {.val {name}}, which isn't a section.",
@@ -304,10 +374,15 @@ build_sidebar_markdown <- function(path, badges = character(), home = list()) {
   c("::: {.column-margin}", body, ":::")
 }
 
-# ---- footer (mirrors pkgdown's footnote_components(), R/build-footer.R) ---
+# ---- footer ------------------------------------------------------------------
 
-data_developed_by <- function(path, roles = default_roles()) {
-  authors <- pkg_authors(path, roles)
-  names <- vapply(authors, author_name, character(1))
-  sprintf("Developed by %s.", paste(names, collapse = ", "))
+# With _quartodown.yml's `authors: footer: text:` instead of "Developed by".
+data_developed_by <- function(path, config = list()) {
+  authors <- pkg_authors(path, author_roles(config, "footer"))
+  names <- vapply(authors, author_display, character(1), config = config)
+  text <- config$authors$footer$text
+  if (is.null(text)) {
+    text <- "Developed by"
+  }
+  sprintf("%s %s.", trimws(text), paste(names, collapse = ", "))
 }

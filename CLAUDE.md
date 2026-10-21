@@ -62,9 +62,12 @@ quartodown::build_site() # also previews it when interactive
      `% Please edit documentation in` header names (else the `.Rd`) to
      `<GitHub URL>/blob/HEAD/` (`source_note()`, shared with the authors page
      and the vignettes, which `copy_vignettes()` gives one after their front
-     matter). Examples are rebuilt from `tools::Rd2ex()` markers into run /
-     `\dontrun` (plain block) / `\dontshow` (hidden chunk) blocks, with
-     `@examplesIf` evaluated at build time.
+     matter). The repository's URLs come from `pkg_repo()` (DESCRIPTION's
+     GitHub/GitLab `URL`, a `/tree/<branch>/<folder>` URL for a package in a
+     subfolder, and `_quartodown.yml`'s pkgdown-style `repo:`). Examples are
+     rebuilt from `tools::Rd2ex()` markers into run / `\dontrun` (plain block) /
+     `\dontshow` (hidden chunk) blocks, with `@examplesIf` evaluated at build
+     time.
    - `_quarto.yml`: fully resolved Quarto config (navbar, footer, theme). User
      overrides from `_quartodown.yml`'s `quarto:` key are applied by
      `merge_quarto_config()` (unnamed lists append, other values replace, `~`
@@ -81,7 +84,10 @@ quartodown::build_site() # also previews it when interactive
      `-`, …) evaluated against Rd topics. `\keyword{internal}` topics are listed
      (and get a page, see `has_page()`) only when named or selected with
      `internal = TRUE`.
-   - `authors.qmd` ([R/authors.R](R/authors.R)).
+   - `authors.qmd` ([R/authors.R](R/authors.R)). `_quartodown.yml`'s
+     pkgdown-style `authors:` links names or swaps them for HTML
+     (`author_display()`, also in the sidebar and footer) and picks the
+     sidebar's and footer's roles.
    - Theme files copied verbatim from [inst/quarto/](inst/quarto/)
      (`quartodown.scss`, header/after-body HTML), with `ansi_scss_rules()`
      ([R/ansi.R](R/ansi.R)) appended to `quartodown.scss`. `quarto_theme()`

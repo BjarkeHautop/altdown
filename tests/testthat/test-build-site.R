@@ -589,7 +589,7 @@ test_that("`home: sidebar:` orders the sections and adds components", {
   home <- yaml::yaml.load(
     "
 sidebar:
-  structure: [funding, authors, license, toc]
+  structure: [funding, authors, license]
   components:
     funding:
       title: Funding
@@ -597,7 +597,7 @@ sidebar:
 "
   )
 
-  sidebar <- build_sidebar_markdown(dir, home = home)
+  sidebar <- build_sidebar_markdown(dir, config = list(home = home))
   headings <- grep("^#### ", sidebar, value = TRUE)
   expect_identical(
     headings,
@@ -606,13 +606,13 @@ sidebar:
   expect_true("Supported by [a grant](https://example.com)." %in% sidebar)
 
   home$sidebar$structure <- list("nope")
-  expect_error(build_sidebar_markdown(dir, home = home), "nope")
+  expect_error(build_sidebar_markdown(dir, config = list(home = home)), "nope")
 
   # Without `structure:`, components come after the built-in sections.
   home$sidebar$structure <- NULL
   headings <- grep(
     "^#### ",
-    build_sidebar_markdown(dir, home = home),
+    build_sidebar_markdown(dir, config = list(home = home)),
     value = TRUE
   )
   expect_identical(headings[length(headings)], "#### Funding")
@@ -621,7 +621,7 @@ sidebar:
 test_that("`home: links:` are added to the sidebar's Links", {
   dir <- new_pkg()
   home <- list(links = list(list(text = "Blog", href = "https://example.com")))
-  sidebar <- build_sidebar_markdown(dir, home = home)
+  sidebar <- build_sidebar_markdown(dir, config = list(home = home))
   links <- which(sidebar == "#### Links")
   expect_identical(sidebar[links + 2], "[Blog](https://example.com)")
 })
@@ -838,7 +838,7 @@ test_that("data_sidebar_community() links the community files, from the root or 
   expect_false(any(grepl("SUPPORT", bullets)))
 })
 
-test_that("data_sidebar_license() links LICENSE.md and the LICENSE file like pkgdown", {
+test_that("data_sidebar_license() links LICENSE.md and the LICENSE file", {
   dir <- new_pkg()
   desc::desc_set(License = "MIT + file LICENSE", file = dir)
   writeLines("YEAR: 2026", file.path(dir, "LICENSE"))
@@ -849,6 +849,57 @@ test_that("data_sidebar_license() links LICENSE.md and the LICENSE file like pkg
   writeLines("# MIT License", file.path(dir, "LICENSE.md"))
   bullets <- data_sidebar_license(dir)
   expect_true(any(grepl("[Full license](LICENSE.html)", bullets, fixed = TRUE)))
+})
+
+test_that("`authors:` links names, picks roles and changes the footer's text", {
+  dir <- new_pkg()
+  desc::desc_set(Title = "Example Package", file = dir)
+  desc::desc_set_authors(
+    c(
+      person("Jane", "Doe", role = c("aut", "cre")),
+      person("Acme", role = c("cph", "fnd"))
+    ),
+    file = dir
+  )
+  config <- yaml::yaml.load(
+    "
+authors:
+  Jane Doe:
+    href: https://jane.example.com
+  Acme:
+    href: https://acme.example.com
+    html: <img src='acme.png' alt='Acme'>
+  sidebar:
+    roles: [cre]
+    after: Thanks to all contributors.
+  footer:
+    roles: [fnd]
+    text: Funded by
+"
+  )
+
+  sidebar <- data_sidebar_authors(dir, config)
+  expect_true(any(grepl(
+    "<a href='https://jane.example.com'>Jane Doe</a>",
+    sidebar,
+    fixed = TRUE
+  )))
+  expect_false(any(grepl("acme", sidebar)))
+  expect_true(any(grepl("Thanks to all contributors.", sidebar, fixed = TRUE)))
+
+  expect_identical(
+    data_developed_by(dir, config),
+    "Funded by <a href='https://acme.example.com'><img src='acme.png' alt='Acme'></a>."
+  )
+  expect_identical(data_developed_by(dir), "Developed by Jane Doe, Acme.")
+
+  build_authors_qmd(dir, config)
+  authors <- readLines(file.path(dir, "_quarto", "authors.qmd"))
+  expect_true(any(grepl(
+    "<strong><a href='https://jane.example.com'>Jane Doe</a></strong>",
+    authors,
+    fixed = TRUE
+  )))
 })
 
 test_that("build_authors_qmd() writes an Authors and Citation page with all authors and a fenced BibTeX code block", {
@@ -1113,7 +1164,7 @@ test_that("a `reference:` list starting with an exclusion leaves internal topics
   expect_false(any(grepl("bar()|hidden", lines)))
 })
 
-test_that("build_reference_qmd() renders pkgdown's title-only and subtitle blocks", {
+test_that("build_reference_qmd() renders title-only and subtitle blocks", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")
 
@@ -1182,7 +1233,7 @@ test_that("build_reference_qmd() accepts a non-syntactic alias like a *-package 
   expect_true(any(grepl(">examplepkg-package</a>", lines, fixed = TRUE)))
 })
 
-test_that("build_reference_qmd() lists every function in a topic's usage, like pkgdown", {
+test_that("build_reference_qmd() lists every function in a topic's usage", {
   dir <- new_pkg_with_man()
   write_rd(
     dir,

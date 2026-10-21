@@ -33,16 +33,16 @@ copy_dir <- function(from, to) {
 # alongside any images or data files they use. Each gets a source_note() under
 # its title, ruled off from the text below like a heading (see
 # quartodown.scss), as a reference page's is by its first `##` heading.
-copy_vignettes <- function(path) {
+copy_vignettes <- function(path, config = list()) {
   out <- file.path(project_dir(path), "vignettes")
   copy_dir(file.path(path, "vignettes"), out)
-  gh_url <- pkg_github_url(path)
+  source <- pkg_repo(path, config)$source
   for (vignette in find_vignettes(path)) {
     file <- file.path(out, vignette)
     lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
     note <- source_note(
       file.path("vignettes", vignette),
-      gh_url,
+      source,
       class = "source-note"
     )
     writeLines(
@@ -95,7 +95,7 @@ community_file_source <- function(path, name) {
 # NEWS.md and the community files keep their name; LICENSE.md is the full
 # license, and a plain LICENSE file (e.g. the "YEAR:/COPYRIGHT HOLDER:" stub
 # of "MIT + file LICENSE") becomes LICENSE-text.md.
-import_markdown_files <- function(path) {
+import_markdown_files <- function(path, config = list()) {
   out <- project_dir(path)
   read <- function(file) readLines(file, warn = FALSE, encoding = "UTF-8")
   read_md <- function(file) github_markdown_to_quarto(read(file))
@@ -105,7 +105,7 @@ import_markdown_files <- function(path) {
 
   news <- file.path(path, "NEWS.md")
   if (file.exists(news)) {
-    write(link_news(read_md(news), pkg_github_url(path)), "NEWS.md")
+    write(link_news(read_md(news), pkg_repo(path, config)), "NEWS.md")
   }
   for (name in community_files) {
     src <- community_file_source(path, name)
@@ -170,26 +170,27 @@ github_markdown_to_quarto <- function(lines, mermaid = FALSE) {
   out
 }
 
-# Links issues and pull requests (`#123`) and GitHub users (`@user`). Code
-# blocks are left alone.
-link_news <- function(lines, gh_url) {
-  if (is.na(gh_url)) {
-    return(lines)
-  }
+# Links issues and pull requests (`#123`) and users (`@user`) to `repo`'s
+# (see pkg_repo()). Code blocks are left alone.
+link_news <- function(lines, repo) {
   is_fence <- grepl("^\\s*```", lines)
   text <- !(cumsum(is_fence) %% 2 == 1 | is_fence)
-  lines[text] <- gsub(
-    "(?<![\\w\\[/&#])#(\\d+)\\b",
-    sprintf("[#\\1](%s/issues/\\1)", gh_url),
-    lines[text],
-    perl = TRUE
-  )
-  lines[text] <- gsub(
-    "(^|\\s|\\()@([-\\w]+)",
-    "\\1[@\\2](https://github.com/\\2)",
-    lines[text],
-    perl = TRUE
-  )
+  if (!is.na(repo$issue)) {
+    lines[text] <- gsub(
+      "(?<![\\w\\[/&#])#(\\d+)\\b",
+      sprintf("[#\\1](%s\\1)", repo$issue),
+      lines[text],
+      perl = TRUE
+    )
+  }
+  if (!is.na(repo$user)) {
+    lines[text] <- gsub(
+      "(^|\\s|\\()@([-\\w]+)",
+      sprintf("\\1[@\\2](%s\\2)", repo$user),
+      lines[text],
+      perl = TRUE
+    )
+  }
   lines
 }
 

@@ -63,12 +63,13 @@ navbar_items <- function(path, config = list()) {
     builtins$news <- list(text = "Changelog", file = "NEWS.md")
   }
   if ("github" %in% used) {
-    gh_url <- pkg_github_url(path)
-    if (!is.na(gh_url)) {
+    home <- pkg_repo(path, config)$home
+    if (!is.na(home)) {
+      gitlab <- grepl("gitlab", home)
       builtins$github <- list(
-        icon = "github",
-        href = gh_url,
-        `aria-label` = "GitHub"
+        icon = if (gitlab) "gitlab" else "github",
+        href = home,
+        `aria-label` = if (gitlab) "GitLab" else "GitHub"
       )
     }
   }

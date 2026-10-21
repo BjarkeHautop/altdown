@@ -10,13 +10,15 @@ vignette: >
 If you want to customize your site, you can do so by editing
 `_quartodown/_quartodown.yml`, which `quartodown::use_quartodown()` creates. The
 `_quartodown/` folder at the package root also holds the files that [style the
-site](#styling-and-layout). `_quartodown.yml` has seven fields, all optional:
+site](#styling-and-layout). `_quartodown.yml` has nine fields, all optional:
 
 - `url:` is the site's address, if it isn't the first non-GitHub `URL` in
   `DESCRIPTION`.
 - `reference:` groups and orders the function reference index.
 - `navbar:` lays out the navbar.
-- `home:` picks the home page's source.
+- `home:` picks the home page's source and lays out its sidebar.
+- `authors:` links authors' names and picks who is shown where.
+- `repo:` says where the source code is, if `DESCRIPTION` doesn't.
 - `theme:` picks the light and dark themes.
 - `redirects:` sends visitors from old addresses to new ones.
 - `quarto:` changes any other Quarto setting.
@@ -198,6 +200,65 @@ home:
 The page then shows the file as written. Like any other page, it then gets a
 table of contents, which `toc: false` in its front matter can turn off.
 
+## Authors
+
+The home page's sidebar and the footer list the authors with the roles `aut`,
+`cre` and `fnd` from `DESCRIPTION`'s `Authors@R`, and the authors page lists
+everyone. `authors:` can link a person's name, or replace it with HTML such as a
+logo, and change who is shown:
+
+```yaml
+authors:
+  Jane Doe:                                # <1>
+    href: https://jane.example.com
+  Acme Inc:
+    href: https://acme.example.com
+    html: <img src="https://acme.example.com/logo.png" alt="Acme" height="24">
+  sidebar:
+    roles: [aut, cre]                      # <2>
+    after: Thanks to all [contributors](authors.html).  # <3>
+  footer:
+    roles: [cre]
+    text: Maintained by                    # <4>
+```
+
+1. A person, by their name as in `Authors@R`.
+2. The roles shown in the sidebar.
+3. Markdown shown under the sidebar's list, or with `before:` above it.
+4. Instead of "Developed by".
+
+The format is the same as pkgdown's `authors:`.
+
+## The repository
+
+Source links (the "Source:" line under each page's title), the sidebar's "Browse
+source code", the navbar's GitHub icon and the changelog's `#123` and `@user`
+links all come from the first GitHub or GitLab URL in `DESCRIPTION`. For a
+package in a folder of a repository, give the URL of the folder, with its
+branch, as in `https://github.com/me/repo/tree/main/mypkg`.
+
+`repo:` sets them where that isn't enough, such as for another host or branch:
+
+```yaml
+repo:
+  url:
+    home: https://codeberg.org/me/mypkg              # <1>
+    source: https://codeberg.org/me/mypkg/src/branch/main/  # <2>
+    issue: https://codeberg.org/me/mypkg/issues/     # <3>
+    user: https://codeberg.org/                      # <4>
+  branch: devel                                       # <5>
+```
+
+1. The repository's page.
+2. Prefix of a file's link, such as `R/foo.R`.
+3. Prefix of an issue's link, such as `123`.
+4. Prefix of a user's link.
+5. The branch the source links point to, instead of the default branch. Ignored
+   when `source:` is set.
+
+Each is optional and replaces only its own link. The format is the same as
+pkgdown's `repo:`.
+
 ## Redirects
 
 When a page moves, such as a function's reference page after it is renamed you
@@ -371,24 +432,33 @@ quarto:
 ## Coming from pkgdown
 
 Moving a site over is very easy, and mostly means moving `_pkgdown.yml`'s
-settings into `_quartodown/_quartodown.yml`:
+settings into `_quartodown/_quartodown.yml`. These have the same format, so can
+be copied as is: `url:`, `reference:`, `home: sidebar:`, `home: links:`,
+`authors:`, `repo:` and `redirects:`. The rest maps as follows:
 
-- `reference:` has the same format and selectors, so it can be copied as is.
-- `navbar:` lists items differently; see [The navbar](#the-navbar).
-- `articles:` has no equivalent: group vignettes with navbar menus instead.
-- `template: bootswatch:` becomes [`theme: light:`](#styling-and-layout).
-- `template: bslib:` fonts go in `_quartodown/extra.scss`, as below.
-- `redirects:` has the same format, so it can be copied as is.
-- `home: sidebar:` and `home: links:` have the same format; see [The home
-  page](#the-home-page).
-- `home: title:` and `description:`, and `template: opengraph:`, are Quarto
-  settings, as below.
-- `footer:` is Quarto's `page-footer:`; see [Other Quarto
-  settings](#other-quarto-settings).
-- A separate home page (an `index.md` used instead of the README) isn't picked
-  up automatically: set it with [`home: file:`](#the-home-page).
-- Code that checks `IN_PKGDOWN` (or `pkgdown::in_pkgdown()`) should check
-  `identical(Sys.getenv("IN_QUARTODOWN"), "true")` instead.
+  | pkgdown                         | quartodown                                                       |
+  | ---                             | ---                                                              |
+  | `navbar:`                       | lists items differently; see [The navbar](#the-navbar)           |
+  | `articles:`                     | no equivalent: group vignettes with navbar menus instead         |
+  | `home: title:`, `title:`        | `quarto: website: navbar: title:`                                |
+  | `home: description:`            | `quarto: website: description:`                                  |
+  | `lang:`                         | `quarto: lang:`                                                  |
+  | `template: bootswatch:`         | [`theme: light:`](#styling-and-layout)                           |
+  | `template: bslib:`              | `_quartodown/extra.scss`; fonts as below                         |
+  | `template: opengraph:`          | `quarto: website: open-graph:` and `twitter-card:`, as below     |
+  | `template: includes:`           | `quarto: format: html: include-in-header:` etc.                  |
+  | `template: math-rendering:`     | `quarto: format: html: html-math-method:`                        |
+  | `template: params: ganalytics:` | `quarto: website: google-analytics:`                             |
+  | `template: light-switch:`       | always on: the site has a light and a dark theme                 |
+  | `navbar: bg:`, `type:`          | `theme:` or `_quartodown/extra.scss`                             |
+  | `toc: depth:`                   | `quarto: format: html: toc-depth:`                               |
+  | `figures:`                      | `quarto: format: html: fig-width:`, `fig-height:`, `fig-dpi:`    |
+  | `footer:`                       | `authors: footer:`, or `quarto: website: page-footer:`           |
+
+A separate home page (an `index.md` used instead of the README) isn't picked up
+automatically: set it with [`home: file:`](#the-home-page). Code that checks
+`IN_PKGDOWN` (or `pkgdown::in_pkgdown()`) should check
+`identical(Sys.getenv("IN_QUARTODOWN"), "true")` instead.
 
 For example, this part of a `_pkgdown.yml`:
 
@@ -438,9 +508,6 @@ navbar:
     - text: CRAN
       href: https://cran.r-project.org/package=mypkg
 ```
-
-The navbar's title is the package's name and version. To show another, set
-`quarto: website: navbar: title:`.
 
 The rest works as with pkgdown, except that vignettes are published under
 `vignettes/` rather than `articles/`: `articles/foo.html` becomes

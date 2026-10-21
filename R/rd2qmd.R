@@ -20,11 +20,11 @@ write_man_pages <- function(path, config = list()) {
   macros <- rd_macros(path)
   pkg <- desc::desc_get_field("Package", file = path)
   pages <- topic_pages(topics)
-  gh_url <- pkg_github_url(path)
+  source <- pkg_repo(path, config)$source
   n <- 0L
   for (rd_file in rd_files) {
     rd <- tools::parse_Rd(rd_file, macros = macros)
-    note <- source_note(rd_source_files(rd_file), gh_url)
+    note <- source_note(rd_source_files(rd_file), source)
     lines <- tryCatch(
       rd_to_qmd(rd, pkg, pages, note),
       error = function(e) {

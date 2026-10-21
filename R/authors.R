@@ -27,9 +27,9 @@ pkg_citation <- function(path) {
   }
 }
 
-citation_source_note <- function(path) {
+citation_source_note <- function(path, config = list()) {
   rel <- if (has_pkg_citation_file(path)) "inst/CITATION" else "DESCRIPTION"
-  source_note(rel, pkg_github_url(path))
+  source_note(rel, pkg_repo(path, config)$source)
 }
 
 # A person()'s comment without the ORCID/ROR identifiers, which are shown as icons.
@@ -62,7 +62,7 @@ author_id_links <- function(x) {
   )
 }
 
-# pkgdown's linkify(): links <doi:...>, <arXiv:...> and <http...> in escaped text.
+# Links <doi:...>, <arXiv:...> and <http...> in escaped text.
 linkify <- function(text) {
   text <- escape_html(text)
   text <- gsub(
@@ -80,7 +80,7 @@ linkify <- function(text) {
   gsub("&lt;((http|ftp)[^&]+)&gt;", "&lt;<a href='\\1'>\\1</a>&gt;", text)
 }
 
-build_authors_qmd <- function(path) {
+build_authors_qmd <- function(path, config = list()) {
   author_items <- vapply(
     pkg_authors(path),
     function(x) {
@@ -92,7 +92,7 @@ build_authors_qmd <- function(path) {
       }
       sprintf(
         "<li><p><strong>%s</strong>. %s.%s%s</p></li>",
-        author_name(x),
+        author_display(x, config),
         author_roles_text(x),
         author_id_links(x),
         comment
@@ -116,7 +116,7 @@ build_authors_qmd <- function(path) {
     "",
     "## Citation {#citation}",
     "",
-    citation_source_note(path),
+    citation_source_note(path, config),
     "",
     format(cit, style = "html"),
     "",

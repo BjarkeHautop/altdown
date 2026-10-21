@@ -18,7 +18,7 @@ test_that("reset_project() empties _quarto/, keeping _freeze/ only when freezing
   )
 })
 
-test_that("import_markdown_files() imports NEWS, the license and community files like pkgdown", {
+test_that("import_markdown_files() imports NEWS, the license and community files", {
   dir <- new_pkg()
   writeLines("# examplepkg 1.0.0", file.path(dir, "NEWS.md"))
   writeLines("# MIT License", file.path(dir, "LICENSE.md"))
@@ -53,7 +53,13 @@ test_that("link_news() links issues and users, but not in code or existing links
     "```"
   )
   expect_identical(
-    link_news(lines, "https://github.com/o/r"),
+    link_news(
+      lines,
+      list(
+        issue = "https://github.com/o/r/issues/",
+        user = "https://github.com/"
+      )
+    ),
     c(
       "* Fixed a bug ([#12](https://github.com/o/r/issues/12), [@jane-doe](https://github.com/jane-doe)).",
       "* See [#3](https://example.com) and https://x.org/#4.",
@@ -63,7 +69,64 @@ test_that("link_news() links issues and users, but not in code or existing links
       "```"
     )
   )
-  expect_identical(link_news(lines, NA_character_), lines)
+  expect_identical(
+    link_news(lines, list(issue = NA_character_, user = NA_character_)),
+    lines
+  )
+})
+
+test_that("pkg_repo() reads the repository from DESCRIPTION's URL", {
+  dir <- new_pkg()
+  expect_true(all(is.na(unlist(pkg_repo(dir)))))
+
+  desc::desc_set(
+    URL = "https://example.com, https://github.com/o/r/",
+    file = dir
+  )
+  expect_identical(
+    pkg_repo(dir),
+    list(
+      home = "https://github.com/o/r",
+      source = "https://github.com/o/r/blob/HEAD/",
+      issue = "https://github.com/o/r/issues/",
+      user = "https://github.com/"
+    )
+  )
+
+  # A package in a folder of the repository, on another branch.
+  desc::desc_set(URL = "https://github.com/o/r/tree/main/pkg", file = dir)
+  repo <- pkg_repo(dir)
+  expect_identical(repo$home, "https://github.com/o/r/tree/main/pkg")
+  expect_identical(repo$source, "https://github.com/o/r/blob/main/pkg/")
+  expect_identical(repo$issue, "https://github.com/o/r/issues/")
+
+  desc::desc_set(URL = "https://gitlab.com/o/r", file = dir)
+  repo <- pkg_repo(dir)
+  expect_identical(repo$source, "https://gitlab.com/o/r/-/blob/HEAD/")
+  expect_identical(repo$issue, "https://gitlab.com/o/r/-/issues/")
+  expect_identical(repo$user, "https://gitlab.com/")
+})
+
+test_that("`repo:` overrides the repository's URLs and branch", {
+  dir <- new_pkg()
+  desc::desc_set(URL = "https://github.com/o/r", file = dir)
+  repo <- pkg_repo(dir, list(repo = list(branch = "devel")))
+  expect_identical(repo$source, "https://github.com/o/r/blob/devel/")
+
+  config <- yaml::yaml.load(
+    "
+repo:
+  url:
+    home: https://code.example.com/r/
+    source: https://code.example.com/r/src/
+    issue: https://bugs.example.com/
+"
+  )
+  repo <- pkg_repo(dir, config)
+  expect_identical(repo$home, "https://code.example.com/r")
+  expect_identical(repo$source, "https://code.example.com/r/src/")
+  expect_identical(repo$issue, "https://bugs.example.com/")
+  expect_identical(repo$user, "https://github.com/")
 })
 
 test_that("github_markdown_to_quarto() turns alerts into callouts and mermaid blocks into diagrams", {

@@ -1,7 +1,7 @@
 # ---- redirects ----------------------------------------------------------------
 #
 # Pages at old addresses that send visitors on to new ones, listed under
-# _quartodown.yml's `redirects:` as pairs of paths in pkgdown's format.
+# _quartodown.yml's `redirects:` as pairs of paths.
 # Quarto's `aliases:` does the same, but needs the target page's front matter,
 # which generated pages such as the reference pages don't take.
 

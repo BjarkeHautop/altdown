@@ -1,9 +1,8 @@
 # ---- reference/index.qmd generation ------------------------------------------
 #
-# `_quartodown.yml`'s `reference:` groups the index into sections (the format
-# of pkgdown's `reference:`, selectors included). An internal topic is listed
-# only when named, or selected with `internal = TRUE`, and then gets a page
-# too.
+# `_quartodown.yml`'s `reference:` groups the index into sections, each
+# listing topics by name or selector. An internal topic is listed only when
+# named, or selected with `internal = TRUE`, and then gets a page too.
 
 # Every man/*.Rd as a topic: its file's basename, title, aliases, concepts
 # and keywords.
@@ -197,8 +196,7 @@ usage_names <- function(usage) {
   unique(vapply(funs[!self_meth], short_name, character(1)))
 }
 
-# The environment `contents:` entries are evaluated in, as pkgdown's
-# `match_env()`: each alias and Rd file name bound to its topic's position,
+# The environment `contents:` entries are evaluated in: each alias and Rd file name bound to its topic's position,
 # plus the selectors. All but has_keyword() skip internal topics unless
 # `internal = TRUE`.
 match_env <- function(topics) {
