@@ -34,9 +34,13 @@ write_vignette <- function(dir, name, title = name) {
   )
 }
 
+nav_texts <- function(items) {
+  vapply(items, function(x) x$text, character(1))
+}
+
 nav_files <- function(left) {
   unlist(lapply(left, function(item) {
-    c(item$file, vapply(item$menu, function(m) m$file, character(1)))
+    c(item$file, unlist(lapply(item$menu, function(m) m$file)))
   }))
 }
 

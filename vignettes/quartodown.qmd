@@ -17,9 +17,10 @@ From the root of your package, run:
 quartodown::use_quartodown()
 ```
 
-This writes `_quartodown.yml` at the package root, the configuration file you
-can edit, and adds the files the build generates to `.gitignore` and
-`.Rbuildignore`.
+This writes `_quartodown.yml` at the package root, and adds the files the build
+generates to `.gitignore` and `.Rbuildignore`. `_quartodown.yml` is where you can
+[customize your
+site](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html).
 
 ## Build the site
 
@@ -44,27 +45,10 @@ The following is added to your site:
   listing them all.
 - **Get started**: the vignette with the same name as your package, like this
   one.
-- **Articles**: all your other vignettes, including any in
+- **Articles**: all your other vignettes, including any in subfolders such as
   `vignettes/articles/`.
 - **Changelog**: your `NEWS.md`. Issue numbers like `#123` and GitHub usernames
   like `@user` become links.
-
-## Organize the reference index
-
-By default the reference index lists every function in one section. To group
-them, edit the `reference:` field in `_quartodown.yml`:
-
-```yaml
-reference:
-  - title: Setting up
-    contents:
-      - use_quartodown
-  - title: Building
-    contents:
-      - starts_with("build_")
-```
-
-See `?build_site` for the other fields.
 
 ## Publish on GitHub Pages
 
@@ -81,6 +65,10 @@ repository's settings on GitHub and choose to deploy from that branch.
 
 ## Learn more
 
+[Customizing your
+site](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html)
+covers everything `_quartodown.yml` can change.
+
 [Quarto
 features](https://bjarkehautop.github.io/quartodown/vignettes/articles/showcase.html)
 shows Quarto's authoring features, such as callouts, tabsets and footnotes, on a
@@ -88,4 +76,4 @@ quartodown site.
 
 [Technical
 details](https://bjarkehautop.github.io/quartodown/vignettes/articles/technical.html)
-explains how a build works and how quartodown's theme is put together.
+explains how a build works.

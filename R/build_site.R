@@ -4,7 +4,7 @@
 #'
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
 #' package sources and `_quartodown.yml`, then renders it. It uses
-#' `README.md`, `man/`, the vignettes (including `vignettes/articles/`),
+#' `README.md`, `man/`, the vignettes (including those in subfolders),
 #' `NEWS.md`, `LICENSE`/`LICENSE.md`, and `CODE_OF_CONDUCT.md`,
 #' `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`). See
 #' `vignette("quartodown")` for what the site contains.
@@ -13,62 +13,14 @@
 #' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]
 #' creates one. It can contain:
 #'
-#' * `reference`: groups the function reference index into sections. It is a
-#'   list of sections, each with any of:
-#'
-#'   * `title`: the section heading;
-#'   * `subtitle`: a heading one level below it;
-#'   * `desc`: Markdown text shown under the heading(s);
-#'   * `contents`: the topics listed, in order.
-#'
-#'   For example:
-#'
-#'   ```yaml
-#'   reference:
-#'     - title: Read and write
-#'       desc: Functions for getting data in and out.
-#'       contents:
-#'         - read_data
-#'         - starts_with("write_")
-#'     - title: Helpers
-#'       contents:
-#'         - has_concept("helpers")
-#'         - -internal_helper
-#'   ```
-#'
-#'   Each `contents` entry is a topic (an `\alias` or Rd file name) or a
-#'   selector: `starts_with()`, `ends_with()`, `contains()` and `matches()`
-#'   (a regular expression) match aliases, and `has_concept()` and
-#'   `has_keyword()` match `\concept`s and `\keyword`s. `c()` combines
-#'   selectors, and a leading `-` removes topics from those selected by the
-#'   entries above it (or, as the first entry, from all topics). Topics not
-#'   listed in any section get a warning and are left off the index.
-#'
-#'   Without `reference`, every topic is listed in one section. Internal
-#'   topics (`\keyword{internal}`) are left out unless named or selected with
-#'   `internal = TRUE`, e.g. `starts_with("dev_", internal = TRUE)`; then they
-#'   get a page too. The format is the same as pkgdown's `reference:` field,
-#'   so an existing one can be copied over.
-#' * `articles`: the order of the "Articles" navbar menu, as vignette paths
-#'   relative to `vignettes/` without extension (e.g. `articles/details`).
-#'   Without it, every vignette other than the "Get started" one is listed,
-#'   top-level vignettes first, then those in `vignettes/articles/`.
+#' * `reference`: the sections of the function reference index and the topics
+#'   each lists, by name or with selectors such as `starts_with()`. The format
+#'   is the same as pkgdown's.
+#' * `navbar`: the items on the navbar's `left` and `right`: keywords such as
+#'   `reference` and `articles`, vignettes, and Quarto navbar items and menus.
 #' * `quarto`: settings merged over the generated Quarto configuration.
-#'   Settings are merged key by key: a list of entries (e.g. the navbar's
-#'   `left:` or `right:` items) is added to, any other value is replaced, and
-#'   `~` removes a setting. For example, to add a navbar link:
 #'
-#'   ```yaml
-#'   quarto:
-#'     website:
-#'       navbar:
-#'         right:
-#'           - text: Blog
-#'             href: https://example.com
-#'   ```
-#'
-#' The "Get started" link points to the vignette named after the package, or
-#' to the only top-level vignette if there is just one.
+#' See `vignette("customizing", package = "quartodown")` for the details.
 #'
 #' @param path Path to the package root.
 #' @param tooltips Logical. Link references to the package's own functions
@@ -169,15 +121,11 @@ copy_theme_files <- function(path) {
 quarto_config <- function(path, config = list(), freeze = FALSE) {
   pkg_name <- desc::desc_get_field("Package", file = path)
   version <- desc::desc_get_field("Version", default = "", file = path)
-  gh_url <- pkg_github_url(path)
 
-  navbar <- list(search = TRUE, left = navbar_left(path, config))
-  if (!is.na(gh_url)) {
-    navbar$right <- list(list(
-      icon = "github",
-      href = gh_url,
-      `aria-label` = "GitHub"
-    ))
+  navbar <- list(search = TRUE)
+  items <- navbar_items(path, config)
+  for (side in names(items)) {
+    if (length(items[[side]]) > 0) navbar[[side]] <- items[[side]]
   }
 
   settings <- list(
@@ -249,40 +197,6 @@ write_quarto_config <- function(path, config = list(), freeze = FALSE) {
     file.path(project_dir(path), "_quarto.yml"),
     handlers = list(logical = yaml::verbatim_logical)
   )
-}
-
-navbar_left <- function(path, config = list()) {
-  vignettes <- find_vignettes(path)
-  getting_started <- find_getting_started_vignette(path, vignettes)
-  articles <- select_articles(
-    setdiff(vignettes, getting_started),
-    config$articles
-  )
-
-  left <- list()
-  if (!is.null(getting_started)) {
-    left <- c(
-      left,
-      list(list(
-        text = "Get started",
-        file = file.path("vignettes", getting_started)
-      ))
-    )
-  }
-  left <- c(left, list(list(text = "Reference", file = "reference/index.qmd")))
-  if (length(articles) > 0) {
-    menu <- lapply(articles, function(a) {
-      list(
-        text = vignette_title(file.path(path, "vignettes", a)),
-        file = file.path("vignettes", a)
-      )
-    })
-    left <- c(left, list(list(text = "Articles", menu = menu)))
-  }
-  if (file.exists(file.path(path, "NEWS.md"))) {
-    left <- c(left, list(list(text = "Changelog", file = "NEWS.md")))
-  }
-  left
 }
 
 # ---- home page ----------------------------------------------------------------

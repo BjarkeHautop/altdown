@@ -13,10 +13,13 @@ test_that("vignette_title() reads the YAML title, falling back to the filename",
   expect_identical(vignette_title(no_frontmatter), "plain")
 })
 
-test_that("find_vignettes() lists top-level vignettes, then vignettes/articles/", {
+test_that("find_vignettes() lists top-level vignettes, then subfolders", {
   dir <- new_pkg(articles = c("b-article", "a-article"))
   write_vignette(dir, "z.qmd")
   write_vignette(dir, "examplepkg.Rmd")
+  write_vignette(dir, "_child.Rmd")
+  dir.create(file.path(dir, "vignettes", "guide"))
+  write_vignette(dir, "guide/intro.qmd")
 
   expect_identical(
     find_vignettes(dir),
@@ -24,7 +27,8 @@ test_that("find_vignettes() lists top-level vignettes, then vignettes/articles/"
       "examplepkg.Rmd",
       "z.qmd",
       "articles/a-article.qmd",
-      "articles/b-article.qmd"
+      "articles/b-article.qmd",
+      "guide/intro.qmd"
     )
   )
 
@@ -56,29 +60,15 @@ test_that("find_getting_started_vignette() is NULL when ambiguous or missing", {
   expect_null(find_getting_started_vignette(new_pkg(articles = "technical")))
 })
 
-test_that("select_articles() keeps the default order, or follows `articles:`", {
-  vignettes <- c("other.qmd", "articles/a.qmd", "articles/b.qmd")
-  expect_identical(select_articles(vignettes), vignettes)
-  expect_identical(
-    select_articles(vignettes, list("articles/b", "other", "articles/a")),
-    c("articles/b.qmd", "other.qmd", "articles/a.qmd")
-  )
-  expect_warning(
-    expect_identical(select_articles(vignettes, list("other")), "other.qmd"),
-    "articles/a"
-  )
-  expect_error(select_articles(vignettes, list("nope")), "nope")
-})
-
-test_that("navbar_left() links Get started, Reference, Articles and Changelog", {
+test_that("navbar_items() links Get started, Reference, Articles and Changelog", {
   dir <- new_pkg(articles = "technical")
   write_vignette(dir, "examplepkg.qmd", title = "Get started with examplepkg")
   write_vignette(dir, "usage.qmd", title = "Using examplepkg")
   writeLines("# examplepkg 1.0.0", file.path(dir, "NEWS.md"))
 
-  left <- navbar_left(dir)
+  left <- navbar_items(dir)$left
   expect_identical(
-    vapply(left, function(x) x$text, character(1)),
+    nav_texts(left),
     c("Get started", "Reference", "Articles", "Changelog")
   )
   expect_identical(
@@ -94,15 +84,103 @@ test_that("navbar_left() links Get started, Reference, Articles and Changelog", 
   expect_identical(left[[3]]$menu[[1]]$text, "Using examplepkg")
 })
 
-test_that("navbar_left() leaves out Articles and Changelog when there are none", {
+test_that("navbar_items() leaves out Articles and Changelog when there are none", {
   dir <- new_pkg()
   write_vignette(dir, "examplepkg.qmd")
 
-  left <- navbar_left(dir)
-  expect_identical(
-    vapply(left, function(x) x$text, character(1)),
-    c("Get started", "Reference")
+  items <- navbar_items(dir)
+  expect_identical(nav_texts(items$left), c("Get started", "Reference"))
+  expect_length(items$right, 0)
+})
+
+test_that("`navbar:` lays out built-in and custom items", {
+  dir <- new_pkg(articles = "technical")
+  write_vignette(dir, "examplepkg.qmd")
+  writeLines("# examplepkg 1.0.0", file.path(dir, "NEWS.md"))
+  for (folder in c("get-started", "guide")) {
+    dir.create(file.path(dir, "vignettes", folder))
+  }
+  write_vignette(dir, "get-started/install.qmd", title = "Installation")
+  write_vignette(dir, "get-started/basics.qmd", title = "Basics")
+  write_vignette(dir, "guide/b.qmd")
+  write_vignette(dir, "guide/a.qmd")
+
+  config <- yaml::yaml.load(
+    "
+navbar:
+  left:
+    - reference
+    - news
+    - text: Get started
+      menu: [get-started/install, get-started/basics]
+    - text: User guide
+      menu:
+        - guide/
+        - text: Website
+          href: https://example.com
+    - articles
+  right:
+    - text: Blog
+      href: https://example.com/blog
+"
   )
+  items <- navbar_items(dir, config)
+
+  expect_identical(
+    nav_texts(items$left),
+    c("Reference", "Changelog", "Get started", "User guide", "Articles")
+  )
+  expect_identical(
+    nav_files(items$left),
+    c(
+      "reference/index.qmd",
+      "NEWS.md",
+      "vignettes/get-started/install.qmd",
+      "vignettes/get-started/basics.qmd",
+      "vignettes/guide/a.qmd",
+      "vignettes/guide/b.qmd",
+      "vignettes/examplepkg.qmd",
+      "vignettes/articles/technical.qmd"
+    )
+  )
+  expect_identical(
+    items$left[[3]]$menu[[1]],
+    list(text = "Installation", file = "vignettes/get-started/install.qmd")
+  )
+  expect_identical(
+    items$left[[4]]$menu[[3]],
+    list(text = "Website", href = "https://example.com")
+  )
+  expect_identical(items$right, config$navbar$right)
+})
+
+test_that("`navbar:` links a vignette given as a string", {
+  dir <- new_pkg(articles = c("a", "b"))
+  left <- navbar_items(dir, list(navbar = list(left = c("articles/b", "articles"))))$left
+  expect_identical(
+    nav_files(left),
+    c("vignettes/articles/b.qmd", "vignettes/articles/a.qmd")
+  )
+})
+
+test_that("`navbar:` warns about vignettes it leaves out, and rejects unknowns", {
+  dir <- new_pkg(articles = c("a", "b"))
+  extra <- list(text = "Extra", menu = "articles/a")
+  config <- list(navbar = list(left = list("reference", extra)))
+  expect_warning(navbar_items(dir, config), "articles/b")
+
+  config$navbar$left <- list("nope")
+  expect_error(navbar_items(dir, config), "nope")
+
+  extra$menu <- "articles/c"
+  config$navbar$left <- list(extra)
+  expect_error(navbar_items(dir, config), "articles/c")
+
+  extra$menu <- "guide/"
+  config$navbar$left <- list(extra)
+  expect_error(navbar_items(dir, config), "guide/")
+
+  expect_error(navbar_items(dir, list(navbar = list(top = "news"))), "top")
 })
 
 test_that("write_quarto_config() writes a complete _quarto/_quarto.yml", {
@@ -290,8 +368,8 @@ test_that("read_config() treats a missing or empty _quartodown.yml as no setting
   file.create(file.path(dir, "_quartodown.yml"))
   expect_identical(read_config(dir), list())
 
-  writeLines("articles: [a]", file.path(dir, "_quartodown.yml"))
-  expect_identical(read_config(dir), list(articles = "a"))
+  writeLines("navbar: {left: [news]}", file.path(dir, "_quartodown.yml"))
+  expect_identical(read_config(dir), list(navbar = list(left = "news")))
 })
 
 test_that("copy_theme_files() copies the SCSS and scripts into _quarto/", {

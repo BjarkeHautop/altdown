@@ -11,19 +11,20 @@ pages, and every Quarto feature works.
 `quartodown::build_site()` runs in three stages:
 
 1. **Before rendering**, it installs the package into a temporary library and
-   writes a Quarto project into `_quarto/`. With `build_site(devel = TRUE)`,
-   each page's R process loads it from source with `pkgload::load_all()`
-   instead.[^devel]
+   writes a Quarto project into `_quarto/`.
 2. **During rendering**, Quarto renders `_quarto/` into `docs/`, running the
-   examples and vignette code against that package.
+   examples and vignettes against that package.
 3. **After rendering**, it links code to its documentation and adds hover
    tooltips.
 
-[^devel]: `devel = TRUE` may not work if your examples or vignettes start other
-    R processes, for example with callr or parallel.
+`build_site(devel = TRUE)` skips the install and loads the package from source
+with `pkgload::load_all()` instead. It is faster, but code that starts other R
+processes (for example with callr or parallel) won't find the package, and
+build-stage `\Sexpr{}` macros in the man pages don't run.
 
-The only file you edit is `_quartodown.yml`. `_quarto/` is rewritten on every
-build, and gitignored by `quartodown::use_quartodown()`:
+`_quarto/` is rewritten on every build, and gitignored by
+`quartodown::use_quartodown()`. To change the site, edit `_quartodown.yml`
+instead (see [Customizing your site](../customizing.qmd)).
 
 ```text
 _quarto/
@@ -36,116 +37,34 @@ _quarto/
 ├── vignettes/                    # the vignettes, as they are
 ├── man/figures/                  # images for the README and man pages
 ├── NEWS.md                       # changelog, with issues and users linked
-├── quartodown.scss               # theme on top of Quarto's HTML
-├── quartodown-header.html        # dark-mode default
-└── quartodown-after-body.html    # navbar alignment
+└── quartodown.scss               # theme on top of Quarto's HTML
 ```
-
-Reference pages are served at `reference/<topic>.html`, and `docs/pkgdown.yml`
-lets [downlit](https://downlit.r-lib.org/) on other sites link to them.
-
-## Before rendering
-
-### The home page
-
-`index.md` holds the README next to a sidebar with links, the license, the
-citation, the developers and the README's badges.
-
-A README `<picture>` with light and dark versions shows the one matching the
-site's theme.
-
-### The reference index
-
-To group and order the function index, use the `reference:` field in
-`_quartodown.yml`:
-
-```yaml
-reference:
-  - title: Building the site       # <1>
-    desc: >                        # <2>
-      Set up a package, then build its site.
-    contents:
-      - use_quartodown             # <3>
-      - starts_with("build_")      # <4>
-```
-
-1. Each entry becomes a section of the index, with this heading.
-2. An optional description, shown under the heading.
-3. A topic, by any of its `\alias{}` names.
-4. A selector: `starts_with()`, `ends_with()`, `contains()`, `matches()`,
-   `has_concept()`, `has_keyword()`, `-` to exclude and `c()` to combine.
-
-`build_site()` warns about any topic the index leaves out, except
-`\keyword{internal}` ones. An internal topic is listed, and gets a page, only
-when named, as with roxygen's `reexports`, or selected with `internal = TRUE`,
-as in `starts_with("dev_", internal = TRUE)`.
-
-### The navbar and footer
-
-The navbar links the "Get started" vignette, the reference index, the other
-vignettes under "Articles" and the changelog. The footer has a "Developed by
-..." line, built from `Authors@R`.
-
-### Code output
-
-R output is shown in the same block as the code, prefixed with `#>`, and left
-out when copying the block. To show a chunk's output in a block of its own, set
-`#| collapse: false` on it.
-
-::: {.callout-tip}
-## Changing the Quarto configuration
-
-A `quarto:` field in `_quartodown.yml` is merged over the generated
-configuration. Lists, like the navbar's items, are appended to; any other
-setting is replaced, and `~` removes it. For example, to add a navbar link and
-fold code blocks:
-
-```yaml
-quarto:
-  website:
-    navbar:
-      right:
-        - text: Blog
-          href: https://example.com
-  format:
-    html:
-      code-fold: true
-```
-:::
 
 ## The man pages
 
-Each `man/*.Rd` file, except `\keyword{internal}` ones the [reference
-index](#the-reference-index) doesn't list, becomes a reference page, rendered
-with the package's Rd macros (such as Rdpack's `\insertRef{}`). Build-stage
-`\Sexpr{}` macros run with the package installed, as in `R CMD build`, though
-not with `devel = TRUE`. Examples run, with their output in the same block.
+Each `man/*.Rd` file becomes a reference page, served at
+`reference/<topic>.html`. It is rendered with the package's Rd macros (such as
+Rdpack's `\insertRef{}`), and build-stage `\Sexpr{}` macros run with the
+package installed, as in `R CMD build`. Examples run, with their output in the
+same block as the code, prefixed with `#>`. To give a chunk's output a block of
+its own, in a vignette too, set `#| collapse: false` on it.
 
 If `DESCRIPTION`'s `URL` includes a GitHub repository, each reference page and
 vignette links to its source file under the title.
 
-## After rendering
+## Code links and tooltips
 
 [downlit](https://downlit.r-lib.org/) links function calls in R code blocks, and
-inline code like `mean()`, to their documentation. In blocks with [code
-annotations](showcase.html#code-annotations), only function calls and `%op%`
-operators such as `%in%` are linked.
+inline code like `mean()`, to their documentation. `docs/pkgdown.yml` lets
+downlit on other sites link to your reference pages in turn.
 
 References to the package's own functions also get a hover tooltip with their
-usage and the first sentence of their description. Try it: hover over
-`build_site()` or `use_quartodown()`. `build_site()` warns when a first sentence
-is longer than 200 characters, since the tooltip cuts it off. To build without
-tooltips, use `build_site(tooltips = FALSE)`.
+usage and the first sentence of their description. `build_site()` warns when a
+first sentence is longer than 200 characters, since the tooltip cuts it off. To
+build without tooltips, use `build_site(tooltips = FALSE)`.
 
 ## The theme
 
 The site uses Quarto's `default` theme in light mode and `darkly` in dark mode,
-with `quartodown.scss` on top of each:
-
-```yaml
-theme:
-  light: [default, quartodown.scss]
-  dark: [darkly, quartodown.scss]
-```
-
-The mode defaults to the browser's preference.
+with `quartodown.scss` on top of each. The mode follows the browser's
+preference.

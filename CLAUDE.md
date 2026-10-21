@@ -99,10 +99,27 @@ quartodown::preview_site()
 
 ### Navbar / articles
 
-[R/articles.R](R/articles.R): "Get started" is the vignette named after the
-package, or the only top-level vignette. Remaining vignettes (top-level, then
-`vignettes/articles/`) go under "Articles", ordered by `_quartodown.yml`'s
-`articles:` if given.
+[R/articles.R](R/articles.R) finds vignettes: top-level, then every subfolder
+(skipping `_`/`.`-prefixed names, as Quarto does). [R/navbar.R](R/navbar.R)
+builds the navbar from the `left:` and `right:` lists under `_quartodown.yml`'s
+`navbar:`. Each entry is one of:
+
+- A keyword that quartodown expands into a generated item, dropped if the
+  package has nothing for it:
+  - `intro`: "Get started", linking the vignette named after the package, or
+    the only top-level vignette.
+  - `reference`: the reference index.
+  - `articles`: an "Articles" menu of every vignette no other entry links.
+  - `news`: "Changelog", linking `NEWS.md`.
+  - `github`: the GitHub icon, linking the repo from `DESCRIPTION`'s `URL`.
+- Any other string: a vignette path relative to `vignettes/`, without
+  extension, linked with its title.
+- A Quarto navbar item (`text:` plus `href:`/`menu:`), passed through. Strings
+  in its `menu:` are vignette paths too, and one ending in `/` expands to
+  every vignette in that folder.
+
+The default is `left: [intro, reference, articles, news]`,
+`right: [github]`.
 
 ## Repo layout notes
 
@@ -111,9 +128,11 @@ package, or the only top-level vignette. Remaining vignettes (top-level, then
 - Tests create throwaway packages in temp dirs (see `new_pkg()` helper in
   [tests/testthat/helper-pkg.R](tests/testthat/helper-pkg.R)) and test the
   generation functions directly rather than running a full Quarto render.
-- [vignettes/articles/technical.qmd](vignettes/articles/technical.qmd) documents
-  the build internals in more depth; keep it in sync when changing build
-  behavior.
-- Roxygen with markdown; `@section Configuration:` in `build_site()` is the
-  user-facing reference for `quartodown.yml` — update it when adding config
-  keys.
+- [vignettes/articles/technical.qmd](vignettes/articles/technical.qmd) is a
+  user-facing overview of the build (stages, `_quarto/` layout, man pages,
+  code links, theme); configuration belongs in `customizing.qmd`. Keep it in
+  sync when changing build behavior.
+- Roxygen with markdown. [vignettes/customizing.qmd](vignettes/customizing.qmd)
+  is the user-facing reference for `_quartodown.yml`; `@section
+  Configuration:` in `build_site()` summarizes each field in a line. Update
+  both when adding config keys.

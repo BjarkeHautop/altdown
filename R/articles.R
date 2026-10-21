@@ -1,20 +1,22 @@
 # ---- vignettes in the navbar --------------------------------------------------
 #
 # Vignettes are identified by their path relative to vignettes/, e.g.
-# "getting-started.qmd" or "articles/technical.qmd". Both top-level
-# vignettes and those in vignettes/articles/ are rendered.
+# "getting-started.qmd" or "articles/technical.qmd". Top-level vignettes and
+# those in subfolders (such as vignettes/articles/) are all rendered.
 
 vignette_pattern <- "\\.(qmd|[Rr]md)$"
 
-# Top-level vignettes first, then vignettes/articles/, each sorted.
+# Top-level vignettes first, then those in subfolders, each sorted. Like
+# Quarto, skips files and folders whose name starts with `_` or `.`.
 find_vignettes <- function(path) {
-  vig_dir <- file.path(path, "vignettes")
-  top <- sort(list.files(vig_dir, pattern = vignette_pattern))
-  articles <- sort(list.files(
-    file.path(vig_dir, "articles"),
-    pattern = vignette_pattern
-  ))
-  c(top, file.path("articles", articles))
+  files <- list.files(
+    file.path(path, "vignettes"),
+    pattern = vignette_pattern,
+    recursive = TRUE
+  )
+  files <- files[!grepl("(^|/)[_.]", files)]
+  top <- dirname(files) == "."
+  c(sort(files[top]), sort(files[!top]))
 }
 
 # The top-level vignette named after the package, or the only top-level
@@ -41,33 +43,6 @@ find_getting_started_vignette <- function(
     ))
   }
   NULL
-}
-
-# `order` is the `articles:` field of quartodown.yml: vignette paths relative to
-# vignettes/, without extension.
-select_articles <- function(vignettes, order = NULL) {
-  if (is.null(order)) {
-    return(vignettes)
-  }
-
-  order <- as.character(unlist(order))
-  keys <- strip_ext(vignettes)
-  unknown <- setdiff(order, keys)
-  if (length(unknown) > 0) {
-    cli::cli_abort(c(
-      "_quartodown.yml `articles:` lists {.val {unknown}}, which {?is not a vignette/are not vignettes}.",
-      "i" = "Known vignettes: {.val {keys}}."
-    ))
-  }
-
-  unlisted <- setdiff(keys, order)
-  if (length(unlisted) > 0) {
-    cli::cli_warn(
-      "{.val {unlisted}} {?is/are} not listed under `articles:` in _quartodown.yml and won't appear in the navbar."
-    )
-  }
-
-  vignettes[match(order, keys)]
 }
 
 strip_ext <- function(x) sub("\\.[^./]*$", "", x)

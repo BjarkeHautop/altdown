@@ -1,0 +1,173 @@
+---
+title: "Customizing your site"
+code-annotations: hover
+vignette: >
+  %\VignetteIndexEntry{Customizing your site}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+If you want to customize your site, you can do so by editing
+`_quartodown.yml` at the package root, which `quartodown::use_quartodown()`
+creates. It has three fields, all optional:
+
+- `reference:` groups and orders the function reference index.
+- `navbar:` lays out the navbar.
+- `quarto:` changes any other Quarto setting.
+
+## The reference index
+
+Without `reference:`, the index lists every function in one section. To group
+them, list the sections:
+
+```yaml
+reference:
+  - title: Read and write              # <1>
+    desc: Functions for getting data in and out.  # <2>
+    contents:
+      - read_data                      # <3>
+      - starts_with("write_")          # <4>
+  - title: Helpers
+    subtitle: Low-level                # <5>
+    contents:
+      - has_concept("helpers")
+      - -internal_helper               # <6>
+```
+
+1. Each entry becomes a section of the index, with this heading.
+2. Optional Markdown text, shown under the heading.
+3. A topic, by any of its `\alias{}` names or its Rd file name.
+4. A selector.
+5. An optional heading one level below `title`.
+6. A leading `-` removes a topic.
+
+The selectors are:
+
+| Selector | Selects topics |
+|---|---|
+| `starts_with("x")`, `ends_with("x")`, `contains("x")` | with an alias that starts with, ends with or contains `x` |
+| `matches("regex")` | with an alias matching a regular expression |
+| `has_concept("x")`, `has_keyword("x")` | with that `\concept{}` or `\keyword{}` |
+| `c(...)` | selected by any of the selectors given |
+| `-` before a topic or selector | removed from those the entries above select, or as the first entry, from all topics |
+
+Topics that no section lists get a warning and are left off the index. The
+exception is `\keyword{internal}` topics, which are left out, without a page,
+unless named, as with roxygen's `reexports`, or selected with
+`internal = TRUE`, as in `starts_with("dev_", internal = TRUE)`.
+
+The format is the same as pkgdown's `reference:` field, so an existing one can
+be copied over.
+
+## The navbar
+
+`navbar:` lists the items on the navbar's `left` and `right`, in order. The
+default is:
+
+```yaml
+navbar:
+  left: [intro, reference, articles, news]
+  right: [github]
+```
+
+Each of these is a keyword that quartodown turns into an item, and leaves out
+if the package has nothing for it:
+
+| Keyword | Item |
+|---|---|
+| `intro` | "Get started": the vignette named after the package, or the only top-level vignette if there's just one |
+| `reference` | "Reference": the function reference index |
+| `articles` | "Articles": a menu of every vignette no other item links, top-level ones first, then those in subfolders |
+| `news` | "Changelog": `NEWS.md` |
+| `github` | A GitHub icon linking the repository in `DESCRIPTION`'s `URL` |
+
+Any other item is a vignette, given as its path relative to `vignettes/`
+without extension and linked with its title, or a [Quarto navbar
+item](https://quarto.org/docs/websites/website-navigation.html#top-navigation).
+Inside a Quarto item's `menu:`, vignettes are given the same way, and a folder
+ending in `/` lists every vignette in it.
+
+For example, with the vignettes in a folder for each menu:
+
+```yaml
+navbar:
+  left:
+    - reference
+    - news
+    - text: Get started
+      menu:
+        - get-started/installation   # <1>
+        - get-started/first-steps
+    - text: User guide
+      menu: user-guide/              # <2>
+    - text: Developers
+      menu:
+        - dev/internals
+        - text: Contributing         # <3>
+          href: CONTRIBUTING.md
+  right:
+    - text: Blog
+      href: https://example.com/blog
+    - github
+```
+
+1. `vignettes/get-started/installation.qmd`.
+2. Every vignette in `vignettes/user-guide/`, sorted by file name.
+3. Any Quarto navbar item works in a menu too.
+
+Vignettes can live in any subfolder of `vignettes/`. Files and folders whose
+name starts with `_` or `.` are skipped, as Quarto does.
+
+Every vignette is built, even one the navbar doesn't link to. Such a vignette
+can only be reached through links from other pages, so `build_site()` warns
+about it, unless the navbar has `articles`, which lists every vignette nothing
+else links.
+
+::: {.callout-note}
+R only builds top-level vignettes into the package, so vignettes in
+subfolders are website-only.
+:::
+
+## Other Quarto settings
+
+quartodown writes a Quarto configuration into `_quarto/_quarto.yml`
+(overwritten on every build). The `quarto:` field is merged over it, key by
+key:
+
+- A list of entries, such as `website: navbar: left:`, is added to.
+- Any other value is replaced.
+- `~` removes a setting.
+
+For example, to fold code blocks, drop the table of contents and change the
+footer:
+
+```yaml
+quarto:
+  format:
+    html:
+      code-fold: true
+      toc: ~
+  website:
+    page-footer:
+      right: "Built with love."
+```
+
+See the [Quarto website
+reference](https://quarto.org/docs/reference/projects/websites.html) for the
+full list of changes you can make.
+
+`quarto:` applies to every page. To change a single vignette instead, set the
+option in its front matter, which overrides the site-wide value:
+
+```yaml
+---
+title: "A long tutorial"
+format:
+  html:
+    code-fold: true
+    toc-depth: 3
+---
+```
+
+To change a single code chunk, use a chunk option such as
+`#| code-fold: true`.

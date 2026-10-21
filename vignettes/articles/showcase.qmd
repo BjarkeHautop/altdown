@@ -5,9 +5,7 @@ code-annotations: hover
 
 quartodown renders every page with Quarto itself, so all of Quarto's authoring
 features work in your vignettes and articles. This page shows some of them as
-they look on a quartodown site. View the [source of this
-page](https://github.com/bjarkehautop/quartodown/blob/main/vignettes/articles/showcase.qmd)
-to see how each one is written.
+they look on a quartodown site.
 
 ## Callouts
 

@@ -104,13 +104,14 @@ use_quartodown <- function(path = ".") {
 
 .starter_config_yml <- function(path) {
   c(
-    "# Configuration for quartodown::build_site(). See ?quartodown::build_site for",
-    "# all fields, including `articles:` (navbar order) and `quarto:` (extra",
-    "# Quarto settings).",
+    "# Configuration for quartodown::build_site(). See",
+    "# vignette(\"customizing\", package = \"quartodown\") for all fields,",
+    "# including `navbar:` (navbar items and menus) and `quarto:` (other Quarto",
+    "# settings).",
     "",
     "# Groups the function reference index into sections, each with a `title:`",
     "# and the `contents:` it lists (topic names or selectors such as",
-    "# starts_with(\"read_\")). See ?quartodown::build_site for the details.",
+    "# starts_with(\"read_\")).",
     .starter_reference_yml(path)
   )
 }
