@@ -9,10 +9,14 @@
     return main.getBoundingClientRect().left;
   }
   // Where the body text starts depends on the page layout, so measure it.
+  // With a docked sidebar (`navbar: style: sidebar`), the title stays above
+  // the sidebar instead.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
+    if (!main || !navContainer || document.body.classList.contains("docked")) {
+      return;
+    }
     navContainer.style.paddingLeft = "";
     var diff = contentLeft(main) -
       navContainer.getBoundingClientRect().left;

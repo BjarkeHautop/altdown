@@ -63,8 +63,10 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 }
 
 // Cap the full-width navbar like pkgdown's `.container`. The title is aligned
-// with the body text in quartodown-after-body.html.
-.navbar-container.container-fluid {
+// with the body text in quartodown-after-body.html. Not with a docked sidebar
+// (`navbar: style: sidebar`), where the title sits above the sidebar, at the
+// page's left edge.
+body:not(.docked) .navbar-container.container-fluid {
   max-width: 1500px;
   margin-left: auto;
   margin-right: auto;
@@ -86,51 +88,6 @@ $quartodown-navbar-bg: mix(mix($body-bg, $primary, 95%), $body-color, 95%);
 
 .navbar-nav .nav-link.active {
   border-bottom: 3px solid var(--bs-primary);
-}
-
-// Quarto puts search after the whole collapsible nav, GitHub icon included.
-// Unwrap the collapse div so its children can be ordered like pkgdown's:
-// title, links, search, GitHub, theme toggle. Desktop only, so the mobile
-// hamburger still works.
-@media (min-width: 992px) {
-  .navbar-expand-lg .navbar-collapse {
-    display: contents !important;
-  }
-
-  .navbar-brand-container {
-    order: 0 !important;
-  }
-
-  .navbar-nav.me-auto {
-    order: 1 !important;
-  }
-
-  #quarto-search {
-    order: 2 !important;
-  }
-
-  .navbar-nav.ms-auto {
-    order: 3 !important;
-    // One gap after the links, not a second one before GitHub.
-    margin-left: 0 !important;
-  }
-
-  .quarto-navbar-tools {
-    order: 4 !important;
-  }
-
-  // Without links on the left (`navbar: style: sidebar`), nothing takes up
-  // the free space, so the items spread out. Keep the title on the left and
-  // the search box and icons on the right. Specific enough to beat Quarto's
-  // `!important` margins on the title.
-  .navbar .navbar-container:not(:has(.navbar-nav.me-auto)) > .navbar-brand-container {
-    margin-right: auto !important;
-  }
-}
-
-// No magnifying glass in the search box, like pkgdown.
-#quarto-search.type-textbox .aa-InputWrapperPrefix {
-  display: none;
 }
 
 // Quarto gives the search box the theme's input colors, which are white in
