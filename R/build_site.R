@@ -203,6 +203,7 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
   if (!is.na(url)) {
     settings$website$`site-url` <- url
   }
+  settings$website <- c(settings$website, social_cards(path))
 
   if (isTRUE(freeze)) {
     # Reruns a page's code only when its source changed.
@@ -213,6 +214,19 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
     settings <- merge_quarto_config(settings, config$quarto)
   }
   settings
+}
+
+# The preview of a link to the site on social media and chat apps: the
+# package's title and, as a small square card, its logo. They don't show SVGs.
+social_cards <- function(path) {
+  title <- desc::desc_get_field("Title", default = NA, file = path)
+  logo <- "man/figures/logo.png"
+  c(
+    list(`open-graph` = TRUE, `twitter-card` = list(`card-style` = "summary")),
+    if (!is.na(title)) list(description = trimws(gsub("\\s+", " ", title))),
+    # From the site's root, not each page's folder.
+    if (file.exists(file.path(path, logo))) list(image = paste0("/", logo))
+  )
 }
 
 # Like utils::modifyList(), but unnamed lists (e.g. the navbar's `left:`

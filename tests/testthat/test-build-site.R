@@ -221,6 +221,21 @@ test_that("quarto_config() sets the site URL from DESCRIPTION's URL", {
   )
 })
 
+test_that("quarto_config() turns on social cards with the title and logo", {
+  dir <- new_pkg()
+  desc::desc_set(Title = "Does Useful\n    Things", file = dir)
+
+  website <- quarto_config(dir)$website
+  expect_true(website$`open-graph`)
+  expect_identical(website$`twitter-card`$`card-style`, "summary")
+  expect_identical(website$description, "Does Useful Things")
+  expect_null(website$image)
+
+  dir.create(file.path(dir, "man", "figures"), recursive = TRUE)
+  file.create(file.path(dir, "man", "figures", "logo.png"))
+  expect_identical(quarto_config(dir)$website$image, "/man/figures/logo.png")
+})
+
 test_that("quarto_config() links GitHub and merges `quarto:` overrides", {
   dir <- new_pkg()
   write(
