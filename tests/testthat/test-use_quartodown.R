@@ -18,7 +18,11 @@ test_that("use_quartodown() writes a starter quartodown.yml listing every topic"
 
   expect_message(use_quartodown(dir), "Wrote")
 
-  config <- yaml::yaml.load_file(file.path(dir, "_quartodown.yml"))
+  config <- yaml::yaml.load_file(file.path(
+    dir,
+    "_quartodown",
+    "_quartodown.yml"
+  ))
   expect_identical(config$reference[[1]]$contents, "foo")
 })
 
@@ -34,7 +38,7 @@ test_that("use_quartodown() adds the .gitignore/.Rbuildignore entries the build 
 
   rbuildignore <- readLines(file.path(dir, ".Rbuildignore"))
   expect_true(all(
-    c("^docs$", "^_quarto$", "^_quartodown\\.yml$") %in% rbuildignore
+    c("^docs$", "^_quarto$", "^_quartodown$") %in% rbuildignore
   ))
 })
 
@@ -56,7 +60,11 @@ test_that("use_quartodown() never overwrites an existing quartodown.yml", {
   writeLines("Package: examplepkg", file.path(dir, "DESCRIPTION"))
   use_quartodown(dir)
 
-  config <- yaml::yaml.load_file(file.path(dir, "_quartodown.yml"))
+  config <- yaml::yaml.load_file(file.path(
+    dir,
+    "_quartodown",
+    "_quartodown.yml"
+  ))
   expect_identical(config$reference[[1]]$contents, list())
 
   dir.create(file.path(dir, "man"))
@@ -66,6 +74,10 @@ test_that("use_quartodown() never overwrites an existing quartodown.yml", {
   )
 
   expect_message(use_quartodown(dir), "Skipping.*quartodown\\.yml")
-  config <- yaml::yaml.load_file(file.path(dir, "_quartodown.yml"))
+  config <- yaml::yaml.load_file(file.path(
+    dir,
+    "_quartodown",
+    "_quartodown.yml"
+  ))
   expect_identical(config$reference[[1]]$contents, list())
 })

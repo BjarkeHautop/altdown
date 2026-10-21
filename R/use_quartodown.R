@@ -1,7 +1,7 @@
 #' Set up a package to use quartodown
 #'
-#' Writes `_quartodown.yml`, the configuration file [build_site()] reads,
-#' at the package root. It starts with a `reference:` field listing every
+#' Writes `_quartodown/_quartodown.yml`, the configuration file
+#' [build_site()] reads. It starts with a `reference:` field listing every
 #' function currently documented in `<path>/man/*.Rd` in one "All functions"
 #' section. Also adds the `.gitignore`/`.Rbuildignore` entries the build
 #' needs (see Details) if they're not already there.
@@ -20,17 +20,18 @@
 #' # .Rbuildignore
 #' ^docs$
 #' ^_quarto$
-#' ^_quartodown\.yml$
+#' ^_quartodown$
 #' ```
 #'
 #' `_quarto/` is the Quarto project [build_site()] generates and renders
 #' into `docs/`. Its `_freeze/` directory holds the results of code run with
 #' `build_site(freeze = TRUE)`, which can be committed so later builds, e.g.
-#' on CI, reuse them.
+#' on CI, reuse them. `_quartodown/` holds the site's configuration and any
+#' files it uses, such as `extra.scss`.
 #'
 #' @param path Path to the target package root. Defaults to the current
 #'   directory.
-#' @return Invisibly, the path to `_quartodown.yml`.
+#' @return Invisibly, the path to `_quartodown/_quartodown.yml`.
 #' @export
 #'
 #' @examples
@@ -41,7 +42,7 @@
 #'   file.path(pkg, "DESCRIPTION")
 #' )
 #' use_quartodown(pkg)
-#' readLines(file.path(pkg, "_quartodown.yml"))
+#' readLines(file.path(pkg, "_quartodown", "_quartodown.yml"))
 #' unlink(pkg, recursive = TRUE)
 use_quartodown <- function(path = ".") {
   if (!file.exists(file.path(path, "DESCRIPTION"))) {
@@ -54,6 +55,7 @@ use_quartodown <- function(path = ".") {
   if (file.exists(config_dest)) {
     cli::cli_alert_info("Skipping {.path {config_dest}}: already exists.")
   } else {
+    dir.create(dirname(config_dest), showWarnings = FALSE)
     writeLines(.starter_config_yml(path), config_dest)
     cli::cli_alert_success(
       "Wrote {.path {config_dest}} (edit this to group your functions)."
@@ -68,13 +70,13 @@ use_quartodown <- function(path = ".") {
   .add_ignore_lines(
     path,
     ".Rbuildignore",
-    c("^docs$", "^_quarto$", "^_quartodown\\.yml$")
+    c("^docs$", "^_quarto$", "^_quartodown$")
   )
 
   cli::cli_text("")
   cli::cli_text("Next steps:")
   cli::cli_ol(c(
-    "Edit {.file _quartodown.yml} to group your functions the way you want.",
+    "Edit {.file {config_file}} to group your functions the way you want.",
     "Build and preview the site with {.run quartodown::build_site()}."
   ))
 

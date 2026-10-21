@@ -8,8 +8,9 @@ vignette: >
 ---
 
 If you want to customize your site, you can do so by editing
-`_quartodown.yml` at the package root, which `quartodown::use_quartodown()`
-creates. It has five fields, all optional:
+`_quartodown/_quartodown.yml`, which `quartodown::use_quartodown()` creates. The
+`_quartodown/` folder at the package root also holds the files that [style the
+site](#styling-and-layout). `_quartodown.yml` has five fields, all optional:
 
 - `url:` is the site's address, if it isn't the first non-GitHub `URL` in
   `DESCRIPTION`.
@@ -46,18 +47,18 @@ reference:
 
 The selectors are:
 
-| Selector | Selects topics |
-|---|---|
-| `starts_with("x")`, `ends_with("x")`, `contains("x")` | with an alias that starts with, ends with or contains `x` |
-| `matches("regex")` | with an alias matching a regular expression |
-| `has_concept("x")`, `has_keyword("x")` | with that `\concept{}` or `\keyword{}` |
-| `c(...)` | selected by any of the selectors given |
-| `-` before a topic or selector | removed from those the entries above select, or as the first entry, from all topics |
+  | Selector                                              | Selects topics                                                                      |
+  | ---                                                   | ---                                                                                 |
+  | `starts_with("x")`, `ends_with("x")`, `contains("x")` | with an alias that starts with, ends with or contains `x`                           |
+  | `matches("regex")`                                    | with an alias matching a regular expression                                         |
+  | `has_concept("x")`, `has_keyword("x")`                | with that `\concept{}` or `\keyword{}`                                              |
+  | `c(...)`                                              | selected by any of the selectors given                                              |
+  | `-` before a topic or selector                        | removed from those the entries above select, or as the first entry, from all topics |
 
 Topics that no section lists get a warning and are left off the index. The
 exception is `\keyword{internal}` topics, which are left out, without a page,
-unless named, as with roxygen's `reexports`, or selected with
-`internal = TRUE`, as in `starts_with("dev_", internal = TRUE)`.
+unless named, as with roxygen's `reexports`, or selected with `internal = TRUE`,
+as in `starts_with("dev_", internal = TRUE)`.
 
 The format is the same as pkgdown's `reference:` field, so an existing one can
 be copied over.
@@ -73,19 +74,19 @@ navbar:
   right: [github]
 ```
 
-Each of these is a keyword that quartodown turns into an item, and leaves out
-if the package has nothing for it:
+Each of these is a keyword that quartodown turns into an item, and leaves out if
+the package has nothing for it:
 
-| Keyword | Item |
-|---|---|
-| `intro` | "Get started": the vignette named after the package, or the only top-level vignette if there's just one |
-| `reference` | "Reference": the function reference index |
-| `articles` | "Articles": a menu of every vignette no other item links, top-level ones first, then those in subfolders |
-| `news` | "Changelog": `NEWS.md` |
-| `github` | A GitHub icon linking the repository in `DESCRIPTION`'s `URL` |
+  | Keyword     | Item                                                                                                     |
+  | ---         | ---                                                                                                      |
+  | `intro`     | "Get started": the vignette named after the package, or the only top-level vignette if there's just one  |
+  | `reference` | "Reference": the function reference index                                                                |
+  | `articles`  | "Articles": a menu of every vignette no other item links, top-level ones first, then those in subfolders |
+  | `news`      | "Changelog": `NEWS.md`                                                                                   |
+  | `github`    | A GitHub icon linking the repository in `DESCRIPTION`'s `URL`                                            |
 
-Any other item is a vignette, given as its path relative to `vignettes/`
-without extension and linked with its title, or a [Quarto navbar
+Any other item is a vignette, given as its path relative to `vignettes/` without
+extension and linked with its title, or a [Quarto navbar
 item](https://quarto.org/docs/websites/website-navigation.html#top-navigation).
 Inside a Quarto item's `menu:`, vignettes are given the same way, and a folder
 ending in `/` lists every vignette in it.
@@ -127,15 +128,15 @@ about it, unless the navbar has `articles`, which lists every vignette nothing
 else links.
 
 ::: {.callout-note}
-R only builds top-level vignettes into the package, so vignettes in
-subfolders are website-only.
+R only builds top-level vignettes into the package, so vignettes in subfolders
+are website-only.
 :::
 
 ## The home page
 
-The home page shows `README.md`, or, if there is none, the package's
-description from `DESCRIPTION`. To give the site a different home page than the README, use `home: file:`
-at another file, relative to the package root:
+The home page shows `README.md`, or, if there is none, the package's description
+from `DESCRIPTION`. To give the site a different home page than the README, use
+`home: file:` at another file, relative to the package root:
 
 ```yaml
 home:
@@ -143,9 +144,9 @@ home:
 ```
 
 It can be Markdown (`.md`) or a Quarto document (`.qmd`), whose code runs when
-the site is built, as in a vignette. Write links and image paths in it
-relative to the package root, as in the README. Add the file to
-`.Rbuildignore` so `R CMD check` doesn't complain.
+the site is built, as in a vignette. Write links and image paths in it relative
+to the package root, as in the README. Add the file to `.Rbuildignore` so
+`R CMD check` doesn't complain.
 
 Next to the page, a sidebar shows the package's links, license, citation,
 authors and badges. For full control over the page, turn it off with
@@ -157,13 +158,13 @@ home:
   sidebar: false
 ```
 
-The page then shows the file as written. Like any other page, it then gets a table of contents, which `toc: false` in its front matter can turn off.
+The page then shows the file as written. Like any other page, it then gets a
+table of contents, which `toc: false` in its front matter can turn off.
 
 ## Other Quarto settings
 
-quartodown writes a Quarto configuration into `_quarto/_quarto.yml`
-(overwritten on every build). The `quarto:` field is merged over it, key by
-key:
+quartodown writes a Quarto configuration into `_quarto/_quarto.yml` (overwritten
+on every build). The `quarto:` field is merged over it, key by key:
 
 - A list of entries, such as `website: navbar: left:`, is added to.
 - Any other value is replaced.
@@ -200,19 +201,91 @@ format:
 ---
 ```
 
-To change a single code chunk, use a chunk option such as
-`#| code-fold: true`.
+To change a single code chunk, use a chunk option such as `#| code-fold: true`.
+
+## Styling and layout
+
+To restyle every page, add `_quartodown/extra.scss`. It is compiled on top of
+quartodown's theme, once for the light theme and once for the dark one, and has
+two parts: Bootstrap and Quarto
+[variables](https://quarto.org/docs/output-formats/html-themes.html#sass-variables)
+under `scss:defaults`, and CSS rules under `scss:rules`:
+
+```scss
+/*-- scss:defaults --*/
+$primary: #2c7a7b;                       // <1>
+$font-family-sans-serif: "Inter", sans-serif;
+
+/*-- scss:rules --*/
+.navbar {
+  border-bottom: 1px solid $border-color; // <2>
+}
+```
+
+1. Links, the active navbar item and buttons.
+2. Variables take the value of the theme being compiled, so this suits both.
+
+Plain CSS can go in `_quartodown/extra.css` instead, which is added to every
+page as it is.
+
+The page's widths and spacing are Quarto settings, under `quarto:`. For example,
+a wider text column and table of contents:
+
+```yaml
+quarto:
+  format:
+    html:
+      grid:
+        body-width: 900px
+        margin-width: 300px
+```
+
+See Quarto's [page
+layout](https://quarto.org/docs/output-formats/page-layout.html) guide for
+`grid:` and `page-layout:`.
+
+The navbar's items start where the page's text does, which a script on each page
+measures. To start them at the edge of the page instead, override it with:
+
+```scss
+/*-- scss:rules --*/
+.navbar-container {
+  padding-left: 1em !important;
+}
+```
+
+Everything in `_quartodown/` is copied into the Quarto project, so other files
+it holds can be named from `quarto:` by the same path, such as Quarto [template
+partials](https://quarto.org/docs/journals/templates.html#template-partials):
+
+```yaml
+quarto:
+  format:
+    html:
+      template-partials:
+        - _quartodown/title-block.html
+```
+
+Setting `include-in-header:` or `include-after-body:` replaces quartodown's own
+files, which, among other things, pick dark mode for visitors who prefer it and
+line up the navbar. To add to them, list them too:
+
+```yaml
+quarto:
+  format:
+    html:
+      include-in-header:
+        - quartodown-header.html
+        - _quartodown/analytics.html
+```
 
 ## Coming from pkgdown
 
-Moving a site
-over is very easy, and mostly means moving `_pkgdown.yml`'s settings into `_quartodown.yml`:
+Moving a site over is very easy, and mostly means moving `_pkgdown.yml`'s
+settings into `_quartodown/_quartodown.yml`:
 
 - `reference:` has the same format and selectors, so it can be copied as is.
 - `navbar:` lists items differently; see [The navbar](#the-navbar).
-- `template:` (Bootstrap version, bslib variables, theme) has no equivalent:
-  style the site with Quarto's `theme:` under `quarto: format: html:`, as in
-  [Other Quarto settings](#other-quarto-settings).
 - `articles:` has no equivalent: group vignettes with navbar menus instead.
 - A separate home page (an `index.md` used instead of the README) isn't picked
   up automatically: set it with [`home: file:`](#the-home-page).

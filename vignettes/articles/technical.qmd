@@ -26,13 +26,13 @@ with `pkgload::load_all()` instead. It is faster, but code that starts other R
 processes (for example with callr or parallel) won't find the package, and
 build-stage `\Sexpr{}` macros in the man pages don't run.
 
-Throughout the build, the environment variable `IN_QUARTODOWN` is `"true"`,
-so the package's code can tell it is running for the site, and
-`IN_QUARTODOWN_PKG` is the package's name.
+Throughout the build, the environment variable `IN_QUARTODOWN` is `"true"`, so
+the package's code can tell it is running for the site, and `IN_QUARTODOWN_PKG`
+is the package's name.
 
 `_quarto/` is rewritten on every build, and gitignored by
-`quartodown::use_quartodown()`. To change the site, edit `_quartodown.yml`
-instead (see [Customizing your site](../customizing.qmd)).
+`quartodown::use_quartodown()`. To change the site, edit `_quartodown/` instead
+(see [Customizing your site](../customizing.qmd)).
 
 ```text
 _quarto/
@@ -45,6 +45,7 @@ _quarto/
 ├── vignettes/                    # the vignettes, as they are
 ├── man/figures/                  # images for the README and man pages
 ├── NEWS.md                       # changelog, with issues and users linked
+├── _quartodown/                  # the package's _quartodown/, as it is
 └── quartodown.scss               # theme on top of Quarto's HTML
 ```
 
@@ -52,10 +53,10 @@ _quarto/
 
 Each `man/*.Rd` file becomes a reference page, served at
 `reference/<topic>.html`. It is rendered with the package's Rd macros (such as
-Rdpack's `\insertRef{}`), and build-stage `\Sexpr{}` macros run with the
-package installed, as in `R CMD build`. Examples run, with their output in the
-same block as the code, prefixed with `#>`. To give a chunk's output a block of
-its own, in a vignette too, set `#| collapse: false` on it.
+Rdpack's `\insertRef{}`), and build-stage `\Sexpr{}` macros run with the package
+installed, as in `R CMD build`. Examples run, with their output in the same
+block as the code, prefixed with `#>`. To give a chunk's output a block of its
+own, in a vignette too, set `#| collapse: false` on it.
 
 If `DESCRIPTION`'s `URL` includes a GitHub repository, each reference page and
 vignette links to its source file under the title.
@@ -66,7 +67,9 @@ vignette links to its source file under the title.
 inline code like `mean()`, to their documentation. `docs/pkgdown.yml` lets
 downlit on other sites link to your reference pages in turn.
 
-That file needs the site's address: `url:` in `_quartodown.yml`, or else the first `URL` in `DESCRIPTION` that isn't a GitHub, GitLab or Codeberg repository.
+That file needs the site's address: `url:` in `_quartodown/_quartodown.yml`, or
+else the first `URL` in `DESCRIPTION` that isn't a GitHub, GitLab or Codeberg
+repository.
 
 References to the package's own functions also get a hover tooltip with their
 usage and the first sentence of their description. `build_site()` warns when a
@@ -76,8 +79,8 @@ build without tooltips, use `build_site(tooltips = FALSE)`.
 ## The theme
 
 The site uses Quarto's `default` theme in light mode and `darkly` in dark mode,
-with `quartodown.scss` on top of each. The mode follows the browser's
-preference.
+with `quartodown.scss` on top of each, and then `_quartodown/extra.scss` if the
+package has one. The mode follows the browser's preference.
 
 Code output keeps the colors packages such as cli give it in a terminal, in
 shades that suit the light or dark theme.

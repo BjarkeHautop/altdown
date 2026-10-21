@@ -156,7 +156,10 @@ navbar:
 
 test_that("`navbar:` links a vignette given as a string", {
   dir <- new_pkg(articles = c("a", "b"))
-  left <- navbar_items(dir, list(navbar = list(left = c("articles/b", "articles"))))$left
+  left <- navbar_items(
+    dir,
+    list(navbar = list(left = c("articles/b", "articles")))
+  )$left
   expect_identical(
     nav_files(left),
     c("vignettes/articles/b.qmd", "vignettes/articles/a.qmd")
@@ -221,7 +224,10 @@ test_that("quarto_config() sets the site URL from DESCRIPTION's URL", {
   )
   # `url:` in _quartodown.yml comes first.
   expect_identical(
-    quarto_config(dir, list(url = "https://example.org/pkg/"))$website$`site-url`,
+    quarto_config(
+      dir,
+      list(url = "https://example.org/pkg/")
+    )$website$`site-url`,
     "https://example.org/pkg"
   )
 })
@@ -510,16 +516,29 @@ test_that("read_config() treats a missing or empty _quartodown.yml as no setting
   dir <- new_pkg()
   expect_identical(read_config(dir), list())
 
-  file.create(file.path(dir, "_quartodown.yml"))
+  dir.create(file.path(dir, "_quartodown"))
+  config_path <- file.path(dir, "_quartodown", "_quartodown.yml")
+  file.create(config_path)
   expect_identical(read_config(dir), list())
 
-  writeLines("navbar: {left: [news]}", file.path(dir, "_quartodown.yml"))
+  writeLines("navbar: {left: [news]}", config_path)
   expect_identical(read_config(dir), list(navbar = list(left = "news")))
+})
+
+test_that("read_config() warns about a _quartodown.yml at the package root", {
+  dir <- new_pkg()
+  writeLines("navbar: {left: [news]}", file.path(dir, "_quartodown.yml"))
+  expect_warning(
+    config <- read_config(dir),
+    "is ignored.*_quartodown/_quartodown.yml"
+  )
+  expect_identical(config, list())
 })
 
 test_that("read_config() warns about unknown fields, suggesting close ones", {
   dir <- new_pkg()
-  config_path <- file.path(dir, "_quartodown.yml")
+  dir.create(file.path(dir, "_quartodown"))
+  config_path <- file.path(dir, "_quartodown", "_quartodown.yml")
 
   writeLines("refrence: []", config_path)
   expect_warning(read_config(dir), "Did you mean.*reference")
@@ -538,6 +557,39 @@ test_that("copy_theme_files() copies the SCSS and scripts into _quarto/", {
   dir <- new_pkg()
   copy_theme_files(dir)
   expect_true(all(file.exists(file.path(dir, "_quarto", theme_files))))
+})
+
+test_that("copy_site_files() copies _quartodown/ into _quarto/, if there is one", {
+  dir <- new_pkg()
+  expect_no_error(copy_site_files(dir))
+  expect_false(dir.exists(file.path(dir, "_quarto", "_quartodown")))
+
+  dir.create(file.path(dir, "_quartodown", "partials"), recursive = TRUE)
+  file.create(file.path(dir, "_quartodown", "partials", "title-block.html"))
+  copy_site_files(dir)
+  expect_true(file.exists(
+    file.path(dir, "_quarto", "_quartodown", "partials", "title-block.html")
+  ))
+})
+
+test_that("quarto_config() adds _quartodown/extra.scss and extra.css when present", {
+  dir <- new_pkg()
+  html <- quarto_config(dir)$format$html
+  expect_identical(html$theme$light, c("default", "quartodown.scss"))
+  expect_null(html$css)
+
+  dir.create(file.path(dir, "_quartodown"))
+  file.create(file.path(dir, "_quartodown", c("extra.scss", "extra.css")))
+  html <- quarto_config(dir)$format$html
+  expect_identical(
+    html$theme$light,
+    c("default", "quartodown.scss", "_quartodown/extra.scss")
+  )
+  expect_identical(
+    html$theme$dark,
+    c("darkly", "quartodown.scss", "_quartodown/extra.scss")
+  )
+  expect_identical(html$css, "_quartodown/extra.css")
 })
 
 test_that("data_sidebar_authors() links to authors.html only when a non-default-role author exists", {

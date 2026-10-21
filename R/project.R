@@ -59,7 +59,7 @@ insert_after_front_matter <- function(lines, insert) {
   first <- which(nzchar(trimws(lines)))[1]
   end <- 0L
   if (!is.na(first) && trimws(lines[first]) == "---") {
-    close <- which(grepl("^(---|\\.\\.\\.)\\s*$", lines[-seq_len(first)]))[1]
+    close <- grep("^(---|\\.\\.\\.)\\s*$", lines[-seq_len(first)])[1]
     if (!is.na(close)) end <- first + close
   }
   append(lines, c(if (end > 0) "", insert), after = end)
@@ -71,6 +71,14 @@ copy_figures <- function(path) {
   for (dir in c("man/figures", "README_files")) {
     copy_dir(file.path(path, dir), file.path(project_dir(path), dir))
   }
+}
+
+# _quartodown/, with the files _quartodown.yml's `quarto:` settings refer to.
+copy_site_files <- function(path) {
+  copy_dir(
+    file.path(path, config_dir),
+    file.path(project_dir(path), config_dir)
+  )
 }
 
 # Markdown files rendered as a page of the same name, from the package root or
@@ -137,7 +145,9 @@ github_markdown_to_quarto <- function(lines, mermaid = FALSE) {
     line <- lines[[i]]
     i <- i + 1L
     if (!is.null(fence)) {
-      if (grepl(paste0("^\\s*", fence, "\\s*$"), line)) fence <- NULL
+      if (grepl(paste0("^\\s*", fence, "\\s*$"), line)) {
+        fence <- NULL
+      }
       out <- c(out, line)
     } else if (grepl("^\\s*(```+|~~~+)", line)) {
       fence <- sub("^\\s*(```+|~~~+).*$", "\\1", line)
@@ -210,6 +220,9 @@ render_project <- function(path, envvars, quiet = TRUE) {
     quiet = quiet,
     as_job = FALSE
   )
+  # Without it, GitHub Pages runs the site through Jekyll, which drops `_`
+  # folders such as _quartodown/.
+  file.create(file.path(docs, ".nojekyll"))
   invisible()
 }
 
@@ -375,7 +388,9 @@ serve_site <- function(path, reopen) {
 
   root <- normalizePath(docs)
   if (!identical(the$server_root, root)) {
-    if (!is.null(the$server)) the$server$stop_server()
+    if (!is.null(the$server)) {
+      the$server$stop_server()
+    }
     the$server <- servr::httw(docs)
     the$server_root <- root
   } else if (reopen) {

@@ -17,11 +17,11 @@ From the root of your package, run:
 quartodown::use_quartodown()
 ```
 
-This writes `_quartodown.yml` at the package root, and adds the files the build
-generates to `.gitignore` and `.Rbuildignore`. `_quartodown.yml` is where you can
-[customize your
-site](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html).
-If your package already has a `_pkgdown.yml`, see [Coming from
+This writes `_quartodown/_quartodown.yml`, and adds the files the build
+generates to `.gitignore` and `.Rbuildignore`. `_quartodown.yml` is where you
+can [customize your
+site](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html). If
+your package already has a `_pkgdown.yml`, see [Coming from
 pkgdown](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html#coming-from-pkgdown)
 for how its settings carry over.
 
@@ -33,9 +33,10 @@ quartodown::build_site()
 
 `build_site()` builds the site into `docs/` and, in an interactive session,
 opens it in your browser. The page reloads when you rebuild, and
-`preview_site()` opens it again if you've closed it. Examples and vignettes run against your package's current source.
-While iterating, `build_site(devel = TRUE)` is faster because it loads the
-package with `pkgload::load_all()` instead of installing it.
+`preview_site()` opens it again if you've closed it. Examples and vignettes run
+against your package's current source. While iterating,
+`build_site(devel = TRUE)` is faster because it loads the package with
+`pkgload::load_all()` instead of installing it.
 
 The following is added to your site:
 

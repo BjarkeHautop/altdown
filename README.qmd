@@ -20,8 +20,8 @@ Every page, help pages included, is a Quarto page, so you get:
 - every Quarto feature, from callouts and tabsets to code annotations and
   cross-references, on every page;
 - Quarto's themes, extensions and settings;
-- the package website layout R users know from pkgdown: a home page sidebar,
-  a grouped function reference, articles and a changelog;
+- the package website layout R users know from pkgdown: a home page sidebar, a
+  grouped function reference, articles and a changelog;
 - function links with hover tooltips.
 
 ## Installation
@@ -42,9 +42,9 @@ what you see, and want to use it for your own package, run:
 ```r
 quartodown::use_quartodown()
 ```
-This writes `_quartodown.yml`, with a `reference:` field that lists your
-package's current functions in one section; edit it to group them however you'd
-like. It also gitignores the files the build generates.
+This writes `_quartodown/_quartodown.yml`, with a `reference:` field that lists
+your package's current functions in one section; edit it to group them however
+you'd like. It also gitignores the files the build generates.
 
 Then build the site:
 

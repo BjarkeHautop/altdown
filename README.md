@@ -41,9 +41,10 @@ like what you see, and want to use it for your own package, run:
 quartodown::use_quartodown()
 ```
 
-This writes `_quartodown.yml`, with a `reference:` field that lists your
-package’s current functions in one section; edit it to group them
-however you’d like. It also gitignores the files the build generates.
+This writes `_quartodown/_quartodown.yml`, with a `reference:` field
+that lists your package’s current functions in one section; edit it to
+group them however you’d like. It also gitignores the files the build
+generates.
 
 Then build the site:
 

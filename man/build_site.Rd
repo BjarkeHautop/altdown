@@ -45,7 +45,7 @@ Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Qua
 }
 \details{
 \code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
-package sources and \verb{_quartodown.yml}, then renders it. It uses
+package sources and \verb{_quartodown/_quartodown.yml}, then renders it. It uses
 \code{README.md} (or, without one, \code{DESCRIPTION}), \verb{man/}, the vignettes (including those in subfolders),
 \code{NEWS.md}, \code{LICENSE}/\code{LICENSE.md}, and \code{CODE_OF_CONDUCT.md},
 \code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/}). See
@@ -59,8 +59,8 @@ packages can check.
 }
 \section{Configuration}{
 
-\verb{_quartodown.yml}, at the package root, is optional; \code{\link[=use_quartodown]{use_quartodown()}}
-creates one. It can contain:
+\verb{_quartodown/_quartodown.yml} is optional; \code{\link[=use_quartodown]{use_quartodown()}} creates
+one. It can contain:
 \itemize{
 \item \code{url}: the site's address, if it isn't the first \code{URL} in \code{DESCRIPTION}
 that isn't a source repository.
@@ -74,6 +74,11 @@ is the same as pkgdown's.
 sidebar.
 \item \code{quarto}: settings merged over the generated Quarto configuration.
 }
+
+\verb{_quartodown/extra.scss} and \verb{_quartodown/extra.css}, if they exist, style
+every page, on top of quartodown's theme. The whole \verb{_quartodown/} folder is
+copied into the Quarto project, so \code{quarto} settings can refer to other
+files in it by the same path.
 
 See \code{vignette("customizing", package = "quartodown")} for the details.
 }

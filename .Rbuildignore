@@ -1,5 +1,5 @@
 ^docs$
-^_quartodown\.yml$
+^_quartodown$
 ^_quarto$
 ^LICENSE\.md$
 ^README\.qmd$

@@ -3,7 +3,7 @@
 #' Builds the package website into `docs/` with [Quarto](https://quarto.org/).
 #'
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
-#' package sources and `_quartodown.yml`, then renders it. It uses
+#' package sources and `_quartodown/_quartodown.yml`, then renders it. It uses
 #' `README.md` (or, without one, `DESCRIPTION`), `man/`, the vignettes (including those in subfolders),
 #' `NEWS.md`, `LICENSE`/`LICENSE.md`, and `CODE_OF_CONDUCT.md`,
 #' `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`). See
@@ -16,8 +16,8 @@
 #' packages can check.
 #'
 #' @section Configuration:
-#' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]
-#' creates one. It can contain:
+#' `_quartodown/_quartodown.yml` is optional; [use_quartodown()] creates
+#' one. It can contain:
 #'
 #' * `url`: the site's address, if it isn't the first `URL` in `DESCRIPTION`
 #'   that isn't a source repository.
@@ -30,6 +30,11 @@
 #'   `README.md`, and `sidebar: false` to show it as written, without the
 #'   sidebar.
 #' * `quarto`: settings merged over the generated Quarto configuration.
+#'
+#' `_quartodown/extra.scss` and `_quartodown/extra.css`, if they exist, style
+#' every page, on top of quartodown's theme. The whole `_quartodown/` folder is
+#' copied into the Quarto project, so `quarto` settings can refer to other
+#' files in it by the same path.
 #'
 #' See `vignette("customizing", package = "quartodown")` for the details.
 #'
@@ -93,6 +98,7 @@ build_site <- function(
   with_libpaths(envvars, write_man_pages(path, config))
   import_markdown_files(path)
   copy_theme_files(path)
+  copy_site_files(path)
   write_home(path, config)
   build_reference_qmd(path, config)
   build_authors_qmd(path)
@@ -130,9 +136,21 @@ theme_files <- c(
   "ror.svg"
 )
 
-config_file <- "_quartodown.yml"
+# The package's site files: _quartodown.yml, plus anything _quartodown.yml
+# refers to and extra.scss/extra.css, which style every page. The folder is
+# copied into _quarto/ as is, so paths in it are the same from the package root
+# and from the project. Quarto doesn't render `_` folders, so nothing in it
+# becomes a page.
+config_dir <- "_quartodown"
+config_file <- file.path(config_dir, "_quartodown.yml")
 
 read_config <- function(path) {
+  if (file.exists(file.path(path, "_quartodown.yml"))) {
+    cli::cli_warn(c(
+      "{.file _quartodown.yml} at the package root is ignored.",
+      "i" = "Move it to {.file {config_file}}."
+    ))
+  }
   config_path <- file.path(path, config_file)
   config <- if (file.exists(config_path)) yaml::read_yaml(config_path)
   if (is.null(config)) {
@@ -228,6 +246,20 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
       )
     )
   )
+
+  # After quartodown.scss, so they override it.
+  extra_scss <- file.path(config_dir, "extra.scss")
+  if (file.exists(file.path(path, extra_scss))) {
+    theme <- settings$format$html$theme
+    settings$format$html$theme <- list(
+      light = c(theme$light, extra_scss),
+      dark = c(theme$dark, extra_scss)
+    )
+  }
+  extra_css <- file.path(config_dir, "extra.css")
+  if (file.exists(file.path(path, extra_css))) {
+    settings$format$html$css <- extra_css
+  }
 
   # For the sitemap, among others.
   url <- site_url(path, config)

@@ -8,10 +8,10 @@ code in this repository.
 quartodown is an R package that builds Bootstrap 5 package websites with Quarto.
 It generates a Quarto website project in `_quarto/` from the package sources,
 renders it into `docs/` with `quarto::quarto_render()`, then post-processes the
-HTML. Configuration is the optional `_quartodown.yml` at the package root. The
-exported API is `use_quartodown()` (one-time setup, writes `_quartodown.yml` and
-gitignore entries), `use_quartodown_action()` (writes the GitHub Pages workflow
-from [inst/templates/quartodown.yaml](inst/templates/quartodown.yaml)),
+HTML. Configuration is the optional `_quartodown/_quartodown.yml`. The exported
+API is `use_quartodown()` (one-time setup, writes `_quartodown/_quartodown.yml`
+and gitignore entries), `use_quartodown_action()` (writes the GitHub Pages
+workflow from [inst/templates/quartodown.yaml](inst/templates/quartodown.yaml)),
 `build_site()` and `preview_site()`.
 
 ## Commands
@@ -46,8 +46,8 @@ quartodown::build_site() # also previews it when interactive
    (pkgdown's layout), plus:
    - These `.md` files and the README go through `github_markdown_to_quarto()`:
      GitHub alerts (`> [!NOTE]`) → callouts; in the README only (written as
-     `.qmd`, since Quarto won't run code cells in `.md`), ```` ```mermaid ````
-     → ```` ```{mermaid} ````.
+     `.qmd`, since Quarto won't run code cells in `.md`), ```` ```mermaid ```` →
+     ```` ```{mermaid} ````.
    - `reference/<topic>.qmd` ([R/rd2qmd.R](R/rd2qmd.R)): each Rd parsed with the
      package's Rd macros ([R/rd-macros.R](R/rd-macros.R)), rendered with
      `tools::Rd2HTML()` running build/install/render `\Sexpr` stages (with the
@@ -60,18 +60,18 @@ quartodown::build_site() # also previews it when interactive
      spans, `reqn` → `$`/`$$` math, `$` escaped, language-tagged `<pre>` →
      fenced blocks. A `Source:` line under the title links the files roxygen's
      `% Please edit documentation in` header names (else the `.Rd`) to
-     `<GitHub URL>/blob/HEAD/` (`source_note()`, shared with the authors
-     page and the vignettes, which `copy_vignettes()` gives one after their
-     front matter). Examples are rebuilt from `tools::Rd2ex()` markers into run
-     / `\dontrun` (plain block) / `\dontshow` (hidden chunk) blocks, with
+     `<GitHub URL>/blob/HEAD/` (`source_note()`, shared with the authors page
+     and the vignettes, which `copy_vignettes()` gives one after their front
+     matter). Examples are rebuilt from `tools::Rd2ex()` markers into run /
+     `\dontrun` (plain block) / `\dontshow` (hidden chunk) blocks, with
      `@examplesIf` evaluated at build time.
    - `_quarto.yml`: fully resolved Quarto config (navbar, footer, theme). User
      overrides from `_quartodown.yml`'s `quarto:` key are applied by
      `merge_quarto_config()` (unnamed lists append, other values replace, `~`
      removes).
    - `index.qmd`: README (or `_quartodown.yml`'s `home: file:`, or without
-     either a page from `DESCRIPTION`) + sidebar (unless `home: sidebar:
-     false`, which leaves the page as written) ([R/sidebar.R](R/sidebar.R)); badges are
+     either a page from `DESCRIPTION`) + sidebar (unless `home: sidebar: false`,
+     which leaves the page as written) ([R/sidebar.R](R/sidebar.R)); badges are
      pulled out of the `<!-- badges: start/end -->` block, and `<picture>`
      light/dark images are rewritten to `.light-content`/`.dark-content`
      `<img>`s.
@@ -84,15 +84,18 @@ quartodown::build_site() # also previews it when interactive
    - Theme files copied verbatim from [inst/quarto/](inst/quarto/)
      (`quartodown.scss`, header/after-body HTML), with `ansi_scss_rules()`
      ([R/ansi.R](R/ansi.R)) appended to `quartodown.scss`.
+   - The package's `_quartodown/` folder, copied to `_quarto/_quartodown/` so
+     paths in `quarto:` settings resolve the same (Quarto doesn't render `_`
+     folders). `extra.scss` is appended to both themes and `extra.css` set as
+     `css:`. `docs/.nojekyll` keeps GitHub Pages from dropping it.
 2. **Rendering** — clears `docs/` (keeping `CNAME` and hidden files), makes the
    package available to the pages' R processes (installed into a temp library
    prepended via `R_LIBS`, or with `devel = TRUE` a generated `R_PROFILE_USER`
    profile that runs `pkgload::load_all()`; plus `R_CLI_NUM_COLORS=256` for
-   colored output), renders `_quarto/` into it
-   (`output-dir: ../docs/`) and writes `docs/pkgdown.yml` (`urls` + `articles`,
-   all downlit reads). The name is fixed: downlit fetches
-   `<site URL>/pkgdown.yml` to link other packages' code to this site, so it
-   must not be renamed.
+   colored output), renders `_quarto/` into it (`output-dir: ../docs/`) and
+   writes `docs/pkgdown.yml` (`urls` + `articles`, all downlit reads). The name
+   is fixed: downlit fetches `<site URL>/pkgdown.yml` to link other packages'
+   code to this site, so it must not be renamed.
 3. **After rendering** — `link_code()` ([R/code-link.R](R/code-link.R)) runs
    downlit over every `docs/**/*.html` (replacing Quarto's `code-link`, which
    would wipe code annotations). `pre.code-annotated` blocks are hidden from
@@ -100,16 +103,16 @@ quartodown::build_site() # also previews it when interactive
    with `downlit::autolink_url()` instead. xml2 drops the ESC of ANSI codes, so
    `protect_ansi()` ([R/ansi.R](R/ansi.R)) first swaps it for a private-use
    character (and strips the codes from `search.json`), and `ansi_to_html()`
-   afterwards converts them with `fansi::sgr_to_html()` (not
-   `cli::ansi_html()`, which loses colors of nested styles). Then `add_tooltips()`
+   afterwards converts them with `fansi::sgr_to_html()` (not `cli::ansi_html()`,
+   which loses colors of nested styles). Then `add_tooltips()`
    ([R/tooltips.R](R/tooltips.R)) regex-rewrites every `docs/**/*.html`, linking
    references to the package's own topics (`<span class="fu|va">` in code
    blocks, and `op`/`sc` spans holding a `%op%`, and `<code>name()</code>`
    inline) to their reference page with a hover tooltip. Pages are marked with
    `<!-- quartodown-tooltips -->` so reruns skip them. Finally, with
-   `preview = interactive()`, `serve_site()` ([R/project.R](R/project.R))
-   serves `docs/` with `servr::httw()`. The server is kept in the package-level
-   `the` environment and reused by later builds, whose open page live-reloads.
+   `preview = interactive()`, `serve_site()` ([R/project.R](R/project.R)) serves
+   `docs/` with `servr::httw()`. The server is kept in the package-level `the`
+   environment and reused by later builds, whose open page live-reloads.
 
 ### Navbar / articles
 
@@ -120,33 +123,32 @@ builds the navbar from the `left:` and `right:` lists under `_quartodown.yml`'s
 
 - A keyword that quartodown expands into a generated item, dropped if the
   package has nothing for it:
-  - `intro`: "Get started", linking the vignette named after the package, or
-    the only top-level vignette.
+  - `intro`: "Get started", linking the vignette named after the package, or the
+    only top-level vignette.
   - `reference`: the reference index.
   - `articles`: an "Articles" menu of every vignette no other entry links.
   - `news`: "Changelog", linking `NEWS.md`.
   - `github`: the GitHub icon, linking the repo from `DESCRIPTION`'s `URL`.
-- Any other string: a vignette path relative to `vignettes/`, without
-  extension, linked with its title.
+- Any other string: a vignette path relative to `vignettes/`, without extension,
+  linked with its title.
 - A Quarto navbar item (`text:` plus `href:`/`menu:`), passed through. Strings
-  in its `menu:` are vignette paths too, and one ending in `/` expands to
-  every vignette in that folder.
+  in its `menu:` are vignette paths too, and one ending in `/` expands to every
+  vignette in that folder.
 
-The default is `left: [intro, reference, articles, news]`,
-`right: [github]`.
+The default is `left: [intro, reference, articles, news]`, `right: [github]`.
 
 ## Repo layout notes
 
-- `_quartodown.yml` at the repo root configures this package's *own* site
+- `_quartodown/_quartodown.yml` configures this package's *own* site
   (dogfooding); `_quarto/` and `docs/` are build outputs.
 - Tests create throwaway packages in temp dirs (see `new_pkg()` helper in
   [tests/testthat/helper-pkg.R](tests/testthat/helper-pkg.R)) and test the
   generation functions directly rather than running a full Quarto render.
 - [vignettes/articles/technical.qmd](vignettes/articles/technical.qmd) is a
-  user-facing overview of the build (stages, `_quarto/` layout, man pages,
-  code links, theme); configuration belongs in `customizing.qmd`. Keep it in
-  sync when changing build behavior.
+  user-facing overview of the build (stages, `_quarto/` layout, man pages, code
+  links, theme); configuration belongs in `customizing.qmd`. Keep it in sync
+  when changing build behavior.
 - Roxygen with markdown. [vignettes/customizing.qmd](vignettes/customizing.qmd)
-  is the user-facing reference for `_quartodown.yml`; `@section
-  Configuration:` in `build_site()` summarizes each field in a line. Update
-  both when adding config keys.
+  is the user-facing reference for `_quartodown.yml`; `@section Configuration:`
+  in `build_site()` summarizes each field in a line. Update both when adding
+  config keys.
