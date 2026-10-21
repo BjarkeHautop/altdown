@@ -21,6 +21,13 @@
     var diff = contentLeft(main) -
       navContainer.getBoundingClientRect().left;
     navContainer.style.paddingLeft = Math.max(diff, 0) + "px";
+    // Where the navbar is crowded (just past its collapse breakpoint), give
+    // the padding back to a title that would otherwise be cut off.
+    var brand = navContainer.querySelector(".navbar-brand");
+    var overflow = brand ? brand.scrollWidth - brand.clientWidth : 0;
+    if (overflow > 0) {
+      navContainer.style.paddingLeft = Math.max(diff - overflow, 0) + "px";
+    }
   }
   // Wrap the version in the "<pkg> <version>" title so it can be styled.
   function shrinkNavbarVersion() {

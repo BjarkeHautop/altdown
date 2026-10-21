@@ -74,6 +74,9 @@ body:not(.docked) .navbar-container.container-fluid {
 
 .navbar-nav .nav-link {
   border-radius: var(--bs-border-radius);
+  // Just past the collapse breakpoint, "Get started" would break over two
+  // lines; let the title give up the room instead.
+  white-space: nowrap;
 }
 
 .navbar-version {
@@ -121,6 +124,39 @@ body:not(.docked) .navbar-container.container-fluid {
 
   .navbar-collapse .nav-item.dropdown:has(> .dropdown-menu.show) {
     flex-basis: 100%;
+  }
+
+  // Give the title the room Quarto's margins and `max-width` (sized for a
+  // wider toggler) take, so a short title fits on a phone; the navbar tools
+  // after it have padding of their own.
+  .navbar-toggler {
+    margin-right: 0.25rem;
+  }
+
+  .navbar-brand-container {
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .navbar-brand {
+    margin-right: 0;
+  }
+
+  // With only icons to show (the repository icon, when `navbar: style:
+  // sidebar` moves the other items into the sidebar), keep them in the bar
+  // instead of behind a toggler.
+  .navbar-container:not(:has(.navbar-collapse .nav-item:not(.compact))) {
+    .navbar-toggler {
+      display: none;
+    }
+
+    .navbar-collapse {
+      display: flex;
+      flex-basis: auto;
+      flex-grow: 0;
+      order: 3;
+    }
   }
 }
 
