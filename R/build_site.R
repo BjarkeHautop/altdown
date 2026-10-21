@@ -19,6 +19,8 @@
 #' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]
 #' creates one. It can contain:
 #'
+#' * `url`: the site's address, if it isn't the first `URL` in `DESCRIPTION`
+#'   that isn't a source repository.
 #' * `reference`: the sections of the function reference index and the topics
 #'   each lists, by name or with selectors such as `starts_with()`. The format
 #'   is the same as pkgdown's.
@@ -98,7 +100,7 @@ build_site <- function(
   write_404(path, settings$website$`site-url`)
 
   render_project(path, envvars, quiet = quiet)
-  write_pkgdown_yml(path)
+  write_pkgdown_yml(path, settings$website$`site-url`)
   protect_ansi(path)
   link_code(path)
   ansi_to_html(path)
@@ -133,7 +135,35 @@ config_file <- "_quartodown.yml"
 read_config <- function(path) {
   config_path <- file.path(path, config_file)
   config <- if (file.exists(config_path)) yaml::read_yaml(config_path)
-  if (is.null(config)) list() else config
+  if (is.null(config)) {
+    return(list())
+  }
+  warn_unknown_fields(
+    names(config),
+    c("url", "reference", "navbar", "home", "quarto")
+  )
+  if (is.list(config$home)) {
+    warn_unknown_fields(names(config$home), c("file", "sidebar"), "home")
+  }
+  config
+}
+
+# Warns about fields of _quartodown.yml (or of its `parent:`) that quartodown
+# doesn't know, such as typos or pkgdown settings, which are ignored.
+warn_unknown_fields <- function(fields, known, parent = NULL) {
+  where <- if (is.null(parent)) "" else paste0(" under `", parent, ":`")
+  for (field in setdiff(fields, known)) {
+    distance <- utils::adist(field, known)[1, ]
+    hint <- if (min(distance) <= 2) {
+      c("i" = "Did you mean {.field {known[which.min(distance)]}}?")
+    } else {
+      c("i" = "Known fields: {.field {known}}.")
+    }
+    cli::cli_warn(c(
+      "_quartodown.yml has an unknown field {.field {field}}{where}, which is ignored.",
+      hint
+    ))
+  }
 }
 
 copy_theme_files <- function(path) {
@@ -200,7 +230,7 @@ quarto_config <- function(path, config = list(), freeze = FALSE) {
   )
 
   # For the sitemap, among others.
-  url <- site_url(path)
+  url <- site_url(path, config)
   if (!is.na(url)) {
     settings$website$`site-url` <- url
   }

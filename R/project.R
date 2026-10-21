@@ -303,9 +303,12 @@ local_envvars <- function(envvars, envir = parent.frame()) {
   invisible()
 }
 
-# The site's own URL: the first DESCRIPTION URL that isn't a source
-# repository. NA if there's none.
-site_url <- function(path) {
+# The site's own URL: _quartodown.yml's `url:`, else the
+# first DESCRIPTION URL that isn't a source repository. NA if there's none.
+site_url <- function(path, config = list()) {
+  if (!is.null(config$url)) {
+    return(sub("/+$", "", config$url))
+  }
   urls <- tryCatch(desc::desc_get_urls(path), error = function(e) character())
   urls <- urls[!grepl("github\\.com|gitlab\\.com|codeberg\\.org", urls)]
   if (length(urls) == 0) NA_character_ else sub("/+$", "", urls[[1]])
@@ -313,9 +316,8 @@ site_url <- function(path) {
 
 # downlit finds a package's reference pages and vignettes through the
 # pkgdown.yml at its site's root.
-write_pkgdown_yml <- function(path) {
-  url <- site_url(path)
-  if (is.na(url)) {
+write_pkgdown_yml <- function(path, url = site_url(path)) {
+  if (is.null(url) || is.na(url)) {
     return(invisible())
   }
   vignettes <- find_vignettes(path)

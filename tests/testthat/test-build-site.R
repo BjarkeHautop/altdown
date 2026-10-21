@@ -219,6 +219,11 @@ test_that("quarto_config() sets the site URL from DESCRIPTION's URL", {
     quarto_config(dir)$website$`site-url`,
     "https://someuser.github.io/examplepkg"
   )
+  # `url:` in _quartodown.yml comes first.
+  expect_identical(
+    quarto_config(dir, list(url = "https://example.org/pkg/"))$website$`site-url`,
+    "https://example.org/pkg"
+  )
 })
 
 test_that("quarto_config() turns on social cards with the title and logo", {
@@ -510,6 +515,23 @@ test_that("read_config() treats a missing or empty _quartodown.yml as no setting
 
   writeLines("navbar: {left: [news]}", file.path(dir, "_quartodown.yml"))
   expect_identical(read_config(dir), list(navbar = list(left = "news")))
+})
+
+test_that("read_config() warns about unknown fields, suggesting close ones", {
+  dir <- new_pkg()
+  config_path <- file.path(dir, "_quartodown.yml")
+
+  writeLines("refrence: []", config_path)
+  expect_warning(read_config(dir), "Did you mean.*reference")
+
+  writeLines("template: {bootstrap: 5}", config_path)
+  expect_warning(read_config(dir), "Known fields")
+
+  writeLines("home: {fil: index.md}", config_path)
+  expect_warning(read_config(dir), "under `home:`.*Did you mean.*file")
+
+  writeLines("home: {file: index.md, sidebar: false}", config_path)
+  expect_no_warning(read_config(dir))
 })
 
 test_that("copy_theme_files() copies the SCSS and scripts into _quarto/", {

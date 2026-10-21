@@ -62,6 +62,8 @@ packages can check.
 \verb{_quartodown.yml}, at the package root, is optional; \code{\link[=use_quartodown]{use_quartodown()}}
 creates one. It can contain:
 \itemize{
+\item \code{url}: the site's address, if it isn't the first \code{URL} in \code{DESCRIPTION}
+that isn't a source repository.
 \item \code{reference}: the sections of the function reference index and the topics
 each lists, by name or with selectors such as \code{starts_with()}. The format
 is the same as pkgdown's.
