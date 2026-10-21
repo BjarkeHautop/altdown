@@ -105,6 +105,47 @@ test_that("pkg_repo() reads the repository from DESCRIPTION's URL", {
   expect_identical(repo$source, "https://gitlab.com/o/r/-/blob/HEAD/")
   expect_identical(repo$issue, "https://gitlab.com/o/r/-/issues/")
   expect_identical(repo$user, "https://gitlab.com/")
+
+  desc::desc_set(
+    URL = "https://gitlab.example.org/o/r/-/tree/main/pkg",
+    file = dir
+  )
+  repo <- pkg_repo(dir)
+  expect_identical(
+    repo$source,
+    "https://gitlab.example.org/o/r/-/blob/main/pkg/"
+  )
+  expect_identical(repo$issue, "https://gitlab.example.org/o/r/-/issues/")
+
+  desc::desc_set(URL = "https://codeberg.org/o/r", file = dir)
+  repo <- pkg_repo(dir)
+  expect_identical(repo$source, "https://codeberg.org/o/r/src/branch/HEAD/")
+  expect_identical(repo$issue, "https://codeberg.org/o/r/issues/")
+  expect_identical(repo$user, "https://codeberg.org/")
+
+  desc::desc_set(
+    URL = "https://codeberg.org/o/r/src/branch/main/pkg",
+    file = dir
+  )
+  repo <- pkg_repo(dir)
+  expect_identical(repo$source, "https://codeberg.org/o/r/src/branch/main/pkg/")
+  expect_identical(repo$issue, "https://codeberg.org/o/r/issues/")
+})
+
+test_that("repo_host() recognizes GitHub, GitLab and Codeberg", {
+  expect_identical(
+    repo_host(c(
+      "https://github.com/o/r",
+      "https://www.github.com/o/r",
+      "https://gitlab.com/o/r",
+      "https://gitlab.example.org/o/r",
+      "https://codeberg.org/o/r",
+      "https://o.github.io/r/",
+      "https://example.com",
+      NA
+    )),
+    c("github", "github", "gitlab", "gitlab", "codeberg", NA, NA, NA)
+  )
 })
 
 test_that("`repo:` overrides the repository's URLs and branch", {

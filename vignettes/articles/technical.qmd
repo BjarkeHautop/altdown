@@ -58,8 +58,8 @@ installed, as in `R CMD build`. Examples run, with their output in the same
 block as the code, prefixed with `#>`. To give a chunk's output a block of its
 own, in a vignette too, set `#| collapse: false` on it.
 
-If `DESCRIPTION`'s `URL` includes a GitHub repository, each reference page and
-vignette links to its source file under the title.
+If `DESCRIPTION`'s `URL` includes a GitHub, GitLab or Codeberg repository, each
+reference page and vignette links to its source file under the title.
 
 ## Code links and tooltips
 

@@ -65,11 +65,13 @@ navbar_items <- function(path, config = list()) {
   if ("github" %in% used) {
     home <- pkg_repo(path, config)$home
     if (!is.na(home)) {
-      gitlab <- grepl("gitlab", home)
+      host <- repo_host(home)
+      labels <- c(github = "GitHub", gitlab = "GitLab", codeberg = "Codeberg")
       builtins$github <- list(
-        icon = if (gitlab) "gitlab" else "github",
+        # Bootstrap Icons has none for Codeberg or other hosts.
+        icon = if (host %in% c("github", "gitlab")) host else "git",
         href = home,
-        `aria-label` = if (gitlab) "GitLab" else "GitHub"
+        `aria-label` = if (is.na(host)) "Source code" else labels[[host]]
       )
     }
   }

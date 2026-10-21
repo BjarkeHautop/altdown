@@ -324,7 +324,7 @@ site_url <- function(path, config = list()) {
     return(sub("/+$", "", config$url))
   }
   urls <- tryCatch(desc::desc_get_urls(path), error = function(e) character())
-  urls <- urls[!grepl("github\\.com|gitlab\\.com|codeberg\\.org", urls)]
+  urls <- urls[is.na(repo_host(urls))]
   if (length(urls) == 0) NA_character_ else sub("/+$", "", urls[[1]])
 }
 

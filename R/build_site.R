@@ -37,7 +37,7 @@
 #'   `before`/`after` text in the sidebar and `text` in the footer.
 #' * `repo`: the repository's `url`s (`home`, and the prefixes of links to a
 #'   file, `source`; an issue, `issue`; and a user, `user`) and `branch`, if
-#'   not from DESCRIPTION's GitHub or GitLab `URL`.
+#'   not from DESCRIPTION's GitHub, GitLab or Codeberg `URL`.
 #' * `theme`: the `light` and `dark` themes: names of Quarto's built-in
 #'   themes, such as `flatly` and `darkly`, or `.scss` files in
 #'   `_quartodown/`. By default, `default` and `darkly`.

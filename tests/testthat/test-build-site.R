@@ -93,6 +93,29 @@ test_that("navbar_items() leaves out Articles and Changelog when there are none"
   expect_length(items$right, 0)
 })
 
+test_that("navbar_items() picks the repository icon from its host", {
+  dir <- new_pkg()
+  repo_icon <- function(url, config = list()) {
+    desc::desc_set(URL = url, file = dir)
+    navbar_items(dir, config)$right[[1]][c("icon", "aria-label")]
+  }
+  expect_identical(
+    repo_icon("https://gitlab.example.org/o/r"),
+    list(icon = "gitlab", `aria-label` = "GitLab")
+  )
+  expect_identical(
+    repo_icon("https://codeberg.org/o/r"),
+    list(icon = "git", `aria-label` = "Codeberg")
+  )
+  expect_identical(
+    repo_icon(
+      "https://example.com",
+      list(repo = list(url = list(home = "https://git.sr.ht/~o/r")))
+    ),
+    list(icon = "git", `aria-label` = "Source code")
+  )
+})
+
 test_that("`navbar:` lays out built-in and custom items", {
   dir <- new_pkg(articles = "technical")
   write_vignette(dir, "examplepkg.qmd")

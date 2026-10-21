@@ -12,8 +12,8 @@ If you want to customize your site, you can do so by editing
 `_quartodown/` folder at the package root also holds the files that [style the
 site](#styling-and-layout). `_quartodown.yml` has nine fields, all optional:
 
-- `url:` is the site's address, if it isn't the first non-GitHub `URL` in
-  `DESCRIPTION`.
+- `url:` is the site's address, if it isn't the first `URL` in `DESCRIPTION`
+  that isn't on GitHub, GitLab or Codeberg.
 - `reference:` groups and orders the function reference index.
 - `navbar:` lays out the navbar.
 - `home:` picks the home page's source and lays out its sidebar.
@@ -87,7 +87,7 @@ the package has nothing for it:
   | `reference` | "Reference": the function reference index                                                                |
   | `articles`  | "Articles": a menu of every vignette no other item links, top-level ones first, then those in subfolders |
   | `news`      | "Changelog": `NEWS.md`                                                                                   |
-  | `github`    | A GitHub icon linking the repository in `DESCRIPTION`'s `URL`                                            |
+  | `github`    | The repository in `DESCRIPTION`'s `URL`, with a GitHub or GitLab icon (else a generic one)               |
 
 Any other item is a vignette, given as its path relative to `vignettes/` without
 extension and linked with its title, or a [Quarto navbar
@@ -232,8 +232,9 @@ The format is the same as pkgdown's `authors:`.
 ## The repository
 
 Source links (the "Source:" line under each page's title), the sidebar's "Browse
-source code", the navbar's GitHub icon and the changelog's `#123` and `@user`
-links all come from the first GitHub or GitLab URL in `DESCRIPTION`. For a
+source code", the navbar's repository icon and the changelog's `#123` and
+`@user` links all come from the first GitHub, GitLab (including self-hosted, if
+its host name has `gitlab` in it) or Codeberg URL in `DESCRIPTION`. For a
 package in a folder of a repository, give the URL of the folder, with its
 branch, as in `https://github.com/me/repo/tree/main/mypkg`.
 
@@ -242,10 +243,10 @@ branch, as in `https://github.com/me/repo/tree/main/mypkg`.
 ```yaml
 repo:
   url:
-    home: https://codeberg.org/me/mypkg              # <1>
-    source: https://codeberg.org/me/mypkg/src/branch/main/  # <2>
-    issue: https://codeberg.org/me/mypkg/issues/     # <3>
-    user: https://codeberg.org/                      # <4>
+    home: https://git.sr.ht/~me/mypkg                # <1>
+    source: https://git.sr.ht/~me/mypkg/tree/main/item/  # <2>
+    issue: https://todo.sr.ht/~me/mypkg/             # <3>
+    user: https://sr.ht/~                            # <4>
   branch: devel                                       # <5>
 ```
 

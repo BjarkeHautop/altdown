@@ -63,8 +63,9 @@ quartodown::build_site() # also previews it when interactive
      `<GitHub URL>/blob/HEAD/` (`source_note()`, shared with the authors page
      and the vignettes, which `copy_vignettes()` gives one after their front
      matter). The repository's URLs come from `pkg_repo()` (DESCRIPTION's
-     GitHub/GitLab `URL`, a `/tree/<branch>/<folder>` URL for a package in a
-     subfolder, and `_quartodown.yml`'s pkgdown-style `repo:`). Examples are
+     GitHub/GitLab/Codeberg `URL`, recognized by `repo_host()`, which
+     `site_url()` skips; a `/tree/<branch>/<folder>` URL for a package in a
+     subfolder; and `_quartodown.yml`'s pkgdown-style `repo:`). Examples are
      rebuilt from `tools::Rd2ex()` markers into run / `\dontrun` (plain block) /
      `\dontshow` (hidden chunk) blocks, with `@examplesIf` evaluated at build
      time.
@@ -142,7 +143,8 @@ builds the navbar from the `left:` and `right:` lists under `_quartodown.yml`'s
   - `reference`: the reference index.
   - `articles`: an "Articles" menu of every vignette no other entry links.
   - `news`: "Changelog", linking `NEWS.md`.
-  - `github`: the GitHub icon, linking the repo from `DESCRIPTION`'s `URL`.
+  - `github`: the repository icon (GitHub, GitLab, else generic), linking the
+    repo from `DESCRIPTION`'s `URL`.
 - Any other string: a vignette path relative to `vignettes/`, without extension,
   linked with its title.
 - A Quarto navbar item (`text:` plus `href:`/`menu:`), passed through. Strings

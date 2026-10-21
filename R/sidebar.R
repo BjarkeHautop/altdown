@@ -102,15 +102,26 @@ cran_url_if_available <- function(pkg_name) {
   url
 }
 
-# Where the package's source lives, from the first GitHub or GitLab URL in
-# DESCRIPTION, with _quartodown.yml's `repo:` over it: `home`,
+# The host a repository URL is on: "github", "gitlab" (gitlab.com or a
+# self-hosted GitLab, whose host name says so) or "codeberg". NA otherwise.
+repo_host <- function(urls) {
+  host <- tolower(sub("^https?://(www\\.)?([^/]+).*$", "\\2", urls))
+  out <- rep(NA_character_, length(urls))
+  out[which(host == "github.com")] <- "github"
+  out[grep("(^|\\.)gitlab\\.", host)] <- "gitlab"
+  out[which(host == "codeberg.org")] <- "codeberg"
+  out
+}
+
+# Where the package's source lives, from the first GitHub, GitLab or Codeberg
+# URL in DESCRIPTION, with _quartodown.yml's `repo:` over it: `home`,
 # the repository's page, and the prefixes of the links to a file (`source`),
 # an issue (`issue`) and a user (`user`). A URL into a folder,
-# `<repo>/tree/<branch>/<folder>`, is a package in that folder of that
-# branch. Each is NA if unknown.
+# `<repo>/tree/<branch>/<folder>` (Codeberg's `<repo>/src/branch/...`), is a
+# package in that folder of that branch. Each is NA if unknown.
 pkg_repo <- function(path, config = list()) {
   urls <- tryCatch(desc::desc_get_urls(path), error = function(e) character())
-  url <- urls[grepl("^https?://(www\\.)?(github|gitlab)\\.com/", urls)][1]
+  url <- urls[!is.na(repo_host(urls))][1]
   repo <- list(
     home = NA_character_,
     source = NA_character_,
@@ -122,25 +133,27 @@ pkg_repo <- function(path, config = list()) {
   if (!is.na(url)) {
     url <- sub("/+$", "", url)
     repo$home <- url
-    tree <- regmatches(url, regexec("^(.*?)(/-)?/tree/([^/]+)(/.*)?$", url))[[
-      1
-    ]]
+    host <- repo_host(url)
+    tree <- regmatches(
+      url,
+      regexec("^(.*?)(/-)?/(tree|src/branch)/([^/]+)(/.*)?$", url)
+    )[[1]]
     if (length(tree) > 0) {
       url <- tree[[2]]
-      branch <- tree[[4]]
-      folder <- sub("^/", "", paste0(tree[[5]], "/"))
+      branch <- tree[[5]]
+      folder <- sub("^/", "", paste0(tree[[6]], "/"))
     }
-    host <- regmatches(url, regexpr("^https?://[^/]+/", url))
     # GitLab's pages are under `/-/`.
-    sep <- if (grepl("gitlab", host)) "/-/" else "/"
+    sep <- if (host == "gitlab") "/-/" else "/"
     repo$issue <- paste0(url, sep, "issues/")
-    repo$user <- host
+    repo$user <- regmatches(url, regexpr("^https?://[^/]+/", url))
   }
   if (!is.null(config$repo$branch)) {
     branch <- config$repo$branch
   }
   if (!is.na(url)) {
-    repo$source <- paste0(url, sep, "blob/", branch, "/", folder)
+    blob <- if (host == "codeberg") "src/branch/" else "blob/"
+    repo$source <- paste0(url, sep, blob, branch, "/", folder)
   }
   for (field in names(repo)) {
     value <- config$repo$url[[field]]
