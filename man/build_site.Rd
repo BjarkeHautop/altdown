@@ -46,7 +46,7 @@ Builds the package website into \verb{docs/} with \href{https://quarto.org/}{Qua
 \details{
 \code{build_site()} assembles a Quarto website project in \verb{_quarto/} from the
 package sources and \verb{_quartodown.yml}, then renders it. It uses
-\code{README.md}, \verb{man/}, the vignettes (including those in subfolders),
+\code{README.md} (or, without one, \code{DESCRIPTION}), \verb{man/}, the vignettes (including those in subfolders),
 \code{NEWS.md}, \code{LICENSE}/\code{LICENSE.md}, and \code{CODE_OF_CONDUCT.md},
 \code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/}). See
 \code{vignette("quartodown")} for what the site contains.
@@ -67,6 +67,9 @@ each lists, by name or with selectors such as \code{starts_with()}. The format
 is the same as pkgdown's.
 \item \code{navbar}: the items on the navbar's \code{left} and \code{right}: keywords such as
 \code{reference} and \code{articles}, vignettes, and Quarto navbar items and menus.
+\item \code{home}: \code{file}, the \code{.md} or \code{.qmd} file the home page shows instead of
+\code{README.md}, and \code{sidebar: false} to show it as written, without the
+sidebar.
 \item \code{quarto}: settings merged over the generated Quarto configuration.
 }
 

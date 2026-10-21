@@ -9,10 +9,11 @@ vignette: >
 
 If you want to customize your site, you can do so by editing
 `_quartodown.yml` at the package root, which `quartodown::use_quartodown()`
-creates. It has three fields, all optional:
+creates. It has four fields, all optional:
 
 - `reference:` groups and orders the function reference index.
 - `navbar:` lays out the navbar.
+- `home:` picks the home page's source.
 - `quarto:` changes any other Quarto setting.
 
 ## The reference index
@@ -128,6 +129,34 @@ R only builds top-level vignettes into the package, so vignettes in
 subfolders are website-only.
 :::
 
+## The home page
+
+The home page shows `README.md`, or, if there is none, the package's
+description from `DESCRIPTION`. To give the site a different home page than the README, use `home: file:`
+at another file, relative to the package root:
+
+```yaml
+home:
+  file: index.qmd
+```
+
+It can be Markdown (`.md`) or a Quarto document (`.qmd`), whose code runs when
+the site is built, as in a vignette. Write links and image paths in it
+relative to the package root, as in the README. Add the file to
+`.Rbuildignore` so `R CMD check` doesn't complain.
+
+Next to the page, a sidebar shows the package's links, license, citation,
+authors and badges. For full control over the page, turn it off with
+`sidebar: false`:
+
+```yaml
+home:
+  file: index.qmd
+  sidebar: false
+```
+
+The page then shows the file as written. Like any other page, it then gets a table of contents, which `toc: false` in its front matter can turn off.
+
 ## Other Quarto settings
 
 quartodown writes a Quarto configuration into `_quarto/_quarto.yml`
@@ -183,6 +212,8 @@ over is very easy, and mostly means moving `_pkgdown.yml`'s settings into `_quar
   style the site with Quarto's `theme:` under `quarto: format: html:`, as in
   [Other Quarto settings](#other-quarto-settings).
 - `articles:` has no equivalent: group vignettes with navbar menus instead.
+- A separate home page (an `index.md` used instead of the README) isn't picked
+  up automatically: set it with [`home: file:`](#the-home-page).
 - Code that checks `IN_PKGDOWN` (or `pkgdown::in_pkgdown()`) should check
   `identical(Sys.getenv("IN_QUARTODOWN"), "true")` instead.
 

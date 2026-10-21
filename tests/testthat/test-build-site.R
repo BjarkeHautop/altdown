@@ -361,6 +361,91 @@ test_that("write_home() writes _quarto/index.qmd and leaves README.md alone", {
   expect_true("Some text." %in% home)
 })
 
+test_that("write_home() uses `home: file:` instead of README.md", {
+  dir <- new_pkg()
+  writeLines("# examplepkg\n\nFor GitHub.", file.path(dir, "README.md"))
+  writeLines("# examplepkg\n\nFor the site.", file.path(dir, "site.md"))
+
+  write_home(dir, list(home = list(file = "site.md")))
+
+  home <- readLines(file.path(dir, "_quarto", "index.qmd"))
+  expect_true("For the site." %in% home)
+  expect_false("For GitHub." %in% home)
+
+  expect_error(
+    write_home(dir, list(home = list(file = "missing.md"))),
+    "doesn't exist"
+  )
+  expect_error(
+    write_home(dir, list(home = list(file = c("a.md", "b.md")))),
+    "single file path"
+  )
+})
+
+test_that("a .qmd home page keeps its front matter and code comments", {
+  dir <- new_pkg()
+  lines <- c(
+    "---",
+    "execute:",
+    "  echo: false",
+    "---",
+    "",
+    "```{r}",
+    "# not a title",
+    "1 + 1",
+    "```"
+  )
+
+  home <- build_website_readme(lines, dir)
+
+  expect_identical(home[1:4], lines[1:4])
+  expect_true("# not a title" %in% home)
+  expect_identical(sum(home == "```{r}"), 1L)
+})
+
+test_that("`home: sidebar: false` shows the home page as written", {
+  dir <- new_pkg()
+  writeLines(
+    c(
+      "# examplepkg",
+      "",
+      "<!-- badges: start -->",
+      "[![badge](b.svg)](https://example.com)",
+      "<!-- badges: end -->",
+      "",
+      "> [!NOTE]",
+      "> Note."
+    ),
+    file.path(dir, "README.md")
+  )
+
+  write_home(dir, list(home = list(sidebar = FALSE)))
+
+  home <- readLines(file.path(dir, "_quarto", "index.qmd"))
+  expect_identical(home[1:5], readLines(file.path(dir, "README.md"))[1:5])
+  expect_false(any(grepl("quartodown-home|column-margin", home)))
+  expect_true("::: {.callout-note}" %in% home)
+
+  expect_error(
+    write_home(dir, list(home = list(sidebar = "no"))),
+    "true or false"
+  )
+})
+
+test_that("write_home() makes the home page from DESCRIPTION without a README", {
+  dir <- new_pkg()
+  desc::desc_set(
+    Description = "Does useful\n    things.",
+    file = dir
+  )
+
+  write_home(dir)
+
+  home <- readLines(file.path(dir, "_quarto", "index.qmd"))
+  expect_true("# examplepkg" %in% home)
+  expect_true("Does useful things." %in% home)
+})
+
 test_that("read_config() treats a missing or empty _quartodown.yml as no settings", {
   dir <- new_pkg()
   expect_identical(read_config(dir), list())

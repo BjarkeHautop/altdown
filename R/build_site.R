@@ -4,7 +4,7 @@
 #'
 #' `build_site()` assembles a Quarto website project in `_quarto/` from the
 #' package sources and `_quartodown.yml`, then renders it. It uses
-#' `README.md`, `man/`, the vignettes (including those in subfolders),
+#' `README.md` (or, without one, `DESCRIPTION`), `man/`, the vignettes (including those in subfolders),
 #' `NEWS.md`, `LICENSE`/`LICENSE.md`, and `CODE_OF_CONDUCT.md`,
 #' `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`). See
 #' `vignette("quartodown")` for what the site contains.
@@ -24,6 +24,9 @@
 #'   is the same as pkgdown's.
 #' * `navbar`: the items on the navbar's `left` and `right`: keywords such as
 #'   `reference` and `articles`, vignettes, and Quarto navbar items and menus.
+#' * `home`: `file`, the `.md` or `.qmd` file the home page shows instead of
+#'   `README.md`, and `sidebar: false` to show it as written, without the
+#'   sidebar.
 #' * `quarto`: settings merged over the generated Quarto configuration.
 #'
 #' See `vignette("customizing", package = "quartodown")` for the details.
@@ -88,7 +91,7 @@ build_site <- function(
   with_libpaths(envvars, write_man_pages(path, config))
   import_markdown_files(path)
   copy_theme_files(path)
-  write_home(path)
+  write_home(path, config)
   build_reference_qmd(path, config)
   build_authors_qmd(path)
   write_quarto_config(path, config, freeze = freeze)
@@ -233,22 +236,66 @@ write_quarto_config <- function(path, config = list(), freeze = FALSE) {
 
 # ---- home page ----------------------------------------------------------------
 
-write_home <- function(path) {
-  readme <- readLines(
-    file.path(path, "README.md"),
-    warn = FALSE,
-    encoding = "UTF-8"
-  )
+# The home page is `home: file:` from _quartodown.yml, else README.md, else
+# made from DESCRIPTION; with a sidebar unless `home: sidebar: false`.
+write_home <- function(path, config = list()) {
+  file <- config$home$file
+  if (!is.null(file)) {
+    if (!is.character(file) || length(file) != 1) {
+      cli::cli_abort(
+        "_quartodown.yml `home: file:` must be a single file path."
+      )
+    }
+    if (!file.exists(file.path(path, file))) {
+      cli::cli_abort(
+        "_quartodown.yml `home: file:` is {.path {file}}, which doesn't exist."
+      )
+    }
+  } else if (file.exists(file.path(path, "README.md"))) {
+    file <- "README.md"
+  }
+  sidebar <- if (is.null(config$home$sidebar)) TRUE else config$home$sidebar
+  if (!isTRUE(sidebar) && !isFALSE(sidebar)) {
+    cli::cli_abort("_quartodown.yml `home: sidebar:` must be true or false.")
+  }
+  lines <- if (is.null(file)) {
+    description_home(path)
+  } else {
+    readLines(file.path(path, file), warn = FALSE, encoding = "UTF-8")
+  }
   writeLines(
-    enc2utf8(build_website_readme(readme, path)),
+    enc2utf8(build_website_readme(lines, path, sidebar = sidebar)),
     file.path(project_dir(path), "index.qmd"),
     useBytes = TRUE
   )
 }
 
-build_website_readme <- function(lines, path = ".") {
+# A home page for a package without a README: its name and description.
+description_home <- function(path) {
+  pkg <- desc::desc_get_field("Package", file = path)
+  description <- desc::desc_get_field("Description", default = "", file = path)
+  c(paste("#", pkg), "", trimws(gsub("\\s+", " ", description)))
+}
+
+# With `sidebar = FALSE`, the page is `lines` as written, only made to render
+# like on GitHub.
+build_website_readme <- function(lines, path = ".", sidebar = TRUE) {
+  # A .qmd's front matter stays at the top.
+  front_matter <- character()
+  ends <- which(lines == "---")
+  if (length(lines) > 0 && lines[[1]] == "---" && length(ends) >= 2) {
+    front_matter <- lines[seq_len(ends[[2]])]
+    lines <- lines[-seq_len(ends[[2]])]
+  }
   lines <- github_markdown_to_quarto(lines, mermaid = TRUE)
   lines <- theme_pictures_to_images(lines)
+  if (sidebar) {
+    lines <- home_page_with_sidebar(lines, path)
+  }
+  c(front_matter, lines)
+}
+
+home_page_with_sidebar <- function(lines, path) {
   badges <- extract_readme_badges(lines)
   lines <- remove_marker_block(
     lines,
@@ -256,7 +303,10 @@ build_website_readme <- function(lines, path = ".") {
     "<!-- badges: end -->"
   )
 
-  title_idx <- grep("^# ", lines)[1]
+  # Not a `# comment` in a code block.
+  is_fence <- grepl("^\\s*(```|~~~)", lines)
+  in_code <- cumsum(is_fence) %% 2 == 1 | is_fence
+  title_idx <- which(grepl("^# ", lines) & !in_code)[1]
   if (is.na(title_idx)) {
     title <- character()
   } else {

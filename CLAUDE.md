@@ -69,7 +69,9 @@ quartodown::build_site() # also previews it when interactive
      overrides from `_quartodown.yml`'s `quarto:` key are applied by
      `merge_quarto_config()` (unnamed lists append, other values replace, `~`
      removes).
-   - `index.qmd`: README + sidebar ([R/sidebar.R](R/sidebar.R)); badges are
+   - `index.qmd`: README (or `_quartodown.yml`'s `home: file:`, or without
+     either a page from `DESCRIPTION`) + sidebar (unless `home: sidebar:
+     false`, which leaves the page as written) ([R/sidebar.R](R/sidebar.R)); badges are
      pulled out of the `<!-- badges: start/end -->` block, and `<picture>`
      light/dark images are rewritten to `.light-content`/`.dark-content`
      `<img>`s.
