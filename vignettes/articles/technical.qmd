@@ -17,6 +17,10 @@ pages, and every Quarto feature works.
 3. **After rendering**, it links code to its documentation and adds hover
    tooltips.
 
+In an interactive session it then serves `docs/` with `preview_site()`. The
+server keeps running for the rest of the session, so after a rebuild the open
+page reloads instead of a new one opening.
+
 `build_site(devel = TRUE)` skips the install and loads the package from source
 with `pkgload::load_all()` instead. It is faster, but code that starts other R
 processes (for example with callr or parallel) won't find the package, and

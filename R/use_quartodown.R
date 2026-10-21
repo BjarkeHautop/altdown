@@ -75,8 +75,7 @@ use_quartodown <- function(path = ".") {
   cli::cli_text("Next steps:")
   cli::cli_ol(c(
     "Edit {.file _quartodown.yml} to group your functions the way you want.",
-    "Build the site with {.run quartodown::build_site()}.",
-    "Preview it with {.run quartodown::preview_site()}."
+    "Build and preview the site with {.run quartodown::build_site()}."
   ))
 
   invisible(config_dest)

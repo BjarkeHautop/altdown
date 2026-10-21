@@ -64,12 +64,11 @@ Hover over the numbers to see the annotations.
 ```r
 quartodown::use_quartodown() # <1>
 quartodown::build_site(devel = TRUE) # <2>
-quartodown::preview_site() # <3>
 ```
 
 1. Write `_quartodown.yml` and gitignore the build output.
-2. Build the site, loading the package with `pkgload::load_all()`.
-3. Open the built site in your browser.
+2. Build the site, loading the package with `pkgload::load_all()`, and open
+   it in your browser.
 
 ## Function links
 

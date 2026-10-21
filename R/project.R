@@ -297,7 +297,10 @@ write_pkgdown_yml <- function(path) {
 #' Preview the built site
 #'
 #' Serves `docs/`, as built by [build_site()], in a web browser, and reloads
-#' the page when the site is rebuilt.
+#' the page when the site is rebuilt. The server keeps running for the rest of
+#' the R session and is reused by later calls, including [build_site()]'s
+#' (which, with a server already running, leaves the open page to reload
+#' instead of opening another).
 #'
 #' @inheritParams build_site
 #' @return The server, invisibly; see [servr::httw()].
@@ -309,6 +312,12 @@ write_pkgdown_yml <- function(path) {
 #' preview_site()
 #' }
 preview_site <- function(path = ".") {
+  serve_site(path, reopen = TRUE)
+}
+
+# Serves `docs/`, starting a server unless one already serves it. `reopen`
+# opens the page again in the browser when it does.
+serve_site <- function(path, reopen) {
   docs <- file.path(path, "docs")
   if (!file.exists(file.path(docs, "index.html"))) {
     cli::cli_abort(c(
@@ -322,5 +331,17 @@ preview_site <- function(path = ".") {
       "i" = "Install it with {.code install.packages(\"servr\")}."
     ))
   }
-  invisible(servr::httw(docs))
+
+  root <- normalizePath(docs)
+  if (!identical(the$server_root, root)) {
+    if (!is.null(the$server)) the$server$stop_server()
+    the$server <- servr::httw(docs)
+    the$server_root <- root
+  } else if (reopen) {
+    the$server$browse(reopen = TRUE)
+  }
+  invisible(the$server)
 }
+
+# The preview server, kept across calls so rebuilds reuse it.
+the <- new.env(parent = emptyenv())

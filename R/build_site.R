@@ -37,6 +37,8 @@
 #'   `devel = TRUE`, they run against it loaded with [pkgload::load_all()]
 #'   instead, which is faster, but code that starts other R processes (e.g.
 #'   with callr or parallel workers) won't find the package there.
+#' @param preview Logical. Open the built site in a web browser with
+#'   [preview_site()]? By default, only in interactive sessions.
 #' @return Invisibly, the path to the built site.
 #' @export
 #'
@@ -44,14 +46,14 @@
 #' \dontrun{
 #' use_quartodown()
 #' build_site()
-#' preview_site()
 #' }
 build_site <- function(
   path = ".",
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
-  devel = FALSE
+  devel = FALSE,
+  preview = interactive()
 ) {
   config <- read_config(path)
   check_quarto()
@@ -84,6 +86,16 @@ build_site <- function(
 
   if (isTRUE(tooltips)) {
     add_tooltips(path)
+  }
+
+  if (isTRUE(preview) && !identical(Sys.getenv("TESTTHAT"), "true")) {
+    if (requireNamespace("servr", quietly = TRUE)) {
+      serve_site(path, reopen = FALSE)
+    } else {
+      cli::cli_inform(c(
+        "i" = "Install {.pkg servr} to preview the site in your browser."
+      ))
+    }
   }
 
   invisible(file.path(path, "docs"))

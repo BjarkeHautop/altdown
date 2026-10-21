@@ -29,8 +29,7 @@ Build this package's own site (needs Quarto installed; CI uses these args):
 
 ```r
 install.packages(".", repos = NULL, type = "source")
-quartodown::build_site()
-quartodown::preview_site()
+quartodown::build_site() # also previews it when interactive
 ```
 
 `README.md` is generated from `README.qmd` — edit the `.qmd` and re-render.
@@ -95,7 +94,10 @@ quartodown::preview_site()
    references to the package's own topics (`<span class="fu|va">` in code
    blocks, and `op`/`sc` spans holding a `%op%`, and `<code>name()</code>`
    inline) to their reference page with a hover tooltip. Pages are marked with
-   `<!-- quartodown-tooltips -->` so reruns skip them.
+   `<!-- quartodown-tooltips -->` so reruns skip them. Finally, with
+   `preview = interactive()`, `serve_site()` ([R/project.R](R/project.R))
+   serves `docs/` with `servr::httw()`. The server is kept in the package-level
+   `the` environment and reused by later builds, whose open page live-reloads.
 
 ### Navbar / articles
 

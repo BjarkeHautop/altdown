@@ -51,7 +51,7 @@ Then build the site:
 quartodown::build_site()
 ```
 
-A preview can then be viewed using `quartodown::preview_site()`.
+In an interactive session, this also opens the site in your browser.
 
 See `?quartodown::build_site` for everything `_quartodown.yml` can
 configure.

@@ -9,7 +9,8 @@ build_site(
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
-  devel = FALSE
+  devel = FALSE,
+  preview = interactive()
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ the package installed from \code{path} into a temporary library. With
 \code{devel = TRUE}, they run against it loaded with \code{\link[pkgload:load_all]{pkgload::load_all()}}
 instead, which is faster, but code that starts other R processes (e.g.
 with callr or parallel workers) won't find the package there.}
+
+\item{preview}{Logical. Open the built site in a web browser with
+\code{\link[=preview_site]{preview_site()}}? By default, only in interactive sessions.}
 }
 \value{
 Invisibly, the path to the built site.
@@ -67,6 +71,5 @@ See \code{vignette("customizing", package = "quartodown")} for the details.
 \dontrun{
 use_quartodown()
 build_site()
-preview_site()
 }
 }

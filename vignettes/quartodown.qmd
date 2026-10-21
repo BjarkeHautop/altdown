@@ -29,11 +29,11 @@ for how its settings carry over.
 
 ```r
 quartodown::build_site()
-quartodown::preview_site()
 ```
 
-`build_site()` builds the site into `docs/`, and `preview_site()` opens it in
-your browser. Examples and vignettes run against your package's current source.
+`build_site()` builds the site into `docs/` and, in an interactive session,
+opens it in your browser. The page reloads when you rebuild, and
+`preview_site()` opens it again if you've closed it. Examples and vignettes run against your package's current source.
 While iterating, `build_site(devel = TRUE)` is faster because it loads the
 package with `pkgload::load_all()` instead of installing it.
 
