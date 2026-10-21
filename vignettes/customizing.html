@@ -67,9 +67,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-a8b8a5b64f5ac945ea32ecedfbba154a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,13 +123,6 @@ visitors who prefer it, before Quarto reads the stored choice.
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image-height" content="600">
 <meta name="twitter:image-width" content="520">
-<!-- quartodown-tooltips -->
-<style>
-.quartodown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.quartodown-tip-float .quartodown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.quartodown-tip-float .quartodown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.quartodown-tip-ref{cursor:help;}
-</style>
 </head>
 <body class="nav-fixed quarto-light">
 <script id="quarto-html-before-body" type="application/javascript">
@@ -325,6 +318,10 @@ a.quartodown-tip-ref{cursor:help;}
  <span class="dropdown-text">Customizing your site</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../vignettes/articles/gallery.html">
+ <span class="dropdown-text">Gallery</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -359,9 +356,18 @@ a.quartodown-tip-ref{cursor:help;}
    
   <ul>
 <li><a href="#the-reference-index" id="toc-the-reference-index" class="nav-link active" data-scroll-target="#the-reference-index">The reference index</a></li>
-  <li><a href="#the-navbar" id="toc-the-navbar" class="nav-link" data-scroll-target="#the-navbar">The navbar</a></li>
+  <li>
+<a href="#the-navbar" id="toc-the-navbar" class="nav-link" data-scroll-target="#the-navbar">The navbar</a>
+  <ul class="collapse">
+<li><a href="#a-sidebar-instead" id="toc-a-sidebar-instead" class="nav-link" data-scroll-target="#a-sidebar-instead">A sidebar instead</a></li>
+  </ul>
+</li>
   <li><a href="#the-home-page" id="toc-the-home-page" class="nav-link" data-scroll-target="#the-home-page">The home page</a></li>
+  <li><a href="#authors" id="toc-authors" class="nav-link" data-scroll-target="#authors">Authors</a></li>
+  <li><a href="#the-repository" id="toc-the-repository" class="nav-link" data-scroll-target="#the-repository">The repository</a></li>
+  <li><a href="#redirects" id="toc-redirects" class="nav-link" data-scroll-target="#redirects">Redirects</a></li>
   <li><a href="#other-quarto-settings" id="toc-other-quarto-settings" class="nav-link" data-scroll-target="#other-quarto-settings">Other Quarto settings</a></li>
+  <li><a href="#styling-and-layout" id="toc-styling-and-layout" class="nav-link" data-scroll-target="#styling-and-layout">Styling and layout</a></li>
   <li><a href="#coming-from-pkgdown" id="toc-coming-from-pkgdown" class="nav-link" data-scroll-target="#coming-from-pkgdown">Coming from pkgdown</a></li>
   </ul></nav>
 </div>
@@ -384,16 +390,24 @@ a.quartodown-tip-ref{cursor:help;}
 </header><p class="source-note">
 <small class="dont-index">Source: <a href="https://github.com/bjarkehautop/quartodown/blob/HEAD/vignettes/customizing.qmd"><code>vignettes/customizing.qmd</code></a></small>
 </p>
-<p>If you want to customize your site, you can do so by editing <code>_quartodown.yml</code> at the package root, which <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../reference/use_quartodown.html">quartodown::use_quartodown()</a></code> creates. It has five fields, all optional:</p>
+<p>If you want to customize your site, you can do so by editing <code>_quartodown/_quartodown.yml</code>, which <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../reference/use_quartodown.html">quartodown::use_quartodown()</a></code> creates. The <code>_quartodown/</code> folder at the package root also holds the files that <a href="#styling-and-layout">style the site</a>. <code>_quartodown.yml</code> has nine fields, all optional:</p>
 <ul>
 <li>
-<code>url:</code> is the site’s address, if it isn’t the first non-GitHub <code>URL</code> in <code>DESCRIPTION</code>.</li>
+<code>url:</code> is the site’s address, if it isn’t the first <code>URL</code> in <code>DESCRIPTION</code> that isn’t on GitHub, GitLab or Codeberg.</li>
 <li>
 <code>reference:</code> groups and orders the function reference index.</li>
 <li>
 <code>navbar:</code> lays out the navbar.</li>
 <li>
-<code>home:</code> picks the home page’s source.</li>
+<code>home:</code> picks the home page’s source and lays out its sidebar.</li>
+<li>
+<code>authors:</code> links authors’ names and picks who is shown where.</li>
+<li>
+<code>repo:</code> says where the source code is, if <code>DESCRIPTION</code> doesn’t.</li>
+<li>
+<code>theme:</code> picks the light and dark themes.</li>
+<li>
+<code>redirects:</code> sends visitors from old addresses to new ones.</li>
 <li>
 <code>quarto:</code> changes any other Quarto setting.</li>
 </ul>
@@ -487,7 +501,7 @@ a.quartodown-tip-ref{cursor:help;}
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">navbar</span><span class="kw">:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">left</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">intro</span><span class="kw">,</span><span class="at"> reference</span><span class="kw">,</span><span class="at"> articles</span><span class="kw">,</span><span class="at"> news</span><span class="kw">]</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">right</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">github</span><span class="kw">]</span></span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">right</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">repo</span><span class="kw">]</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p>Each of these is a keyword that quartodown turns into an item, and leaves out if the package has nothing for it:</p>
@@ -519,9 +533,8 @@ a.quartodown-tip-ref{cursor:help;}
 </td>
 </tr>
 <tr class="odd">
-<td><code>github</code></td>
-<td>A GitHub icon linking the repository in <code>DESCRIPTION</code>’s <code>URL</code>
-</td>
+<td><code>repo</code></td>
+<td>The repository in <code>DESCRIPTION</code>’s <code>URL</code>, with a GitHub or GitLab icon (else a generic one)</td>
 </tr>
 </tbody>
 </table>
@@ -546,7 +559,7 @@ a.quartodown-tip-ref{cursor:help;}
 <span id="annotated-cell-3-16"><a href="#annotated-cell-3-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">right</span><span class="kw">:</span></span>
 <span id="annotated-cell-3-17"><a href="#annotated-cell-3-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="kw">:</span><span class="at"> Blog</span></span>
 <span id="annotated-cell-3-18"><a href="#annotated-cell-3-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://example.com/blog</span></span>
-<span id="annotated-cell-3-19"><a href="#annotated-cell-3-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> github</span></span><div class="code-annotation-gutter-bg"></div>
+<span id="annotated-cell-3-19"><a href="#annotated-cell-3-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> repo</span></span><div class="code-annotation-gutter-bg"></div>
 <div class="code-annotation-gutter"></div></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
@@ -579,22 +592,138 @@ Note
 <p>R only builds top-level vignettes into the package, so vignettes in subfolders are website-only.</p>
 </div>
 </div>
-</section><section id="the-home-page" class="level2"><h2 class="anchored" data-anchor-id="the-home-page">The home page</h2>
-<p>The home page shows <code>README.md</code>, or, if there is none, the package’s description from <code>DESCRIPTION</code>. To give the site a different home page than the README, use <code>home: file:</code> at another file, relative to the package root:</p>
+<section id="a-sidebar-instead" class="level3"><h3 class="anchored" data-anchor-id="a-sidebar-instead">A sidebar instead</h3>
+<p>With <code>style: sidebar</code>, the <code>left</code> items move into a sidebar beside every page, and the navbar keeps the site’s title, the search box and the <code>right</code> items:</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">home</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">file</span><span class="kw">:</span><span class="at"> index.qmd</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">navbar</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">style</span><span class="kw">:</span><span class="at"> sidebar</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-<p>It can be Markdown (<code>.md</code>) or a Quarto document (<code>.qmd</code>), whose code runs when the site is built, as in a vignette. Write links and image paths in it relative to the package root, as in the README. Add the file to <code>.Rbuildignore</code> so <code>R CMD check</code> doesn’t complain.</p>
-<p>Next to the page, a sidebar shows the package’s links, license, citation, authors and badges. For full control over the page, turn it off with <code>sidebar: false</code>:</p>
+<p>Menus become sections of the sidebar, and “Reference” lists every reference page by function name, with a section for each titled group of <a href="#the-reference-index"><code>reference:</code></a>.</p>
+</section></section><section id="the-home-page" class="level2"><h2 class="anchored" data-anchor-id="the-home-page">The home page</h2>
+<p>The home page shows <code>README.md</code>, or, if there is none, the package’s description from <code>DESCRIPTION</code>. To give the site a different home page than the README, use <code>home: file:</code> at another file, relative to the package root:</p>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">home</span><span class="kw">:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">file</span><span class="kw">:</span><span class="at"> index.qmd</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sidebar</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">file</span><span class="kw">:</span><span class="at"> index.qmd</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>It can be Markdown (<code>.md</code>) or a Quarto document (<code>.qmd</code>), whose code runs when the site is built, as in a vignette. Write links and image paths in it relative to the package root, as in the README.</p>
+<p>Next to the page, a sidebar shows the package’s links, license, community files, citation, authors and badges. <code>sidebar:</code> can reorder its sections, drop some, or add your own, and <code>links:</code> adds to its links:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="annotated-cell-6"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-6-1"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">home</span><span class="kw">:</span></span>
+<span id="annotated-cell-6-2"><a href="#annotated-cell-6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">links</span><span class="kw">:</span></span>
+<span id="annotated-cell-6-3"><a href="#annotated-cell-6-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="kw">:</span><span class="at"> Blog</span></span>
+<span id="annotated-cell-6-4"><a href="#annotated-cell-6-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://example.com/blog</span></span>
+<span id="annotated-cell-6-5"><a href="#annotated-cell-6-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sidebar</span><span class="kw">:</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="1">1</button><span id="annotated-cell-6-6" class="code-annotation-target"><a href="#annotated-cell-6-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu"><a href="https://rdrr.io/r/base/structure.html">structure</a></span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">links</span><span class="kw">,</span><span class="at"> funding</span><span class="kw">,</span><span class="at"> license</span><span class="kw">,</span><span class="at"> authors</span><span class="kw">]</span></span>
+<span id="annotated-cell-6-7"><a href="#annotated-cell-6-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">components</span><span class="kw">:</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="2">2</button><span id="annotated-cell-6-8" class="code-annotation-target"><a href="#annotated-cell-6-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">funding</span><span class="kw">:</span></span>
+<span id="annotated-cell-6-9"><a href="#annotated-cell-6-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html">title</a></span><span class="kw">:</span><span class="at"> Funding</span></span>
+<span id="annotated-cell-6-10"><a href="#annotated-cell-6-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="kw">:</span><span class="at"> Supported by [a grant](https://example.com).</span></span><div class="code-annotation-gutter-bg"></div>
+<div class="code-annotation-gutter"></div></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-6" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="6" data-code-annotation="1">The sections, in order. The built-in ones are <code>links</code>, <code>license</code>, <code>community</code>, <code>citation</code>, <code>authors</code> and <code>dev</code> (the README’s badges); by default, all of them in that order, then your own.</span>
+</dd>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-6" data-code-lines="8" data-code-annotation="2">A section of your own: a heading and Markdown text.</span>
+</dd>
+</dl>
+<p>For full control over the page you can turn the sidebar off with <code>sidebar: false</code>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">home</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">file</span><span class="kw">:</span><span class="at"> index.qmd</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sidebar</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p>The page then shows the file as written. Like any other page, it then gets a table of contents, which <code>toc: false</code> in its front matter can turn off.</p>
+</section><section id="authors" class="level2"><h2 class="anchored" data-anchor-id="authors">Authors</h2>
+<p>The home page’s sidebar and the footer list the authors with the roles <code>aut</code>, <code>cre</code> and <code>fnd</code> from <code>DESCRIPTION</code>’s <code>Authors@R</code>, and the authors page lists everyone. <code>authors:</code> can link a person’s name, or replace it with HTML such as a logo, and change who is shown:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="annotated-cell-8"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">authors</span><span class="kw">:</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="1">1</button><span id="annotated-cell-8-2" class="code-annotation-target"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">Jane Doe</span><span class="kw">:</span></span>
+<span id="annotated-cell-8-3"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://jane.example.com</span></span>
+<span id="annotated-cell-8-4"><a href="#annotated-cell-8-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">Acme Inc</span><span class="kw">:</span></span>
+<span id="annotated-cell-8-5"><a href="#annotated-cell-8-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://acme.example.com</span></span>
+<span id="annotated-cell-8-6"><a href="#annotated-cell-8-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span><span class="at"> &lt;img src="https://acme.example.com/logo.png" alt="Acme" height="24"&gt;</span></span>
+<span id="annotated-cell-8-7"><a href="#annotated-cell-8-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sidebar</span><span class="kw">:</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="2">2</button><span id="annotated-cell-8-8" class="code-annotation-target"><a href="#annotated-cell-8-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">roles</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">aut</span><span class="kw">,</span><span class="at"> cre</span><span class="kw">]</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="3">3</button><span id="annotated-cell-8-9" class="code-annotation-target"><a href="#annotated-cell-8-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">after</span><span class="kw">:</span><span class="at"> Thanks to all [contributors](authors.html).</span></span>
+<span id="annotated-cell-8-10"><a href="#annotated-cell-8-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">footer</span><span class="kw">:</span></span>
+<span id="annotated-cell-8-11"><a href="#annotated-cell-8-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">roles</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">cre</span><span class="kw">]</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="4">4</button><span id="annotated-cell-8-12" class="code-annotation-target"><a href="#annotated-cell-8-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="kw">:</span><span class="at"> Maintained by</span></span><div class="code-annotation-gutter-bg"></div>
+<div class="code-annotation-gutter"></div></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-8" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="1">A person, by their name as in <code>Authors@R</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="8" data-code-annotation="2">The roles shown in the sidebar.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="9" data-code-annotation="3">Markdown shown under the sidebar’s list, or with <code>before:</code> above it.</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="12" data-code-annotation="4">Instead of “Developed by”.</span>
+</dd>
+</dl>
+<p>The format is the same as pkgdown’s <code>authors:</code>.</p>
+</section><section id="the-repository" class="level2"><h2 class="anchored" data-anchor-id="the-repository">The repository</h2>
+<p>Source links (the “Source:” line under each page’s title), the sidebar’s “Browse source code”, the navbar’s repository icon and the changelog’s <code>#123</code> and <code>@user</code> links all come from the first GitHub, GitLab (including self-hosted, if its host name has <code>gitlab</code> in it) or Codeberg URL in <code>DESCRIPTION</code>. For a package in a folder of a repository, give the URL of the folder, with its branch, as in <code>https://github.com/me/repo/tree/main/mypkg</code>.</p>
+<p><code>repo:</code> sets them where that isn’t enough, such as for another host or branch:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="annotated-cell-9"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-9-1"><a href="#annotated-cell-9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">repo</span><span class="kw">:</span></span>
+<span id="annotated-cell-9-2"><a href="#annotated-cell-9-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu"><a href="https://rdrr.io/r/base/connections.html">url</a></span><span class="kw">:</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="1">1</button><span id="annotated-cell-9-3" class="code-annotation-target"><a href="#annotated-cell-9-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">home</span><span class="kw">:</span><span class="at"> https://git.sr.ht/~me/mypkg</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="2">2</button><span id="annotated-cell-9-4" class="code-annotation-target"><a href="#annotated-cell-9-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="kw">:</span><span class="at"> https://git.sr.ht/~me/mypkg/tree/main/item/</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="3">3</button><span id="annotated-cell-9-5" class="code-annotation-target"><a href="#annotated-cell-9-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">issue</span><span class="kw">:</span><span class="at"> https://todo.sr.ht/~me/mypkg/</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="4">4</button><span id="annotated-cell-9-6" class="code-annotation-target"><a href="#annotated-cell-9-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">user</span><span class="kw">:</span><span class="at"> https://sr.ht/~</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-9" data-target-annotation="5">5</button><span id="annotated-cell-9-7" class="code-annotation-target"><a href="#annotated-cell-9-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">branch</span><span class="kw">:</span><span class="at"> devel</span></span><div class="code-annotation-gutter-bg"></div>
+<div class="code-annotation-gutter"></div></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-9" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="3" data-code-annotation="1">The repository’s page.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="4" data-code-annotation="2">Prefix of a file’s link, such as <code>R/foo.R</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="5" data-code-annotation="3">Prefix of an issue’s link, such as <code>123</code>.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="6" data-code-annotation="4">Prefix of a user’s link.</span>
+</dd>
+<dt data-target-cell="annotated-cell-9" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-cell="annotated-cell-9" data-code-lines="7" data-code-annotation="5">The branch the source links point to, instead of the default branch. Ignored when <code>source:</code> is set.</span>
+</dd>
+</dl>
+<p>Each is optional and replaces only its own link. The format is the same as pkgdown’s <code>repo:</code>.</p>
+</section><section id="redirects" class="level2"><h2 class="anchored" data-anchor-id="redirects">Redirects</h2>
+<p>When a page moves, such as a function’s reference page after it is renamed you can use <code>redirects:</code> so links to the old address keeps working. Each entry is a pair: the old address and the new one, both relative to the site’s root:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">redirects</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">[</span><span class="st">"reference/foo.bar.html"</span><span class="kw">,</span><span class="at"> </span><span class="st">"reference/foo_bar.html"</span><span class="kw">]</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="kw">[</span><span class="st">"articles/old-guide.html"</span><span class="kw">,</span><span class="at"> </span><span class="st">"vignettes/guide.html"</span><span class="kw">]</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>For a vignette, Quarto’s own <a href="https://quarto.org/docs/websites/website-navigation.html#redirects"><code>aliases:</code></a> in its front matter does the same.</p>
 </section><section id="other-quarto-settings" class="level2"><h2 class="anchored" data-anchor-id="other-quarto-settings">Other Quarto settings</h2>
 <p>quartodown writes a Quarto configuration into <code>_quarto/_quarto.yml</code> (overwritten on every build). The <code>quarto:</code> field is merged over it, key by key:</p>
 <ul>
@@ -605,44 +734,263 @@ Note
 </ul>
 <p>For example, to fold code blocks, drop the table of contents and change the footer:</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">code-fold</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">toc</span><span class="kw">:</span><span class="at"> </span><span class="ch">~</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">page-footer</span><span class="kw">:</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">right</span><span class="kw">:</span><span class="at"> </span><span class="st">"Built with love."</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">code-fold</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">toc</span><span class="kw">:</span><span class="at"> </span><span class="ch">~</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">page-footer</span><span class="kw">:</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">right</span><span class="kw">:</span><span class="at"> </span><span class="st">"Built with love."</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p>See the <a href="https://quarto.org/docs/reference/projects/websites.html">Quarto website reference</a> for the full list of changes you can make.</p>
 <p><code>quarto:</code> applies to every page. To change a single vignette instead, set the option in its front matter, which overrides the site-wide value:</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"A long tutorial"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">code-fold</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">toc-depth</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"A long tutorial"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">code-fold</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">toc-depth</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p>To change a single code chunk, use a chunk option such as <code>#| code-fold: true</code>.</p>
+</section><section id="styling-and-layout" class="level2"><h2 class="anchored" data-anchor-id="styling-and-layout">Styling and layout</h2>
+<p>The site uses Quarto’s <code>default</code> theme in light mode and <code>darkly</code> in dark mode. <code>theme:</code> picks others from Quarto’s <a href="https://quarto.org/docs/output-formats/html-themes.html">built-in themes</a> (the Bootswatch themes, as in pkgdown’s <code>template: bootswatch:</code>), with quartodown’s styling on top:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">light</span><span class="kw">:</span><span class="at"> flatly</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dark</span><span class="kw">:</span><span class="at"> darkly</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>Either can be left out to keep its default. A theme can also be your own <code>.scss</code> file in <code>_quartodown/</code>, such as <code>light: _quartodown/brand.scss</code>. To adjust a built-in theme you can use <code>extra.scss</code>, an example is given below.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>A crowded navbar
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Some themes space the navbar’s items further apart or capitalize them. With <code>lux</code>, for example, “Get started” wraps onto two lines and the version is cut off. Bringing the items closer in <code>_quartodown/extra.scss</code> fixes it:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb9"><pre class="sourceCode scss code-with-copy"><code class="sourceCode scss"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">/*-- scss:rules --*/</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">.navbar</span> <span class="fu">.nav-item</span> {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">margin-right</span>: <span class="dv">0.25</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">.navbar</span> <span class="fu">.nav-link</span><span class="op">,</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">.navbar-brand</span> {</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">white-space</span>: <span class="dv">nowrap</span><span class="op">;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+</div>
+</div>
+<p>To restyle every page, add <code>_quartodown/extra.scss</code>. It is compiled on top of quartodown’s theme, once for the light theme and once for the dark one, and has two parts: Bootstrap and Quarto <a href="https://quarto.org/docs/output-formats/html-themes.html#sass-variables">variables</a> under <code>scss:defaults</code>, and CSS rules under <code>scss:rules</code>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="annotated-cell-14"><pre class="sourceCode scss code-annotation-code code-with-copy code-annotated"><code class="sourceCode scss"><span id="annotated-cell-14-1"><a href="#annotated-cell-14-1" aria-hidden="true" tabindex="-1"></a><span class="co">/*-- scss:defaults --*/</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="1">1</button><span id="annotated-cell-14-2" class="code-annotation-target"><a href="#annotated-cell-14-2" aria-hidden="true" tabindex="-1"></a><span class="va">$primary</span>: <span class="cn">#2c7a7b</span><span class="op">;</span></span>
+<span id="annotated-cell-14-3"><a href="#annotated-cell-14-3" aria-hidden="true" tabindex="-1"></a><span class="va">$font-family-sans-serif</span>: <span class="st">"Inter"</span><span class="op">,</span> <span class="dv">sans-serif</span><span class="op">;</span></span>
+<span id="annotated-cell-14-4"><a href="#annotated-cell-14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-14-5"><a href="#annotated-cell-14-5" aria-hidden="true" tabindex="-1"></a><span class="co">/*-- scss:rules --*/</span></span>
+<span id="annotated-cell-14-6"><a href="#annotated-cell-14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">.navbar</span> {</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="2">2</button><span id="annotated-cell-14-7" class="code-annotation-target"><a href="#annotated-cell-14-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">border-bottom</span>: <span class="dv">1</span><span class="dt">px</span> <span class="dv">solid</span> <span class="va">$border-color</span><span class="op">;</span></span>
+<span id="annotated-cell-14-8"><a href="#annotated-cell-14-8" aria-hidden="true" tabindex="-1"></a>}</span><div class="code-annotation-gutter-bg"></div>
+<div class="code-annotation-gutter"></div></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-14" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-14" data-code-lines="2" data-code-annotation="1">Links, the active navbar item and buttons.</span>
+</dd>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-14" data-code-lines="7" data-code-annotation="2">Variables take the value of the theme being compiled, so this suits both.</span>
+</dd>
+</dl>
+<p>Plain CSS can go in <code>_quartodown/extra.css</code> instead, which is added to every page as it is.</p>
+<p>The page’s widths and spacing are Quarto settings, under <code>quarto:</code>. For example, a wider text column and table of contents:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">grid</span><span class="kw">:</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">body-width</span><span class="kw">:</span><span class="at"> 900px</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">margin-width</span><span class="kw">:</span><span class="at"> 300px</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>See Quarto’s <a href="https://quarto.org/docs/output-formats/page-layout.html">page layout</a> guide for <code>grid:</code> and <code>page-layout:</code>.</p>
+<p>The navbar’s items start where the page’s text does, which a script on each page measures. To start them at the edge of the page instead, override it with:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb11"><pre class="sourceCode scss code-with-copy"><code class="sourceCode scss"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">/*-- scss:rules --*/</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">.navbar-container</span> {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">padding-left</span>: <span class="dv">1</span><span class="dt">em</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>Everything in <code>_quartodown/</code> is copied into the Quarto project, so other files it holds can be named from <code>quarto:</code> by the same path, such as Quarto <a href="https://quarto.org/docs/journals/templates.html#template-partials">template partials</a>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">template-partials</span><span class="kw">:</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> _quartodown/title-block.html</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>Setting <code>include-in-header:</code> or <code>include-after-body:</code> replaces quartodown’s own files, which, among other things, pick dark mode for visitors who prefer it and line up the navbar. To add to them, list them too:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">include-in-header</span><span class="kw">:</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> quartodown-header.html</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> _quartodown/analytics.html</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
 </section><section id="coming-from-pkgdown" class="level2"><h2 class="anchored" data-anchor-id="coming-from-pkgdown">Coming from pkgdown</h2>
-<p>Moving a site over is very easy, and mostly means moving <code>_pkgdown.yml</code>’s settings into <code>_quartodown.yml</code>:</p>
-<ul>
-<li>
-<code>reference:</code> has the same format and selectors, so it can be copied as is.</li>
-<li>
-<code>navbar:</code> lists items differently; see <a href="#the-navbar">The navbar</a>.</li>
-<li>
-<code>template:</code> (Bootstrap version, bslib variables, theme) has no equivalent: style the site with Quarto’s <code>theme:</code> under <code>quarto: format: html:</code>, as in <a href="#other-quarto-settings">Other Quarto settings</a>.</li>
-<li>
-<code>articles:</code> has no equivalent: group vignettes with navbar menus instead.</li>
-<li>A separate home page (an <code>index.md</code> used instead of the README) isn’t picked up automatically: set it with <a href="#the-home-page"><code>home: file:</code></a>.</li>
-<li>Code that checks <code>IN_PKGDOWN</code> (or <code>pkgdown::in_pkgdown()</code>) should check <code>identical(Sys.getenv("IN_QUARTODOWN"), "true")</code> instead.</li>
-</ul>
-<p>The rest works as with pkgdown, except that vignettes are published under <code>vignettes/</code> rather than <code>articles/</code>: <code>articles/foo.html</code> becomes <code>vignettes/foo.html</code>, and <code>articles/bar.html</code>, from <code>vignettes/articles/bar.Rmd</code>, becomes <code>vignettes/articles/bar.html</code>, so update any links pointing to them.</p>
+<p>Moving a site over is very easy, and mostly means moving <code>_pkgdown.yml</code>’s settings into <code>_quartodown/_quartodown.yml</code>. These have the same format, so can be copied as is: <code>url:</code>, <code>reference:</code>, <code>home: sidebar:</code>, <code>home: links:</code>, <code>authors:</code>, <code>repo:</code> and <code>redirects:</code>. The rest maps as follows:</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>pkgdown</th>
+<th>quartodown</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>navbar:</code></td>
+<td>lists items differently; see <a href="#the-navbar">The navbar</a>
+</td>
+</tr>
+<tr class="even">
+<td><code>articles:</code></td>
+<td>no equivalent: group vignettes with navbar menus instead</td>
+</tr>
+<tr class="odd">
+<td>
+<code>home: title:</code>, <code>title:</code>
+</td>
+<td><code>quarto: website: navbar: title:</code></td>
+</tr>
+<tr class="even">
+<td><code>home: description:</code></td>
+<td><code>quarto: website: description:</code></td>
+</tr>
+<tr class="odd">
+<td><code>lang:</code></td>
+<td><code>quarto: lang:</code></td>
+</tr>
+<tr class="even">
+<td><code>template: bootswatch:</code></td>
+<td><a href="#styling-and-layout"><code>theme: light:</code></a></td>
+</tr>
+<tr class="odd">
+<td><code>template: bslib:</code></td>
+<td>
+<code>_quartodown/extra.scss</code>; fonts as below</td>
+</tr>
+<tr class="even">
+<td><code>template: opengraph:</code></td>
+<td>
+<code>quarto: website: open-graph:</code> and <code>twitter-card:</code>, as below</td>
+</tr>
+<tr class="odd">
+<td><code>template: includes:</code></td>
+<td>
+<code>quarto: format: html: include-in-header:</code> etc.</td>
+</tr>
+<tr class="even">
+<td><code>template: math-rendering:</code></td>
+<td><code>quarto: format: html: html-math-method:</code></td>
+</tr>
+<tr class="odd">
+<td><code>template: params: ganalytics:</code></td>
+<td><code>quarto: website: google-analytics:</code></td>
+</tr>
+<tr class="even">
+<td><code>template: light-switch:</code></td>
+<td>always on: the site has a light and a dark theme</td>
+</tr>
+<tr class="odd">
+<td>
+<code>navbar: bg:</code>, <code>type:</code>
+</td>
+<td>
+<code>theme:</code> or <code>_quartodown/extra.scss</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>toc: depth:</code></td>
+<td><code>quarto: format: html: toc-depth:</code></td>
+</tr>
+<tr class="odd">
+<td><code>figures:</code></td>
+<td>
+<code>quarto: format: html: fig-width:</code>, <code>fig-height:</code>, <code>fig-dpi:</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>footer:</code></td>
+<td>
+<code>authors: footer:</code>, or <code>quarto: website: page-footer:</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A separate home page (an <code>index.md</code> used instead of the README) isn’t picked up automatically: set it with <a href="#the-home-page"><code>home: file:</code></a>. Code that checks <code>IN_PKGDOWN</code> (or <code>pkgdown::in_pkgdown()</code>) should check <code>identical(Sys.getenv("IN_QUARTODOWN"), "true")</code> instead.</p>
+<p>For example, this part of a <code>_pkgdown.yml</code>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">bootswatch</span><span class="kw">:</span><span class="at"> flatly</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">bslib</span><span class="kw">:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">base_font</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">google</span><span class="kw">:</span><span class="at"> </span><span class="st">"Inter"</span><span class="kw">}</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">code_font</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="fu">google</span><span class="kw">:</span><span class="at"> </span><span class="st">"Fira Code"</span><span class="kw">}</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">opengraph</span><span class="kw">:</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">twitter</span><span class="kw">:</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">creator</span><span class="kw">:</span><span class="at"> </span><span class="st">"@me"</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">card</span><span class="kw">:</span><span class="at"> summary_large_image</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">home</span><span class="kw">:</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"mypkg: Do Things"</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">description</span><span class="kw">:</span><span class="at"> A package that does things.</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>becomes, in <code>_quartodown/_quartodown.yml</code>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">light</span><span class="kw">:</span><span class="at"> flatly</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">description</span><span class="kw">:</span><span class="at"> A package that does things.</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">twitter-card</span><span class="kw">:</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">creator</span><span class="kw">:</span><span class="at"> </span><span class="st">"@me"</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">card-style</span><span class="kw">:</span><span class="at"> summary_large_image</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>and, in <code>_quartodown/extra.scss</code>:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb16"><pre class="sourceCode scss code-with-copy"><code class="sourceCode scss"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">/*-- scss:defaults --*/</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">@import</span> <span class="fu">url(</span><span class="st">"https://fonts.googleapis.com/css2?family=Inter&amp;family=Fira+Code&amp;display=swap"</span><span class="fu">)</span><span class="op">;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="va">$font-family-sans-serif</span>: <span class="st">"Inter"</span><span class="op">,</span> <span class="dv">sans-serif</span><span class="op">;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="va">$font-family-monospace</span>: <span class="st">"Fira Code"</span><span class="op">,</span> <span class="dv">monospace</span><span class="op">;</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>A custom navbar item, such as a link to CRAN, is a Quarto navbar item:</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb17"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">navbar</span><span class="kw">:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">right</span><span class="kw">:</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> repo</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">text</span><span class="kw">:</span><span class="at"> CRAN</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://cran.r-project.org/package=mypkg</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>The rest works as with pkgdown, except that vignettes are published under <code>vignettes/</code> rather than <code>articles/</code>: <code>articles/foo.html</code> becomes <code>vignettes/foo.html</code>, and <code>articles/bar.html</code>, from <code>vignettes/articles/bar.Rmd</code>, becomes <code>vignettes/articles/bar.html</code>. Likewise, the changelog is <code>NEWS.html</code> rather than <code>news/index.html</code>. Update links to them, or keep the old addresses working with <a href="#redirects"><code>redirects:</code></a>.</p>
 
 
 </section></main><!-- /main --><script>
@@ -656,10 +1004,14 @@ Note
     return main.getBoundingClientRect().left;
   }
   // Where the body text starts depends on the page layout, so measure it.
+  // With a docked sidebar (`navbar: style: sidebar`), the title stays above
+  // the sidebar instead.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
+    if (!main || !navContainer || document.body.classList.contains("docked")) {
+      return;
+    }
     navContainer.style.paddingLeft = "";
     var diff = contentLeft(main) -
       navContainer.getBoundingClientRect().left;
@@ -702,7 +1054,52 @@ Note
       e.preventDefault();
     }, true);
   }
+  // Shows the tip of a reference to the package's own topics, from the
+  // page's hidden `.quartodown-tip-payload` (see add_tooltips_html()), in
+  // one `position: fixed` element, so code blocks' `overflow: auto` can't
+  // clip it.
+  function initTooltips() {
+    var payload = document.querySelector(".quartodown-tip-payload");
+    if (!payload) return;
+    var float = document.createElement("div");
+    float.className = "quartodown-tip-float";
+    float.setAttribute("role", "tooltip");
+    document.body.appendChild(float);
+    var hideTimer;
+    function place(el) {
+      var r = el.getBoundingClientRect();
+      var top = r.bottom + 6;
+      var left = r.left;
+      var maxLeft = window.innerWidth - float.offsetWidth - 8;
+      if (left > maxLeft) left = Math.max(8, maxLeft);
+      var maxTop = window.innerHeight - float.offsetHeight - 8;
+      if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
+      float.style.top = top + "px";
+      float.style.left = left + "px";
+    }
+    function show(el) {
+      var key = el.getAttribute("data-quartodown-tip");
+      var tip = payload.querySelector('[data-for="' + key + '"]');
+      if (!tip) return;
+      float.innerHTML = tip.innerHTML;
+      float.style.display = "block";
+      place(el);
+    }
+    function hide() { float.style.display = "none"; }
+    function cancelHide() { clearTimeout(hideTimer); }
+    function scheduleHide() { hideTimer = setTimeout(hide, 150); }
+    document.querySelectorAll("a.quartodown-tip-ref").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { cancelHide(); show(el); });
+      el.addEventListener("mouseleave", scheduleHide);
+      el.addEventListener("focus", function () { show(el); });
+      el.addEventListener("blur", hide);
+    });
+    float.addEventListener("mouseenter", cancelHide);
+    float.addEventListener("mouseleave", scheduleHide);
+  }
   stripOutputOnCopy();
+  // The payload comes after this script, at the end of the body.
+  document.addEventListener("DOMContentLoaded", initTooltips);
   shrinkNavbarVersion();
   alignNavbarToContent();
   window.addEventListener("load", alignNavbarToContent);
@@ -1173,7 +1570,7 @@ Note
 </div>
   </div>
 </footer>
-<div class="quartodown-tip-payload" hidden><div data-for="t1"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown.yml</code>, the configuration file <code>build_site()</code> reads, at the package root.</span></div><div data-for="t2"><code class="quartodown-tip-sig">build_site(
+<div class="quartodown-tip-payload" hidden><div data-for="t1"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown/_quartodown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div><div data-for="t2"><code class="quartodown-tip-sig">build_site(
   path = &quot;.&quot;,
   tooltips = TRUE,
   freeze = FALSE,
@@ -1181,48 +1578,5 @@ Note
   devel = FALSE,
   preview = interactive()
 )</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div></div>
-<script>
-(function(){
-  var payload = document.currentScript.previousElementSibling;
-  var float = document.createElement('div');
-  float.className = 'quartodown-tip-float';
-  float.setAttribute('role', 'tooltip');
-  document.body.appendChild(float);
-  var hideTimer;
-  function place(el){
-    var r = el.getBoundingClientRect();
-    var top = r.bottom + 6;
-    var left = r.left;
-    var maxLeft = window.innerWidth - float.offsetWidth - 8;
-    if (left > maxLeft) left = Math.max(8, maxLeft);
-    var maxTop = window.innerHeight - float.offsetHeight - 8;
-    if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
-    float.style.top = top + 'px';
-    float.style.left = left + 'px';
-  }
-  function show(el){
-    var key = el.getAttribute('data-quartodown-tip');
-    var tip = payload.querySelector('[data-for="' + key + '"]');
-    if (!tip) return;
-    float.innerHTML = tip.innerHTML;
-    float.style.display = 'block';
-    place(el);
-  }
-  function hide(){ float.style.display = 'none'; }
-  function cancelHide(){ clearTimeout(hideTimer); }
-  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.quartodown-tip-ref');
-  for (var i = 0; i < links.length; i++) {
-    (function(el){
-      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
-      el.addEventListener('mouseleave', scheduleHide);
-      el.addEventListener('focus', function(){ show(el); });
-      el.addEventListener('blur', hide);
-    })(links[i]);
-  }
-  float.addEventListener('mouseenter', cancelHide);
-  float.addEventListener('mouseleave', scheduleHide);
-})();
-</script>
 </body>
 </html>

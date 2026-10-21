@@ -67,9 +67,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script><link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-a8b8a5b64f5ac945ea32ecedfbba154a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -318,6 +318,10 @@ visitors who prefer it, before Quarto reads the stored choice.
  <span class="dropdown-text">Customizing your site</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./vignettes/articles/gallery.html">
+ <span class="dropdown-text">Gallery</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -438,10 +442,14 @@ Hautop Kristensen B (2026). <em>quartodown: Package Websites Built Entirely with
     return main.getBoundingClientRect().left;
   }
   // Where the body text starts depends on the page layout, so measure it.
+  // With a docked sidebar (`navbar: style: sidebar`), the title stays above
+  // the sidebar instead.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
+    if (!main || !navContainer || document.body.classList.contains("docked")) {
+      return;
+    }
     navContainer.style.paddingLeft = "";
     var diff = contentLeft(main) -
       navContainer.getBoundingClientRect().left;
@@ -484,7 +492,52 @@ Hautop Kristensen B (2026). <em>quartodown: Package Websites Built Entirely with
       e.preventDefault();
     }, true);
   }
+  // Shows the tip of a reference to the package's own topics, from the
+  // page's hidden `.quartodown-tip-payload` (see add_tooltips_html()), in
+  // one `position: fixed` element, so code blocks' `overflow: auto` can't
+  // clip it.
+  function initTooltips() {
+    var payload = document.querySelector(".quartodown-tip-payload");
+    if (!payload) return;
+    var float = document.createElement("div");
+    float.className = "quartodown-tip-float";
+    float.setAttribute("role", "tooltip");
+    document.body.appendChild(float);
+    var hideTimer;
+    function place(el) {
+      var r = el.getBoundingClientRect();
+      var top = r.bottom + 6;
+      var left = r.left;
+      var maxLeft = window.innerWidth - float.offsetWidth - 8;
+      if (left > maxLeft) left = Math.max(8, maxLeft);
+      var maxTop = window.innerHeight - float.offsetHeight - 8;
+      if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
+      float.style.top = top + "px";
+      float.style.left = left + "px";
+    }
+    function show(el) {
+      var key = el.getAttribute("data-quartodown-tip");
+      var tip = payload.querySelector('[data-for="' + key + '"]');
+      if (!tip) return;
+      float.innerHTML = tip.innerHTML;
+      float.style.display = "block";
+      place(el);
+    }
+    function hide() { float.style.display = "none"; }
+    function cancelHide() { clearTimeout(hideTimer); }
+    function scheduleHide() { hideTimer = setTimeout(hide, 150); }
+    document.querySelectorAll("a.quartodown-tip-ref").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { cancelHide(); show(el); });
+      el.addEventListener("mouseleave", scheduleHide);
+      el.addEventListener("focus", function () { show(el); });
+      el.addEventListener("blur", hide);
+    });
+    float.addEventListener("mouseenter", cancelHide);
+    float.addEventListener("mouseleave", scheduleHide);
+  }
   stripOutputOnCopy();
+  // The payload comes after this script, at the end of the body.
+  document.addEventListener("DOMContentLoaded", initTooltips);
   shrinkNavbarVersion();
   alignNavbarToContent();
   window.addEventListener("load", alignNavbarToContent);

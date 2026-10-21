@@ -67,9 +67,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-a8b8a5b64f5ac945ea32ecedfbba154a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,13 +123,6 @@ visitors who prefer it, before Quarto reads the stored choice.
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image-height" content="600">
 <meta name="twitter:image-width" content="520">
-<!-- quartodown-tooltips -->
-<style>
-.quartodown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.quartodown-tip-float .quartodown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.quartodown-tip-float .quartodown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.quartodown-tip-ref{cursor:help;}
-</style>
 </head>
 <body class="nav-fixed quarto-light">
 <script id="quarto-html-before-body" type="application/javascript">
@@ -325,6 +318,10 @@ a.quartodown-tip-ref{cursor:help;}
  <span class="dropdown-text">Customizing your site</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../vignettes/articles/gallery.html">
+ <span class="dropdown-text">Gallery</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -391,7 +388,7 @@ a.quartodown-tip-ref{cursor:help;}
 <code class="sourceCode R"><span><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../reference/use_quartodown.html">use_quartodown</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-<p>This writes <code>_quartodown.yml</code> at the package root, and adds the files the build generates to <code>.gitignore</code> and <code>.Rbuildignore</code>. <code>_quartodown.yml</code> is where you can <a href="https://bjarkehautop.github.io/quartodown/vignettes/customizing.html">customize your site</a>. If your package already has a <code>_pkgdown.yml</code>, see <a href="https://bjarkehautop.github.io/quartodown/vignettes/customizing.html#coming-from-pkgdown">Coming from pkgdown</a> for how its settings carry over.</p>
+<p>This writes <code>_quartodown/_quartodown.yml</code>, and adds the files the build generates to <code>.gitignore</code> and <code>.Rbuildignore</code>. <code>_quartodown.yml</code> is where you can <a href="https://bjarkehautop.github.io/quartodown/vignettes/customizing.html">customize your site</a>. If your package already has a <code>_pkgdown.yml</code>, see <a href="https://bjarkehautop.github.io/quartodown/vignettes/customizing.html#coming-from-pkgdown">Coming from pkgdown</a> for how its settings carry over.</p>
 </section><section id="build-the-site" class="level2"><h2 class="anchored" data-anchor-id="build-the-site">Build the site</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -436,10 +433,14 @@ a.quartodown-tip-ref{cursor:help;}
     return main.getBoundingClientRect().left;
   }
   // Where the body text starts depends on the page layout, so measure it.
+  // With a docked sidebar (`navbar: style: sidebar`), the title stays above
+  // the sidebar instead.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
+    if (!main || !navContainer || document.body.classList.contains("docked")) {
+      return;
+    }
     navContainer.style.paddingLeft = "";
     var diff = contentLeft(main) -
       navContainer.getBoundingClientRect().left;
@@ -482,7 +483,52 @@ a.quartodown-tip-ref{cursor:help;}
       e.preventDefault();
     }, true);
   }
+  // Shows the tip of a reference to the package's own topics, from the
+  // page's hidden `.quartodown-tip-payload` (see add_tooltips_html()), in
+  // one `position: fixed` element, so code blocks' `overflow: auto` can't
+  // clip it.
+  function initTooltips() {
+    var payload = document.querySelector(".quartodown-tip-payload");
+    if (!payload) return;
+    var float = document.createElement("div");
+    float.className = "quartodown-tip-float";
+    float.setAttribute("role", "tooltip");
+    document.body.appendChild(float);
+    var hideTimer;
+    function place(el) {
+      var r = el.getBoundingClientRect();
+      var top = r.bottom + 6;
+      var left = r.left;
+      var maxLeft = window.innerWidth - float.offsetWidth - 8;
+      if (left > maxLeft) left = Math.max(8, maxLeft);
+      var maxTop = window.innerHeight - float.offsetHeight - 8;
+      if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
+      float.style.top = top + "px";
+      float.style.left = left + "px";
+    }
+    function show(el) {
+      var key = el.getAttribute("data-quartodown-tip");
+      var tip = payload.querySelector('[data-for="' + key + '"]');
+      if (!tip) return;
+      float.innerHTML = tip.innerHTML;
+      float.style.display = "block";
+      place(el);
+    }
+    function hide() { float.style.display = "none"; }
+    function cancelHide() { clearTimeout(hideTimer); }
+    function scheduleHide() { hideTimer = setTimeout(hide, 150); }
+    document.querySelectorAll("a.quartodown-tip-ref").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { cancelHide(); show(el); });
+      el.addEventListener("mouseleave", scheduleHide);
+      el.addEventListener("focus", function () { show(el); });
+      el.addEventListener("blur", hide);
+    });
+    float.addEventListener("mouseenter", cancelHide);
+    float.addEventListener("mouseleave", scheduleHide);
+  }
   stripOutputOnCopy();
+  // The payload comes after this script, at the end of the body.
+  document.addEventListener("DOMContentLoaded", initTooltips);
   shrinkNavbarVersion();
   alignNavbarToContent();
   window.addEventListener("load", alignNavbarToContent);
@@ -914,7 +960,7 @@ a.quartodown-tip-ref{cursor:help;}
 </div>
   </div>
 </footer>
-<div class="quartodown-tip-payload" hidden><div data-for="t1"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown.yml</code>, the configuration file <code>build_site()</code> reads, at the package root.</span></div><div data-for="t2"><code class="quartodown-tip-sig">build_site(
+<div class="quartodown-tip-payload" hidden><div data-for="t1"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown/_quartodown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div><div data-for="t2"><code class="quartodown-tip-sig">build_site(
   path = &quot;.&quot;,
   tooltips = TRUE,
   freeze = FALSE,
@@ -922,48 +968,5 @@ a.quartodown-tip-ref{cursor:help;}
   devel = FALSE,
   preview = interactive()
 )</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t3"><code class="quartodown-tip-sig">preview_site(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Serves <code>docs/</code>, as built by <code>build_site()</code>, in a web browser, and reloads the page when the site is rebuilt.</span></div><div data-for="t4"><code class="quartodown-tip-sig">use_quartodown_action(path = &quot;.&quot;, overwrite = FALSE)</code><span class="quartodown-tip-brief">Writes <code>.github/workflows/quartodown.yaml</code>, a GitHub Actions workflow that builds the site and deploys it to the <code>gh-pages</code> branch.</span></div></div>
-<script>
-(function(){
-  var payload = document.currentScript.previousElementSibling;
-  var float = document.createElement('div');
-  float.className = 'quartodown-tip-float';
-  float.setAttribute('role', 'tooltip');
-  document.body.appendChild(float);
-  var hideTimer;
-  function place(el){
-    var r = el.getBoundingClientRect();
-    var top = r.bottom + 6;
-    var left = r.left;
-    var maxLeft = window.innerWidth - float.offsetWidth - 8;
-    if (left > maxLeft) left = Math.max(8, maxLeft);
-    var maxTop = window.innerHeight - float.offsetHeight - 8;
-    if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
-    float.style.top = top + 'px';
-    float.style.left = left + 'px';
-  }
-  function show(el){
-    var key = el.getAttribute('data-quartodown-tip');
-    var tip = payload.querySelector('[data-for="' + key + '"]');
-    if (!tip) return;
-    float.innerHTML = tip.innerHTML;
-    float.style.display = 'block';
-    place(el);
-  }
-  function hide(){ float.style.display = 'none'; }
-  function cancelHide(){ clearTimeout(hideTimer); }
-  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.quartodown-tip-ref');
-  for (var i = 0; i < links.length; i++) {
-    (function(el){
-      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
-      el.addEventListener('mouseleave', scheduleHide);
-      el.addEventListener('focus', function(){ show(el); });
-      el.addEventListener('blur', hide);
-    })(links[i]);
-  }
-  float.addEventListener('mouseenter', cancelHide);
-  float.addEventListener('mouseleave', scheduleHide);
-})();
-</script>
 </body>
 </html>

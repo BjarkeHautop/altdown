@@ -67,9 +67,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-a8b8a5b64f5ac945ea32ecedfbba154a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-eb65bd2df348a18f6e61dc3e7adab417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,13 +123,6 @@ visitors who prefer it, before Quarto reads the stored choice.
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image-height" content="600">
 <meta name="twitter:image-width" content="520">
-<!-- quartodown-tooltips -->
-<style>
-.quartodown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
-.quartodown-tip-float .quartodown-tip-sig{display:block;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;background-color:transparent;padding:0;border-radius:0;}
-.quartodown-tip-float .quartodown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}
-a.quartodown-tip-ref{cursor:help;}
-</style>
 </head>
 <body class="nav-fixed quarto-light">
 <script id="quarto-html-before-body" type="application/javascript">
@@ -325,6 +318,10 @@ a.quartodown-tip-ref{cursor:help;}
  <span class="dropdown-text">Customizing your site</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../vignettes/articles/gallery.html">
+ <span class="dropdown-text">Gallery</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -386,7 +383,7 @@ a.quartodown-tip-ref{cursor:help;}
 <small class="dont-index">Source: <a href="https://github.com/bjarkehautop/quartodown/blob/HEAD/R/use_quartodown.R"><code>R/use_quartodown.R</code></a></small>
 </p>
 <section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Writes <code>_quartodown.yml</code>, the configuration file <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site()</a></code> reads, at the package root. It starts with a <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one "All functions" section. Also adds the <code>.gitignore</code>/<code>.Rbuildignore</code> entries the build needs (see Details) if they’re not already there.</p>
+<p>Writes <code>_quartodown/_quartodown.yml</code>, the configuration file <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site()</a></code> reads. It starts with a <code>reference:</code> field listing every function currently documented in <code>&lt;path&gt;/man/*.Rd</code> in one "All functions" section. Also adds the <code>.gitignore</code>/<code>.Rbuildignore</code> entries the build needs (see Details) if they’re not already there.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -412,12 +409,12 @@ _quarto/*
 # .Rbuildignore
 ^docs$
 ^_quarto$
-^_quartodown\.yml$
+^_quartodown$
 </pre>
 </div>
-<p><code>_quarto/</code> is the Quarto project <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site()</a></code> generates and renders into <code>docs/</code>. Its <code>_freeze/</code> directory holds the results of code run with <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site(freeze = TRUE)</a></code>, which can be committed so later builds, e.g. on CI, reuse them.</p>
+<p><code>_quarto/</code> is the Quarto project <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site()</a></code> generates and renders into <code>docs/</code>. Its <code>_freeze/</code> directory holds the results of code run with <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site(freeze = TRUE)</a></code>, which can be committed so later builds, e.g. on CI, reuse them. <code>_quartodown/</code> holds the site’s configuration and any files it uses, such as <code>extra.scss</code>.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
-<p>Invisibly, the path to <code>_quartodown.yml</code>.</p>
+<p>Invisibly, the path to <code>_quartodown/_quartodown.yml</code>.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
@@ -429,14 +426,14 @@ _quarto/*
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">pkg</span>, <span class="st">"DESCRIPTION"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./use_quartodown.html">use_quartodown</a></span><span class="op">(</span><span class="va">pkg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Wrote <span class='fansi-color-004'>/tmp/RtmpSSKHEC/examplepkg1a2172ba0074/_quartodown.yml</span> (edit this to group your functions).</span></span>
-<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Added `_quarto/*` and `!_quarto/_freeze/` to <span class='fansi-color-004'>/tmp/RtmpSSKHEC/examplepkg1a2172ba0074/.gitignore</span>.</span></span>
-<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Added `^docs$`, `^_quarto$`, and `^_quartodown\.yml$` to <span class='fansi-color-004'>/tmp/RtmpSSKHEC/examplepkg1a2172ba0074/.Rbuildignore</span>.</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Wrote <span class='fansi-color-004'>/tmp/RtmpvVecxf/examplepkg195c2b4adc4f/_quartodown/_quartodown.yml</span> (edit this to group your functions).</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Added `_quarto/*` and `!_quarto/_freeze/` to <span class='fansi-color-004'>/tmp/RtmpvVecxf/examplepkg195c2b4adc4f/.gitignore</span>.</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Added `^docs$`, `^_quarto$`, and `^_quartodown$` to <span class='fansi-color-004'>/tmp/RtmpvVecxf/examplepkg195c2b4adc4f/.Rbuildignore</span>.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Next steps:</span></span>
-<span><span class="co">#&gt; 1. Edit <span class='fansi-color-004'>_quartodown.yml</span> to group your functions the way you want.</span></span>
+<span><span class="co">#&gt; 1. Edit <span class='fansi-color-004'>_quartodown/_quartodown.yml</span> to group your functions the way you want.</span></span>
 <span><span class="co">#&gt; 2. Build and preview the site with `quartodown::build_site()`.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">pkg</span>, <span class="st">"_quartodown.yml"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">pkg</span>, <span class="st">"_quartodown"</span>, <span class="st">"_quartodown.yml"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "# Configuration for quartodown::build_site(). See"                         </span></span>
 <span><span class="co">#&gt;  [2] "# vignette(\"customizing\", package = \"quartodown\") for all fields,"     </span></span>
 <span><span class="co">#&gt;  [3] "# including `navbar:` (navbar items and menus) and `quarto:` (other Quarto"</span></span>
@@ -466,10 +463,14 @@ _quarto/*
     return main.getBoundingClientRect().left;
   }
   // Where the body text starts depends on the page layout, so measure it.
+  // With a docked sidebar (`navbar: style: sidebar`), the title stays above
+  // the sidebar instead.
   function alignNavbarToContent() {
     var main = document.querySelector("#quarto-document-content");
     var navContainer = document.querySelector(".navbar-container");
-    if (!main || !navContainer) return;
+    if (!main || !navContainer || document.body.classList.contains("docked")) {
+      return;
+    }
     navContainer.style.paddingLeft = "";
     var diff = contentLeft(main) -
       navContainer.getBoundingClientRect().left;
@@ -512,7 +513,52 @@ _quarto/*
       e.preventDefault();
     }, true);
   }
+  // Shows the tip of a reference to the package's own topics, from the
+  // page's hidden `.quartodown-tip-payload` (see add_tooltips_html()), in
+  // one `position: fixed` element, so code blocks' `overflow: auto` can't
+  // clip it.
+  function initTooltips() {
+    var payload = document.querySelector(".quartodown-tip-payload");
+    if (!payload) return;
+    var float = document.createElement("div");
+    float.className = "quartodown-tip-float";
+    float.setAttribute("role", "tooltip");
+    document.body.appendChild(float);
+    var hideTimer;
+    function place(el) {
+      var r = el.getBoundingClientRect();
+      var top = r.bottom + 6;
+      var left = r.left;
+      var maxLeft = window.innerWidth - float.offsetWidth - 8;
+      if (left > maxLeft) left = Math.max(8, maxLeft);
+      var maxTop = window.innerHeight - float.offsetHeight - 8;
+      if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
+      float.style.top = top + "px";
+      float.style.left = left + "px";
+    }
+    function show(el) {
+      var key = el.getAttribute("data-quartodown-tip");
+      var tip = payload.querySelector('[data-for="' + key + '"]');
+      if (!tip) return;
+      float.innerHTML = tip.innerHTML;
+      float.style.display = "block";
+      place(el);
+    }
+    function hide() { float.style.display = "none"; }
+    function cancelHide() { clearTimeout(hideTimer); }
+    function scheduleHide() { hideTimer = setTimeout(hide, 150); }
+    document.querySelectorAll("a.quartodown-tip-ref").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { cancelHide(); show(el); });
+      el.addEventListener("mouseleave", scheduleHide);
+      el.addEventListener("focus", function () { show(el); });
+      el.addEventListener("blur", hide);
+    });
+    float.addEventListener("mouseenter", cancelHide);
+    float.addEventListener("mouseleave", scheduleHide);
+  }
   stripOutputOnCopy();
+  // The payload comes after this script, at the end of the body.
+  document.addEventListener("DOMContentLoaded", initTooltips);
   shrinkNavbarVersion();
   alignNavbarToContent();
   window.addEventListener("load", alignNavbarToContent);
@@ -951,49 +997,6 @@ _quarto/*
   quiet = TRUE,
   devel = FALSE,
   preview = interactive()
-)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t2"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown.yml</code>, the configuration file <code>build_site()</code> reads, at the package root.</span></div></div>
-<script>
-(function(){
-  var payload = document.currentScript.previousElementSibling;
-  var float = document.createElement('div');
-  float.className = 'quartodown-tip-float';
-  float.setAttribute('role', 'tooltip');
-  document.body.appendChild(float);
-  var hideTimer;
-  function place(el){
-    var r = el.getBoundingClientRect();
-    var top = r.bottom + 6;
-    var left = r.left;
-    var maxLeft = window.innerWidth - float.offsetWidth - 8;
-    if (left > maxLeft) left = Math.max(8, maxLeft);
-    var maxTop = window.innerHeight - float.offsetHeight - 8;
-    if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);
-    float.style.top = top + 'px';
-    float.style.left = left + 'px';
-  }
-  function show(el){
-    var key = el.getAttribute('data-quartodown-tip');
-    var tip = payload.querySelector('[data-for="' + key + '"]');
-    if (!tip) return;
-    float.innerHTML = tip.innerHTML;
-    float.style.display = 'block';
-    place(el);
-  }
-  function hide(){ float.style.display = 'none'; }
-  function cancelHide(){ clearTimeout(hideTimer); }
-  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }
-  var links = document.querySelectorAll('a.quartodown-tip-ref');
-  for (var i = 0; i < links.length; i++) {
-    (function(el){
-      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });
-      el.addEventListener('mouseleave', scheduleHide);
-      el.addEventListener('focus', function(){ show(el); });
-      el.addEventListener('blur', hide);
-    })(links[i]);
-  }
-  float.addEventListener('mouseenter', cancelHide);
-  float.addEventListener('mouseleave', scheduleHide);
-})();
-</script>
+)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t2"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown/_quartodown.yml</code>, the configuration file <code>build_site()</code> reads.</span></div></div>
 </body>
 </html>

@@ -4,5 +4,6 @@ urls:
 articles:
   customizing: customizing.html
   quartodown: quartodown.html
+  gallery: articles/gallery.html
   showcase: articles/showcase.html
   technical: articles/technical.html
