@@ -9,7 +9,8 @@
 # quartodown <picture><source media="(prefers-color-scheme: dark)" srcset="man/figures/logo.png" /><img src="man/figures/logo-light.png" align="right" height="139" alt="quartodown logo" /></picture>
 
 quartodown is an R package that turns your package’s README, help pages
-and vignettes into a website, rendered entirely by Quarto.
+and vignettes into a website, rendered entirely by
+[Quarto](https://quarto.org/).
 
 ## Why quartodown?
 
@@ -17,7 +18,10 @@ Every page, help pages included, is a Quarto page, so you get:
 
 - every Quarto feature, from callouts and tabsets to code annotations
   and cross-references, on every page;
-- Quarto’s themes, extensions and settings;
+- Quarto’s themes, extensions and settings.
+
+On top of that, quartodown adds:
+
 - the package website layout R users know from pkgdown: a home page
   sidebar, a grouped function reference, articles and a changelog;
 - function links with hover tooltips.
@@ -27,12 +31,16 @@ Every page, help pages included, is a Quarto page, so you get:
 Install from GitHub:
 
 ``` r
-pak::pak("https://github.com/BjarkeHautop/quartodown")
+pak::pak("BjarkeHautop/quartodown")
 ```
+
+quartodown also needs [Quarto](https://quarto.org/docs/get-started/)
+installed.
 
 ## Usage
 
-Browse around to see how it looks! [Quarto
+[Browse the site](https://bjarkehautop.github.io/quartodown/) to see how
+it looks! [Quarto
 features](https://bjarkehautop.github.io/quartodown/vignettes/articles/showcase.html)
 shows callouts, tabsets, footnotes and more on a quartodown site. If you
 like what you see, and want to use it for your own package, run:
@@ -58,8 +66,14 @@ quartodown::build_site()
 
 In an interactive session, this also opens the site in your browser.
 
-See `?quartodown::build_site` for everything `_quartodown.yml` can
-configure.
+To publish it on GitHub Pages, run
+`quartodown::use_quartodown_action()`. It writes a GitHub Actions
+workflow that builds the site on every push and deploys it to the
+`gh-pages` branch.
+
+See
+[Customizing](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html)
+for everything `_quartodown.yml` can configure.
 
 ## Packages using quartodown
 
