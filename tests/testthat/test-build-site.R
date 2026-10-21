@@ -236,6 +236,19 @@ test_that("quarto_config() turns on social cards with the title and logo", {
   expect_identical(quarto_config(dir)$website$image, "/man/figures/logo.png")
 })
 
+test_that("write_404() writes a 404 page only for a site with a URL", {
+  dir <- new_pkg()
+  page <- file.path(dir, "_quarto", "404.qmd")
+
+  write_404(dir, NULL)
+  expect_false(file.exists(page))
+
+  write_404(dir, "https://someuser.github.io/examplepkg")
+  lines <- readLines(page)
+  expect_true("title: Page not found" %in% lines)
+  expect_true("search: false" %in% lines)
+})
+
 test_that("quarto_config() uses the logo as favicon, preferring the PNG", {
   dir <- new_pkg()
   expect_null(quarto_config(dir)$website$favicon)

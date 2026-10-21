@@ -94,7 +94,8 @@ build_site <- function(
   write_home(path, config)
   build_reference_qmd(path, config)
   build_authors_qmd(path)
-  write_quarto_config(path, config, freeze = freeze)
+  settings <- write_quarto_config(path, config, freeze = freeze)
+  write_404(path, settings$website$`site-url`)
 
   render_project(path, envvars, quiet = quiet)
   write_pkgdown_yml(path)
@@ -251,12 +252,15 @@ merge_quarto_config <- function(x, val) {
   x
 }
 
+# Returns, invisibly, the settings written.
 write_quarto_config <- function(path, config = list(), freeze = FALSE) {
+  settings <- quarto_config(path, config, freeze = freeze)
   yaml::write_yaml(
-    quarto_config(path, config, freeze = freeze),
+    settings,
     file.path(project_dir(path), "_quarto.yml"),
     handlers = list(logical = yaml::verbatim_logical)
   )
+  invisible(settings)
 }
 
 # ---- home page ----------------------------------------------------------------
@@ -292,6 +296,29 @@ write_home <- function(path, config = list()) {
     enc2utf8(build_website_readme(lines, path, sidebar = sidebar)),
     file.path(project_dir(path), "index.qmd"),
     useBytes = TRUE
+  )
+}
+
+# The page GitHub Pages (and Netlify) show for a URL that doesn't exist, with
+# the navbar and search to find the way back. It can be shown at any depth, so
+# needs absolute links, which Quarto makes from the `site_url`; without one,
+# the host's own page is better than an unstyled one.
+write_404 <- function(path, site_url) {
+  if (is.null(site_url)) {
+    return(invisible())
+  }
+  writeLines(
+    c(
+      "---",
+      "title: Page not found",
+      "toc: false",
+      "search: false",
+      "---",
+      "",
+      "Sorry, there is no page at this address. It may have moved, or the link",
+      "may be mistyped. Try the search, or go to the [home page](index.qmd)."
+    ),
+    file.path(project_dir(path), "404.qmd")
   )
 }
 
