@@ -164,8 +164,29 @@ the site is built, as in a vignette. Write links and image paths in it relative
 to the package root, as in the README. Add the file to `.Rbuildignore` so
 `R CMD check` doesn't complain.
 
-Next to the page, a sidebar shows the package's links, license, citation,
-authors and badges. For full control over the page, turn it off with
+Next to the page, a sidebar shows the package's links, license, community files,
+citation, authors and badges. `sidebar:` can reorder its sections, drop some, or
+add your own, and `links:` adds to its links:
+
+```yaml
+home:
+  links:
+    - text: Blog
+      href: https://example.com/blog
+  sidebar:
+    structure: [links, funding, license, authors]   # <1>
+    components:
+      funding:                                       # <2>
+        title: Funding
+        text: Supported by [a grant](https://example.com).
+```
+
+1. The sections, in order. The built-in ones are `links`, `license`,
+   `community`, `citation`, `authors` and `dev` (the README's badges); by
+   default, all of them in that order, then your own.
+2. A section of your own: a heading and Markdown text.
+
+For full control over the page you can turn the sidebar off with
 `sidebar: false`:
 
 ```yaml
@@ -358,6 +379,8 @@ settings into `_quartodown/_quartodown.yml`:
 - `template: bootswatch:` becomes [`theme: light:`](#styling-and-layout).
 - `template: bslib:` fonts go in `_quartodown/extra.scss`, as below.
 - `redirects:` has the same format, so it can be copied as is.
+- `home: sidebar:` and `home: links:` have the same format; see [The home
+  page](#the-home-page).
 - `home: title:` and `description:`, and `template: opengraph:`, are Quarto
   settings, as below.
 - `footer:` is Quarto's `page-footer:`; see [Other Quarto

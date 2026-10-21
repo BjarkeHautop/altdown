@@ -72,8 +72,9 @@ is the same as pkgdown's.
 With \code{style: sidebar}, the \code{left} items go in a sidebar instead, with a
 link to every reference page.
 \item \code{home}: \code{file}, the \code{.md} or \code{.qmd} file the home page shows instead of
-\code{README.md}, and \code{sidebar: false} to show it as written, without the
-sidebar.
+\code{README.md}; \code{sidebar}, the sidebar's \code{structure} (its sections, in
+order) and \code{components} (sections of your own), or \code{false} to show the
+page as written, without it; and \code{links}, added to the sidebar's links.
 \item \code{theme}: the \code{light} and \code{dark} themes: names of Quarto's built-in
 themes, such as \code{flatly} and \code{darkly}, or \code{.scss} files in
 \verb{_quartodown/}. By default, \code{default} and \code{darkly}.

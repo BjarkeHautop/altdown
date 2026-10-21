@@ -29,8 +29,9 @@
 #'   With `style: sidebar`, the `left` items go in a sidebar instead, with a
 #'   link to every reference page.
 #' * `home`: `file`, the `.md` or `.qmd` file the home page shows instead of
-#'   `README.md`, and `sidebar: false` to show it as written, without the
-#'   sidebar.
+#'   `README.md`; `sidebar`, the sidebar's `structure` (its sections, in
+#'   order) and `components` (sections of your own), or `false` to show the
+#'   page as written, without it; and `links`, added to the sidebar's links.
 #' * `theme`: the `light` and `dark` themes: names of Quarto's built-in
 #'   themes, such as `flatly` and `darkly`, or `.scss` files in
 #'   `_quartodown/`. By default, `default` and `darkly`.
@@ -170,7 +171,12 @@ read_config <- function(path) {
     c("url", "reference", "navbar", "home", "theme", "redirects", "quarto")
   )
   if (is.list(config$home)) {
-    warn_unknown_fields(names(config$home), c("file", "sidebar"), "home")
+    warn_unknown_fields(
+      names(config$home),
+      c("file", "sidebar", "links"),
+      "home"
+    )
+    check_home_config(config$home)
   }
   if (is.list(config$theme)) {
     warn_unknown_fields(names(config$theme), c("light", "dark"), "theme")
@@ -388,17 +394,13 @@ write_home <- function(path, config = list()) {
   } else if (file.exists(file.path(path, "README.md"))) {
     file <- "README.md"
   }
-  sidebar <- if (is.null(config$home$sidebar)) TRUE else config$home$sidebar
-  if (!isTRUE(sidebar) && !isFALSE(sidebar)) {
-    cli::cli_abort("_quartodown.yml `home: sidebar:` must be true or false.")
-  }
   lines <- if (is.null(file)) {
     description_home(path)
   } else {
     readLines(file.path(path, file), warn = FALSE, encoding = "UTF-8")
   }
   writeLines(
-    enc2utf8(build_website_readme(lines, path, sidebar = sidebar)),
+    enc2utf8(build_website_readme(lines, path, home = config$home)),
     file.path(project_dir(path), "index.qmd"),
     useBytes = TRUE
   )
@@ -427,6 +429,38 @@ write_404 <- function(path, site_url) {
   )
 }
 
+# Checks `home: sidebar:` and `home: links:` before the slow render.
+check_home_config <- function(home) {
+  sidebar <- home$sidebar
+  if (is.list(sidebar)) {
+    warn_unknown_fields(
+      names(sidebar),
+      c("structure", "components"),
+      "home: sidebar"
+    )
+    for (name in names(sidebar$components)) {
+      component <- sidebar$components[[name]]
+      if (!is.character(component$title) || !is.character(component$text)) {
+        cli::cli_abort(
+          "_quartodown.yml `home: sidebar: components: {name}:` needs a {.field title} and a {.field text}."
+        )
+      }
+    }
+  } else if (!is.null(sidebar) && !isTRUE(sidebar) && !isFALSE(sidebar)) {
+    cli::cli_abort(
+      "_quartodown.yml `home: sidebar:` must be true, false, or a list with {.field structure} and {.field components}."
+    )
+  }
+  for (link in home$links) {
+    if (!is.character(link$text) || !is.character(link$href)) {
+      cli::cli_abort(
+        "Each of _quartodown.yml's `home: links:` needs a {.field text} and an {.field href}."
+      )
+    }
+  }
+  invisible()
+}
+
 # A home page for a package without a README: its name and description.
 description_home <- function(path) {
   pkg <- desc::desc_get_field("Package", file = path)
@@ -434,9 +468,9 @@ description_home <- function(path) {
   c(paste("#", pkg), "", trimws(gsub("\\s+", " ", description)))
 }
 
-# With `sidebar = FALSE`, the page is `lines` as written, only made to render
-# like on GitHub.
-build_website_readme <- function(lines, path = ".", sidebar = TRUE) {
+# `home` is _quartodown.yml's `home:`. With `sidebar: false`, the page is
+# `lines` as written, only made to render like on GitHub.
+build_website_readme <- function(lines, path = ".", home = list()) {
   # A .qmd's front matter stays at the top.
   front_matter <- character()
   ends <- which(lines == "---")
@@ -446,13 +480,13 @@ build_website_readme <- function(lines, path = ".", sidebar = TRUE) {
   }
   lines <- github_markdown_to_quarto(lines, mermaid = TRUE)
   lines <- theme_pictures_to_images(lines)
-  if (sidebar) {
-    lines <- home_page_with_sidebar(lines, path)
+  if (!isFALSE(home$sidebar)) {
+    lines <- home_page_with_sidebar(lines, path, home)
   }
   c(front_matter, lines)
 }
 
-home_page_with_sidebar <- function(lines, path) {
+home_page_with_sidebar <- function(lines, path, home = list()) {
   badges <- extract_readme_badges(lines)
   lines <- remove_marker_block(
     lines,
@@ -477,7 +511,7 @@ home_page_with_sidebar <- function(lines, path) {
     lines[seq(first_nonblank, length(lines))]
   }
 
-  sidebar <- build_sidebar_markdown(path, badges = badges)
+  sidebar <- build_sidebar_markdown(path, badges = badges, home = home)
   if (length(sidebar) == 0) {
     c(title, "", body)
   } else {

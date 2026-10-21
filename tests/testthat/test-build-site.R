@@ -581,11 +581,68 @@ test_that("`home: sidebar: false` shows the home page as written", {
   expect_identical(home[1:5], readLines(file.path(dir, "README.md"))[1:5])
   expect_false(any(grepl("quartodown-home|column-margin", home)))
   expect_true("::: {.callout-note}" %in% home)
+})
 
-  expect_error(
-    write_home(dir, list(home = list(sidebar = "no"))),
-    "true or false"
+test_that("`home: sidebar:` orders the sections and adds components", {
+  dir <- new_pkg()
+  desc::desc_set(License = "MIT + file LICENSE", file = dir)
+  home <- yaml::yaml.load(
+    "
+sidebar:
+  structure: [funding, authors, license, toc]
+  components:
+    funding:
+      title: Funding
+      text: Supported by [a grant](https://example.com).
+"
   )
+
+  sidebar <- build_sidebar_markdown(dir, home = home)
+  headings <- grep("^#### ", sidebar, value = TRUE)
+  expect_identical(
+    headings,
+    c("#### Funding", "#### Developers", "#### License")
+  )
+  expect_true("Supported by [a grant](https://example.com)." %in% sidebar)
+
+  home$sidebar$structure <- list("nope")
+  expect_error(build_sidebar_markdown(dir, home = home), "nope")
+
+  # Without `structure:`, components come after the built-in sections.
+  home$sidebar$structure <- NULL
+  headings <- grep(
+    "^#### ",
+    build_sidebar_markdown(dir, home = home),
+    value = TRUE
+  )
+  expect_identical(headings[length(headings)], "#### Funding")
+})
+
+test_that("`home: links:` are added to the sidebar's Links", {
+  dir <- new_pkg()
+  home <- list(links = list(list(text = "Blog", href = "https://example.com")))
+  sidebar <- build_sidebar_markdown(dir, home = home)
+  links <- which(sidebar == "#### Links")
+  expect_identical(sidebar[links + 2], "[Blog](https://example.com)")
+})
+
+test_that("check_home_config() rejects malformed `home:` settings", {
+  expect_error(check_home_config(list(sidebar = "no")), "true, false")
+  expect_error(
+    check_home_config(list(
+      sidebar = list(components = list(x = list(title = "X")))
+    )),
+    "components: x"
+  )
+  expect_error(
+    check_home_config(list(links = list(list(text = "Blog")))),
+    "href"
+  )
+  expect_warning(
+    check_home_config(list(sidebar = list(html = "x.html"))),
+    "html"
+  )
+  expect_silent(check_home_config(list(sidebar = FALSE)))
 })
 
 test_that("write_home() makes the home page from DESCRIPTION without a README", {

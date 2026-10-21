@@ -106,7 +106,9 @@ source_note <- function(files, gh_url = NA_character_, class = NULL) {
   )
 }
 
-data_sidebar_links <- function(path) {
+# `links` are _quartodown.yml's `home: links:`, each with `text` and `href`,
+# listed after the package's own.
+data_sidebar_links <- function(path, links = list()) {
   gh_url <- pkg_github_url(path)
   gh_url <- if (is.na(gh_url)) character() else gh_url
   bug_reports <- tryCatch(
@@ -118,6 +120,11 @@ data_sidebar_links <- function(path) {
     error = function(e) NA
   )
 
+  extra <- vapply(
+    links,
+    function(link) sprintf("[%s](%s)", link$text, link$href),
+    character(1)
+  )
   links <- character()
   cran_url <- cran_url_if_available(pkg_name)
   if (!is.na(cran_url)) {
@@ -130,7 +137,7 @@ data_sidebar_links <- function(path) {
     links <- c(links, sprintf("[Report a bug](%s)", bug_reports))
   }
 
-  sidebar_section("Links", links)
+  sidebar_section("Links", c(links, extra))
 }
 
 data_sidebar_devstatus <- function(badges) {
@@ -248,15 +255,45 @@ data_sidebar_authors <- function(path, roles = default_roles()) {
   sidebar_section("Developers", bullets)
 }
 
-build_sidebar_markdown <- function(path, badges = character()) {
-  sections <- list(
-    data_sidebar_links(path),
-    data_sidebar_license(path),
-    data_sidebar_community(path),
-    data_sidebar_citation(path),
-    data_sidebar_authors(path),
-    data_sidebar_devstatus(badges)
-  )
+sidebar_sections <- c(
+  "links",
+  "license",
+  "community",
+  "citation",
+  "authors",
+  "dev"
+)
+
+# `home` is _quartodown.yml's `home:`. Its `sidebar: structure:` orders the
+# sections, which are those above or `sidebar: components:` of its own, each
+# with a `title` and Markdown `text`. pkgdown's `toc` is accepted but left out:
+# with the sidebar, the home page has no table of contents.
+build_sidebar_markdown <- function(path, badges = character(), home = list()) {
+  sidebar <- if (is.list(home$sidebar)) home$sidebar else list()
+  components <- sidebar$components
+  structure <- sidebar$structure
+  if (is.null(structure)) {
+    structure <- c(sidebar_sections, names(components))
+  }
+  sections <- lapply(setdiff(unlist(structure), "toc"), function(name) {
+    component <- components[[name]]
+    if (!is.null(component)) {
+      return(sidebar_section(component$title, trimws(component$text)))
+    }
+    switch(
+      name,
+      links = data_sidebar_links(path, home$links),
+      license = data_sidebar_license(path),
+      community = data_sidebar_community(path),
+      citation = data_sidebar_citation(path),
+      authors = data_sidebar_authors(path),
+      dev = data_sidebar_devstatus(badges),
+      cli::cli_abort(c(
+        "_quartodown.yml `home: sidebar: structure:` has {.val {name}}, which isn't a section.",
+        "i" = "Sections: {.val {sidebar_sections}}, or one of your own under `components:`."
+      ))
+    )
+  })
   sections <- Filter(length, sections)
   if (length(sections) == 0) {
     return(character())

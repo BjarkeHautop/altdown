@@ -71,10 +71,11 @@ quartodown::build_site() # also previews it when interactive
      removes).
    - `index.qmd`: README (or `_quartodown.yml`'s `home: file:`, or without
      either a page from `DESCRIPTION`) + sidebar (unless `home: sidebar: false`,
-     which leaves the page as written) ([R/sidebar.R](R/sidebar.R)); badges are
-     pulled out of the `<!-- badges: start/end -->` block, and `<picture>`
-     light/dark images are rewritten to `.light-content`/`.dark-content`
-     `<img>`s.
+     which leaves the page as written) ([R/sidebar.R](R/sidebar.R)), whose
+     sections `home: sidebar: structure:`/`components:` and `home: links:` set
+     as in pkgdown; badges are pulled out of the `<!-- badges: start/end -->`
+     block, and `<picture>` light/dark images are rewritten to
+     `.light-content`/`.dark-content` `<img>`s.
    - `reference/index.qmd` ([R/reference.R](R/reference.R)): pkgdown-compatible
      `reference:` grouping with selectors (`starts_with()`, `has_concept()`,
      `-`, …) evaluated against Rd topics. `\keyword{internal}` topics are listed
