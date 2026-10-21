@@ -90,6 +90,40 @@ body:not(.docked) .navbar-container.container-fluid {
   border-bottom: 3px solid var(--bs-primary);
 }
 
+// Below `navbar-expand-lg`'s breakpoint the menu collapses behind the toggler.
+// Tile its items side by side rather than one per row. An open dropdown,
+// which Bootstrap shows inline there, takes a row of its own.
+@media (max-width: 991.98px) {
+  .navbar-collapse.show,
+  .navbar-collapse.collapsing {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .navbar-collapse .navbar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 0.25rem;
+  }
+
+  // The left items wrap within the space the right ones (the repository
+  // icon) leave, so those stay on the first row.
+  .navbar-collapse .navbar-nav.me-auto {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .navbar-collapse .nav-link {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .navbar-collapse .nav-item.dropdown:has(> .dropdown-menu.show) {
+    flex-basis: 100%;
+  }
+}
+
 // Quarto gives the search box the theme's input colors, which are white in
 // dark themes such as darkly. Use the page's instead.
 #quarto-search .aa-Form {
