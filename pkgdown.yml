@@ -2,6 +2,7 @@ urls:
   reference: https://bjarkehautop.github.io/quartodown/reference
   article: https://bjarkehautop.github.io/quartodown/vignettes
 articles:
+  customizing: customizing.html
   quartodown: quartodown.html
   showcase: articles/showcase.html
   technical: articles/technical.html

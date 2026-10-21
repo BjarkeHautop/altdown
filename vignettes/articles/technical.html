@@ -24,41 +24,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script><script src="../../site_libs/quarto-nav/headroom.min.js"></script><script src="../../site_libs/clipboard/clipboard.min.js"></script><script src="../../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../../site_libs/quarto-search/fuse.min.js"></script><script src="../../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../../">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script><script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../../site_libs/quarto-html/popper.min.js"></script><script src="../../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../../site_libs/quarto-html/anchor.min.js"></script><link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
@@ -66,9 +31,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -309,6 +274,10 @@ a.quartodown-tip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">
 <li>
+    <a class="dropdown-item" href="../../vignettes/customizing.html">
+ <span class="dropdown-text">Customizing your site</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -343,17 +312,8 @@ a.quartodown-tip-ref{cursor:help;}
    
   <ul>
 <li><a href="#how-a-build-works" id="toc-how-a-build-works" class="nav-link active" data-scroll-target="#how-a-build-works">How a build works</a></li>
-  <li>
-<a href="#before-rendering" id="toc-before-rendering" class="nav-link" data-scroll-target="#before-rendering">Before rendering</a>
-  <ul class="collapse">
-<li><a href="#the-home-page" id="toc-the-home-page" class="nav-link" data-scroll-target="#the-home-page">The home page</a></li>
-  <li><a href="#the-reference-index" id="toc-the-reference-index" class="nav-link" data-scroll-target="#the-reference-index">The reference index</a></li>
-  <li><a href="#the-navbar-and-footer" id="toc-the-navbar-and-footer" class="nav-link" data-scroll-target="#the-navbar-and-footer">The navbar and footer</a></li>
-  <li><a href="#code-output" id="toc-code-output" class="nav-link" data-scroll-target="#code-output">Code output</a></li>
-  </ul>
-</li>
   <li><a href="#the-man-pages" id="toc-the-man-pages" class="nav-link" data-scroll-target="#the-man-pages">The man pages</a></li>
-  <li><a href="#after-rendering" id="toc-after-rendering" class="nav-link" data-scroll-target="#after-rendering">After rendering</a></li>
+  <li><a href="#code-links-and-tooltips" id="toc-code-links-and-tooltips" class="nav-link" data-scroll-target="#code-links-and-tooltips">Code links and tooltips</a></li>
   <li><a href="#the-theme" id="toc-the-theme" class="nav-link" data-scroll-target="#the-theme">The theme</a></li>
   </ul></nav>
 </div>
@@ -373,22 +333,27 @@ a.quartodown-tip-ref{cursor:help;}
   
 
 
-</header><p>quartodown generates a <a href="https://quarto.org/">Quarto</a> website project from the package sources, so the man pages, vignettes and generated pages are all Quarto pages, and every Quarto feature works.</p>
+</header><p class="source-note">
+<small class="dont-index">Source: <a href="https://github.com/bjarkehautop/quartodown/blob/HEAD/vignettes/articles/technical.qmd"><code>vignettes/articles/technical.qmd</code></a></small>
+</p>
+<p>quartodown generates a <a href="https://quarto.org/">Quarto</a> website project from the package sources, so the man pages, vignettes and generated pages are all Quarto pages, and every Quarto feature works.</p>
 <section id="how-a-build-works" class="level2"><h2 class="anchored" data-anchor-id="how-a-build-works">How a build works</h2>
 <p><code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">quartodown::build_site()</a></code> runs in three stages:</p>
 <ol type="1">
 <li>
-<strong>Before rendering</strong>, it installs the package into a temporary library and writes a Quarto project into <code>_quarto/</code>. With <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site(devel = TRUE)</a></code>, each page’s R process loads it from source with <code><a href="https://pkgload.r-lib.org/reference/load_all.html">pkgload::load_all()</a></code> instead.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
-</li>
+<strong>Before rendering</strong>, it installs the package into a temporary library and writes a Quarto project into <code>_quarto/</code>.</li>
 <li>
-<strong>During rendering</strong>, Quarto renders <code>_quarto/</code> into <code>docs/</code>, running the examples and vignette code against that package.</li>
+<strong>During rendering</strong>, Quarto renders <code>_quarto/</code> into <code>docs/</code>, running the examples and vignettes against that package.</li>
 <li>
 <strong>After rendering</strong>, it links code to its documentation and adds hover tooltips.</li>
 </ol>
-<p>The only file you edit is <code>_quartodown.yml</code>. <code>_quarto/</code> is rewritten on every build, and gitignored by <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/use_quartodown.html">quartodown::use_quartodown()</a></code>:</p>
+<p>In an interactive session it then serves <code>docs/</code> with <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/preview_site.html">preview_site()</a></code>. The server keeps running for the rest of the session, so after a rebuild the open page reloads instead of a new one opening.</p>
+<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site(devel = TRUE)</a></code> skips the install and loads the package from source with <code><a href="https://pkgload.r-lib.org/reference/load_all.html">pkgload::load_all()</a></code> instead. It is faster, but code that starts other R processes (for example with callr or parallel) won’t find the package, and build-stage <code>\Sexpr{}</code> macros in the man pages don’t run.</p>
+<p>Throughout the build, the environment variable <code>IN_QUARTODOWN</code> is <code>"true"</code>, so the package’s code can tell it is running for the site, and <code>IN_QUARTODOWN_PKG</code> is the package’s name.</p>
+<p><code>_quarto/</code> is rewritten on every build, and gitignored by <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/use_quartodown.html">quartodown::use_quartodown()</a></code>. To change the site, edit <code>_quartodown.yml</code> instead (see <a href="../../vignettes/customizing.html">Customizing your site</a>).</p>
 <pre class="text"><code>_quarto/
 ├── _quarto.yml                   # Quarto configuration (navbar, footer, theme)
-├── index.md                      # home page
+├── index.qmd                     # home page
 ├── reference/
 │   ├── index.qmd                 # function reference index
 │   └── &lt;topic&gt;.qmd               # a page per man/*.Rd
@@ -396,109 +361,19 @@ a.quartodown-tip-ref{cursor:help;}
 ├── vignettes/                    # the vignettes, as they are
 ├── man/figures/                  # images for the README and man pages
 ├── NEWS.md                       # changelog, with issues and users linked
-├── quartodown.scss               # theme on top of Quarto's HTML
-├── quartodown-header.html        # dark-mode default
-├── quartodown-after-body.html    # navbar alignment
-└── orcid.svg, ror.svg            # icons for authors' ORCID/ROR ids</code></pre>
-<p>Reference pages are served at <code>reference/&lt;topic&gt;.html</code>, and <code>docs/pkgdown.yml</code> lets <a href="https://downlit.r-lib.org/">downlit</a> on other sites link to them.</p>
-</section><section id="before-rendering" class="level2"><h2 class="anchored" data-anchor-id="before-rendering">Before rendering</h2>
-<section id="the-home-page" class="level3"><h3 class="anchored" data-anchor-id="the-home-page">The home page</h3>
-<p><code>index.md</code> holds the README next to a sidebar with links, the license, the citation, the developers and the README’s badges.</p>
-<p>A README <code>&lt;picture&gt;</code> with light and dark versions shows the one matching the site’s theme.</p>
-</section><section id="the-reference-index" class="level3"><h3 class="anchored" data-anchor-id="the-reference-index">The reference index</h3>
-<p>To group and order the function index, use the <code>reference:</code> field in <code>_quartodown.yml</code>:</p>
-<div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="annotated-cell-2"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-2-1"><a href="#annotated-cell-2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reference</span><span class="kw">:</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-2-2" class="code-annotation-target"><a href="#annotated-cell-2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html">title</a></span><span class="kw">:</span><span class="at"> Building the site</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-2-3" class="code-annotation-target"><a href="#annotated-cell-2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">    desc</span><span class="kw">: </span><span class="ch">&gt;</span></span>
-<span id="annotated-cell-2-4"><a href="#annotated-cell-2-4" aria-hidden="true" tabindex="-1"></a>      Set up a package, then build its site.</span>
-<span id="annotated-cell-2-5"><a href="#annotated-cell-2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">contents</span><span class="kw">:</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-2-6" class="code-annotation-target"><a href="#annotated-cell-2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> use_quartodown</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-2" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-2-7" class="code-annotation-target"><a href="#annotated-cell-2-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> starts_with("build_")</span></span><div class="code-annotation-gutter-bg"></div>
-<div class="code-annotation-gutter"></div></code></pre></div>
-<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
-</div>
-<dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-2" data-target-annotation="1">1</dt>
-<dd>
-<span data-code-cell="annotated-cell-2" data-code-lines="2" data-code-annotation="1">Each entry becomes a section of the index, with this heading.</span>
-</dd>
-<dt data-target-cell="annotated-cell-2" data-target-annotation="2">2</dt>
-<dd>
-<span data-code-cell="annotated-cell-2" data-code-lines="3" data-code-annotation="2">An optional description, shown under the heading.</span>
-</dd>
-<dt data-target-cell="annotated-cell-2" data-target-annotation="3">3</dt>
-<dd>
-<span data-code-cell="annotated-cell-2" data-code-lines="6" data-code-annotation="3">A topic, by any of its <code>\alias{}</code> names.</span>
-</dd>
-<dt data-target-cell="annotated-cell-2" data-target-annotation="4">4</dt>
-<dd>
-<span data-code-cell="annotated-cell-2" data-code-lines="7" data-code-annotation="4">A selector: <code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>matches()</code>, <code>has_concept()</code>, <code>has_keyword()</code>, <code>-</code> to exclude and <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> to combine.</span>
-</dd>
-</dl>
-<p><code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site()</a></code> warns about any topic the index leaves out, except <code>\keyword{internal}</code> ones. An internal topic is listed, and gets a page, only when named, as with roxygen’s <code>reexports</code>, or selected with <code>internal = TRUE</code>, as in <code>starts_with("dev_", internal = TRUE)</code>.</p>
-</section><section id="the-navbar-and-footer" class="level3"><h3 class="anchored" data-anchor-id="the-navbar-and-footer">The navbar and footer</h3>
-<p>The navbar links the “Get started” vignette, the reference index, the other vignettes under “Articles” and the changelog. The footer has a “Developed by …” line, built from <code>Authors@R</code>.</p>
-</section><section id="code-output" class="level3"><h3 class="anchored" data-anchor-id="code-output">Code output</h3>
-<p>R output is shown in the same block as the code, prefixed with <code>#&gt;</code>. To show a chunk’s output in a block of its own, set <code>#| collapse: false</code> on it.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Changing the Quarto configuration
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>A <code>quarto:</code> field in <code>_quartodown.yml</code> is merged over the generated configuration. Lists, like the navbar’s items, are appended to; any other setting is replaced, and <code>~</code> removes it. For example, to add a navbar link and fold code blocks:</p>
-<div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quarto</span><span class="kw">:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">website</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">navbar</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">right</span><span class="kw">:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">text</span><span class="kw">:</span><span class="at"> Blog</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">href</span><span class="kw">:</span><span class="at"> https://example.com</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">format</span><span class="kw">:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">html</span><span class="kw">:</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">code-fold</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
-<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
-</div>
-</div>
-</div>
-</section></section><section id="the-man-pages" class="level2"><h2 class="anchored" data-anchor-id="the-man-pages">The man pages</h2>
-<p>Each <code>man/*.Rd</code> file, except <code>\keyword{internal}</code> ones the <a href="#the-reference-index">reference index</a> doesn’t list, becomes a reference page, rendered with the package’s Rd macros (such as Rdpack’s <code>\insertRef{}</code>). Build-stage <code>\Sexpr{}</code> macros run with the package installed, as in <code>R CMD build</code>, though not with <code>devel = TRUE</code>.</p>
-<ul>
-<li>
-<strong>Usage</strong>, the usage of R6 methods, and code blocks with a language, such as roxygen’s <code>```yaml</code>, are syntax-highlighted with a copy button.</li>
-<li>
-<strong>Links</strong> go to the topic’s reference page, or, for another package’s topic, to its documentation as downlit finds it.</li>
-<li>
-<strong>Math</strong> in <code>\eqn{}</code> and <code>\deqn{}</code> is rendered.</li>
-<li>
-<strong>Examples</strong> run, with their output in the same block. <code>\dontrun{}</code> code is shown but not run, <code>\dontshow{}</code> code is run but not shown, and <code>@examplesIf</code> examples run only if their condition holds.</li>
-</ul></section><section id="after-rendering" class="level2"><h2 class="anchored" data-anchor-id="after-rendering">After rendering</h2>
-<p><a href="https://downlit.r-lib.org/">downlit</a> links function calls in R code blocks, and inline code like <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>, to their documentation. In blocks with <a href="showcase.html#code-annotations">code annotations</a>, only function calls and <code>%op%</code> operators such as <code>%in%</code> are linked.</p>
-<p>References to the package’s own functions also get a hover tooltip with their usage and the first sentence of their description. Try it: hover over <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site()</a></code> or <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/use_quartodown.html">use_quartodown()</a></code>. <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site()</a></code> warns when a first sentence is longer than 200 characters, since the tooltip cuts it off. To build without tooltips, use <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site(tooltips = FALSE)</a></code>.</p>
+└── quartodown.scss               # theme on top of Quarto's HTML</code></pre>
+</section><section id="the-man-pages" class="level2"><h2 class="anchored" data-anchor-id="the-man-pages">The man pages</h2>
+<p>Each <code>man/*.Rd</code> file becomes a reference page, served at <code>reference/&lt;topic&gt;.html</code>. It is rendered with the package’s Rd macros (such as Rdpack’s <code>\insertRef{}</code>), and build-stage <code>\Sexpr{}</code> macros run with the package installed, as in <code>R CMD build</code>. Examples run, with their output in the same block as the code, prefixed with <code>#&gt;</code>. To give a chunk’s output a block of its own, in a vignette too, set <code>#| collapse: false</code> on it.</p>
+<p>If <code>DESCRIPTION</code>’s <code>URL</code> includes a GitHub repository, each reference page and vignette links to its source file under the title.</p>
+</section><section id="code-links-and-tooltips" class="level2"><h2 class="anchored" data-anchor-id="code-links-and-tooltips">Code links and tooltips</h2>
+<p><a href="https://downlit.r-lib.org/">downlit</a> links function calls in R code blocks, and inline code like <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>, to their documentation. <code>docs/pkgdown.yml</code> lets downlit on other sites link to your reference pages in turn.</p>
+<p>References to the package’s own functions also get a hover tooltip with their usage and the first sentence of their description. <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site()</a></code> warns when a first sentence is longer than 200 characters, since the tooltip cuts it off. To build without tooltips, use <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/build_site.html">build_site(tooltips = FALSE)</a></code>.</p>
 </section><section id="the-theme" class="level2"><h2 class="anchored" data-anchor-id="the-theme">The theme</h2>
-<p>The site uses Quarto’s <code>default</code> theme in light mode and <code>darkly</code> in dark mode, with <code>quartodown.scss</code> on top of each:</p>
-<div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span><span class="kw">:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">light</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">default</span><span class="kw">,</span><span class="at"> quartodown.scss</span><span class="kw">]</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dark</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">darkly</span><span class="kw">,</span><span class="at"> quartodown.scss</span><span class="kw">]</span></span></code></pre></div>
-<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
-</div>
-<p><code>quartodown.scss</code> gives both modes the same font and heading sizes, so switching modes doesn’t shift the text. <code>quartodown-header.html</code> and <code>quartodown-after-body.html</code> also:</p>
-<ul>
-<li>show the dark theme to new visitors whose system is set to dark mode,</li>
-<li>line up the navbar title with the page text,</li>
-<li>show the version number smaller next to the package name,</li>
-<li>leave <code>#&gt;</code> output lines out when copying code.</li>
-</ul></section><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+<p>The site uses Quarto’s <code>default</code> theme in light mode and <code>darkly</code> in dark mode, with <code>quartodown.scss</code> on top of each. The mode follows the browser’s preference.</p>
+<p>Code output keeps the colors packages such as cli give it in a terminal, in shades that suit the light or dark theme.</p>
 
-<ol>
-<li id="fn1"><p><code>devel = TRUE</code> may not work if your examples or vignettes start other R processes, for example with callr or parallel.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol></section></div></main><!-- /main --><script>
+
+</section></main><!-- /main --><script>
 (function () {
   function contentLeft(main) {
     // With margin content, <main> is a full-width grid; use the title.
@@ -992,8 +867,9 @@ a.quartodown-tip-ref{cursor:help;}
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
-  devel = FALSE
-)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t2"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown.yml</code>, the configuration file <code>build_site()</code> reads, at the package root.</span></div></div>
+  devel = FALSE,
+  preview = interactive()
+)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t2"><code class="quartodown-tip-sig">preview_site(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Serves <code>docs/</code>, as built by <code>build_site()</code>, in a web browser, and reloads the page when the site is rebuilt.</span></div><div data-for="t3"><code class="quartodown-tip-sig">use_quartodown(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Writes <code>_quartodown.yml</code>, the configuration file <code>build_site()</code> reads, at the package root.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;

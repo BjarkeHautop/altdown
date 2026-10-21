@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script><link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -309,6 +309,10 @@ a.quartodown-tip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">
 <li>
+    <a class="dropdown-item" href="./vignettes/customizing.html">
+ <span class="dropdown-text">Customizing your site</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -358,11 +362,11 @@ a.quartodown-tip-ref{cursor:help;}
 </h1>
 <p>quartodown is an R package that turns your package’s README, help pages and vignettes into a website, rendered entirely by Quarto.</p>
 <section id="why-quartodown" class="level2"><h2 class="anchored" data-anchor-id="why-quartodown">Why quartodown?</h2>
-<p>pkgdown can render Quarto vignettes, but it replaces Quarto’s styling with its own (<code>theme: "none"</code>, <code>minimal: TRUE</code>). As a result, Quarto features such as callout blocks, code annotations and tabsets don’t render correctly; callouts, for instance, become plain blockquotes.</p>
-<p>quartodown renders the whole site with Quarto itself, so you get:</p>
+<p>Every page, help pages included, is a Quarto page, so you get:</p>
 <ul>
-<li>full Quarto support, on every page;</li>
-<li>a package website layout: a home page sidebar, a grouped function reference, articles and a changelog;</li>
+<li>every Quarto feature, from callouts and tabsets to code annotations and cross-references, on every page;</li>
+<li>Quarto’s themes, extensions and settings;</li>
+<li>the package website layout R users know from pkgdown: a home page sidebar, a grouped function reference, articles and a changelog;</li>
 <li>function links with hover tooltips.</li>
 </ul></section><section id="installation" class="level2"><h2 class="anchored" data-anchor-id="installation">Installation</h2>
 <p>Install from GitHub:</p>
@@ -385,8 +389,8 @@ a.quartodown-tip-ref{cursor:help;}
 <code class="sourceCode R"><span><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="reference/build_site.html">build_site</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
-<p>A preview can then be viewed using <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="reference/preview_site.html">quartodown::preview_site()</a></code>.</p>
-<p>The navbar is built from your vignettes: the one named after the package (or the only top-level one) becomes “Get started”, and the rest, including those in <code>vignettes/articles/</code>, go under “Articles”. See <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="reference/build_site.html">?quartodown::build_site</a></code> for everything <code>quartodown.yml</code> can configure.</p>
+<p>In an interactive session, this also opens the site in your browser.</p>
+<p>See <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="reference/build_site.html">?quartodown::build_site</a></code> for everything <code>_quartodown.yml</code> can configure.</p>
 </section><section id="packages-using-quartodown" class="level2"><h2 class="anchored" data-anchor-id="packages-using-quartodown">Packages using quartodown</h2>
 <ul>
 <li><a href="https://bjarkehautop.github.io/jlbind/">jlbind</a></li>
@@ -901,8 +905,9 @@ a.quartodown-tip-ref{cursor:help;}
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
-  devel = FALSE
-)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t3"><code class="quartodown-tip-sig">preview_site(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Serves <code>docs/</code>, as built by <code>build_site()</code>, in a web browser, and reloads the page when the site is rebuilt.</span></div></div>
+  devel = FALSE,
+  preview = interactive()
+)</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div></div>
 <script>
 (function(){
   var payload = document.currentScript.previousElementSibling;

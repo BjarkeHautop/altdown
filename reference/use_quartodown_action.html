@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -309,6 +309,10 @@ a.quartodown-tip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">
 <li>
+    <a class="dropdown-item" href="../vignettes/customizing.html">
+ <span class="dropdown-text">Customizing your site</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -366,7 +370,10 @@ a.quartodown-tip-ref{cursor:help;}
   
 
 
-</header><section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
+</header><p>
+<small class="dont-index">Source: <a href="https://github.com/bjarkehautop/quartodown/blob/HEAD/R/use_quartodown_action.R"><code>R/use_quartodown_action.R</code></a></small>
+</p>
+<section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
 <p>Writes <code>.github/workflows/quartodown.yaml</code>, a GitHub Actions workflow that builds the site and deploys it to the <code>gh-pages</code> branch. It runs <code><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="./build_site.html">build_site()</a></code> on every push, pull request and release, but only deploys when it isn’t a pull request. Also adds <code>^\.github$</code> to <code>.Rbuildignore</code> if it’s not already there.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
@@ -407,8 +414,8 @@ Logical. Replace an existing <code>.github/workflows/quartodown.yaml</code>? By 
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">pkg</span>, <span class="st">"DESCRIPTION"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="./use_quartodown_action.html">use_quartodown_action</a></span><span class="op">(</span><span class="va">pkg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ Wrote '/tmp/RtmpPUx52v/examplepkg19491d6874df/.github/workflows/quartodown.yaml'.</span></span>
-<span><span class="co">#&gt; ✔ Added `^\.github$` to '/tmp/RtmpPUx52v/examplepkg19491d6874df/.Rbuildignore'.</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Wrote <span class='fansi-color-004'>/tmp/Rtmp88vSMl/examplepkg195519a0cbed/.github/workflows/quartodown.yaml</span>.</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Added `^\.github$` to <span class='fansi-color-004'>/tmp/Rtmp88vSMl/examplepkg195519a0cbed/.Rbuildignore</span>.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Next steps:</span></span>
 <span><span class="co">#&gt; 1. Commit and push the workflow.</span></span>
@@ -918,7 +925,8 @@ Logical. Replace an existing <code>.github/workflows/quartodown.yaml</code>? By 
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
-  devel = FALSE
+  devel = FALSE,
+  preview = interactive()
 )</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t2"><code class="quartodown-tip-sig">use_quartodown_action(path = &quot;.&quot;, overwrite = FALSE)</code><span class="quartodown-tip-brief">Writes <code>.github/workflows/quartodown.yaml</code>, a GitHub Actions workflow that builds the site and deploys it to the <code>gh-pages</code> branch.</span></div></div>
 <script>
 (function(){

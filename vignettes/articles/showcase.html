@@ -66,9 +66,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script><link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-f8c19171514a1394413652f1a61164e6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-60d2d0d2feeb856325635b00ada20ed9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-8a0fc7517d4fef05d25afb346587ddac.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-46f0479080eac61a53d04a21e9c9b358.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -335,6 +335,10 @@ a.quartodown-tip-ref{cursor:help;}
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">
 <li>
+    <a class="dropdown-item" href="../../vignettes/customizing.html">
+ <span class="dropdown-text">Customizing your site</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../vignettes/articles/showcase.html">
  <span class="dropdown-text">Quarto features</span></a>
   </li>  
@@ -374,6 +378,7 @@ a.quartodown-tip-ref{cursor:help;}
   <li><a href="#function-links" id="toc-function-links" class="nav-link" data-scroll-target="#function-links">Function links</a></li>
   <li><a href="#footnotes-and-margin-content" id="toc-footnotes-and-margin-content" class="nav-link" data-scroll-target="#footnotes-and-margin-content">Footnotes and margin content</a></li>
   <li><a href="#figures-and-cross-references" id="toc-figures-and-cross-references" class="nav-link" data-scroll-target="#figures-and-cross-references">Figures and cross-references</a></li>
+  <li><a href="#colored-output" id="toc-colored-output" class="nav-link" data-scroll-target="#colored-output">Colored output</a></li>
   <li><a href="#math" id="toc-math" class="nav-link" data-scroll-target="#math">Math</a></li>
   <li><a href="#diagrams" id="toc-diagrams" class="nav-link" data-scroll-target="#diagrams">Diagrams</a></li>
   <li><a href="#layout" id="toc-layout" class="nav-link" data-scroll-target="#layout">Layout</a></li>
@@ -396,7 +401,10 @@ a.quartodown-tip-ref{cursor:help;}
   
 
 
-</header><p>quartodown renders every page with Quarto itself, so all of Quarto’s authoring features work in your vignettes and articles. This page shows some of them as they look on a quartodown site. View the <a href="https://github.com/bjarkehautop/quartodown/blob/main/vignettes/articles/showcase.qmd">source of this page</a> to see how each one is written.</p>
+</header><p class="source-note">
+<small class="dont-index">Source: <a href="https://github.com/bjarkehautop/quartodown/blob/HEAD/vignettes/articles/showcase.qmd"><code>vignettes/articles/showcase.qmd</code></a></small>
+</p>
+<p>quartodown renders every page with Quarto itself, so all of Quarto’s authoring features work in your vignettes and articles. This page shows some of them as they look on a quartodown site.</p>
 <section id="callouts" class="level2"><h2 class="anchored" data-anchor-id="callouts">Callouts</h2>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -494,9 +502,8 @@ Note
 </section><section id="code-annotations" class="level2"><h2 class="anchored" data-anchor-id="code-annotations">Code annotations</h2>
 <p>Hover over the numbers to see the annotations.</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><button class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1">1</button><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a>quartodown<span class="sc">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/use_quartodown.html">use_quartodown</a></span>()</span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="2">2</button><span id="annotated-cell-1-2" class="code-annotation-target"><a href="#annotated-cell-1-2" aria-hidden="true" tabindex="-1"></a>quartodown<span class="sc">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/build_site.html">build_site</a></span>(<span class="at">devel =</span> <span class="cn">TRUE</span>)</span>
-<button class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="3">3</button><span id="annotated-cell-1-3" class="code-annotation-target"><a href="#annotated-cell-1-3" aria-hidden="true" tabindex="-1"></a>quartodown<span class="sc">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="../../reference/preview_site.html">preview_site</a></span>()</span><div class="code-annotation-gutter-bg"></div>
+<div class="sourceCode" id="annotated-cell-1"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><button class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1">1</button><span id="annotated-cell-1-1" class="code-annotation-target"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t1" href="../../reference/use_quartodown.html">use_quartodown</a></span>()</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="2">2</button><span id="annotated-cell-1-2" class="code-annotation-target"><a href="#annotated-cell-1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quartodown</span><span class="fu">::</span><span class="fu"><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/build_site.html">build_site</a></span>(<span class="at">devel =</span> <span class="cn">TRUE</span>)</span><div class="code-annotation-gutter-bg"></div>
 <div class="code-annotation-gutter"></div></code></pre></div>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
@@ -507,11 +514,7 @@ Note
 </dd>
 <dt data-target-cell="annotated-cell-1" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-1" data-code-lines="2" data-code-annotation="2">Build the site, loading the package with <code><a href="https://pkgload.r-lib.org/reference/load_all.html">pkgload::load_all()</a></code>.</span>
-</dd>
-<dt data-target-cell="annotated-cell-1" data-target-annotation="3">3</dt>
-<dd>
-<span data-code-cell="annotated-cell-1" data-code-lines="3" data-code-annotation="3">Open the built site in your browser.</span>
+<span data-code-cell="annotated-cell-1" data-code-lines="2" data-code-annotation="2">Build the site, loading the package with <code><a href="https://pkgload.r-lib.org/reference/load_all.html">pkgload::load_all()</a></code>, and open it in your browser.</span>
 </dd>
 </dl></section><section id="function-links" class="level2"><h2 class="anchored" data-anchor-id="function-links">Function links</h2>
 <p>Functions from this package are linked to their reference page, with a tooltip on hover, both inline, like <code><a class="quartodown-tip-ref" data-quartodown-tip="t2" href="../../reference/build_site.html">build_site()</a></code>, and in code:</p>
@@ -631,6 +634,41 @@ Table 1: The first rows of the <code>mtcars</code> data.
 </div>
 </div>
 </figure>
+</div>
+</div>
+</section><section id="colored-output" class="level2"><h2 class="anchored" data-anchor-id="colored-output">Colored output</h2>
+<p>Output keeps the colors it has in the console, such as cli’s messages and errors:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cli_h1.html">cli_h2</a></span><span class="op">(</span><span class="st">"Checking {.pkg quartodown}"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style='font-weight: bold;'>Checking </span><span class='fansi-color-004' style='font-weight: bold;'>quartodown</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cli_alert.html">cli_alert_success</a></span><span class="op">(</span><span class="st">"Found {.val {3}} vignettes."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-002'>✔</span> Found <span class='fansi-color-004'>3</span> vignettes.</span></span>
+<span><span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cli_abort.html">cli_abort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Can't find {.file _quartodown.yml}."</span>,</span>
+<span>  <span class="st">"i"</span> <span class="op">=</span> <span class="st">"Create one with {.fn quartodown::use_quartodown}."</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-003' style='font-weight: bold;'>Error</span><span style='font-weight: bold;'>:</span></span></span>
+<span><span class="co">#&gt; <span class='fansi-color-003'>!</span> Can't find <span class='fansi-color-004'>_quartodown.yml</span>.</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-006'>ℹ</span> Create one with `quartodown::use_quartodown()`.</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
+</div>
+</div>
+<p>and tibbles:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="cn">NA</span>, <span class="st">"c"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span class='fansi-color-246'># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;       x y    </span></span>
+<span><span class="co">#&gt;   <span class='fansi-color-246' style='font-style: italic;'>&lt;dbl&gt;</span> <span class='fansi-color-246' style='font-style: italic;'>&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span class='fansi-color-250'>1</span>  -<span class='fansi-color-001'>1.5</span> a    </span></span>
+<span><span class="co">#&gt; <span class='fansi-color-250'>2</span>  <span class='fansi-color-001'>NA</span>   <span class='fansi-color-001'>NA</span>   </span></span>
+<span><span class="co">#&gt; <span class='fansi-color-250'>3</span>   3   c</span></span></code></pre></div>
+<button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
 </section><section id="math" class="level2"><h2 class="anchored" data-anchor-id="math">Math</h2>
@@ -1207,7 +1245,8 @@ Table 1: The first rows of the <code>mtcars</code> data.
   tooltips = TRUE,
   freeze = FALSE,
   quiet = TRUE,
-  devel = FALSE
+  devel = FALSE,
+  preview = interactive()
 )</code><span class="quartodown-tip-brief">Builds the package website into <code>docs/</code> with Quarto.</span></div><div data-for="t3"><code class="quartodown-tip-sig">preview_site(path = &quot;.&quot;)</code><span class="quartodown-tip-brief">Serves <code>docs/</code>, as built by <code>build_site()</code>, in a web browser, and reloads the page when the site is rebuilt.</span></div></div>
 <script>
 (function(){
