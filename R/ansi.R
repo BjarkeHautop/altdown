@@ -9,7 +9,7 @@
 # drops the color of text styled inside it (as in `col_red("a {.strong b}")`).
 
 ansi_esc <- "\u001b"
-ansi_placeholder <- ""
+ansi_placeholder <- "\uE01B"
 
 protect_ansi <- function(path) {
   rewrite_html_files(path, ansi_esc, function(lines) {

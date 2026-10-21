@@ -257,7 +257,7 @@ test_that("load_all_envvars() writes a profile that loads the package from sourc
   envvars <- load_all_envvars(dir, withr::local_tempdir())
   profile <- readLines(envvars[["R_PROFILE_USER"]])
   expect_match(profile, "pkgload::load_all(", fixed = TRUE, all = FALSE)
-  expect_match(profile, normalizePath(dir), fixed = TRUE, all = FALSE)
+  expect_match(profile, deparse(normalizePath(dir)), fixed = TRUE, all = FALSE)
 })
 
 test_that("local_envvars() restores set and unset variables on exit", {
