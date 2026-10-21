@@ -234,12 +234,13 @@ write_home <- function(path) {
   )
   writeLines(
     enc2utf8(build_website_readme(readme, path)),
-    file.path(project_dir(path), "index.md"),
+    file.path(project_dir(path), "index.qmd"),
     useBytes = TRUE
   )
 }
 
 build_website_readme <- function(lines, path = ".") {
+  lines <- github_markdown_to_quarto(lines, mermaid = TRUE)
   lines <- theme_pictures_to_images(lines)
   badges <- extract_readme_badges(lines)
   lines <- remove_marker_block(

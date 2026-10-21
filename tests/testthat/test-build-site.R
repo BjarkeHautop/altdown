@@ -347,7 +347,7 @@ test_that("theme_pictures_to_images() leaves other pictures and plain READMEs al
   expect_identical(theme_pictures_to_images(plain), plain)
 })
 
-test_that("write_home() writes _quarto/index.md and leaves README.md alone", {
+test_that("write_home() writes _quarto/index.qmd and leaves README.md alone", {
   dir <- new_pkg()
   readme_path <- file.path(dir, "README.md")
   writeBin(charToRaw("# examplepkg\n\nSome text.\n"), readme_path)
@@ -356,7 +356,7 @@ test_that("write_home() writes _quarto/index.md and leaves README.md alone", {
   write_home(dir)
 
   expect_identical(readBin(readme_path, "raw", file.size(readme_path)), before)
-  home <- readLines(file.path(dir, "_quarto", "index.md"))
+  home <- readLines(file.path(dir, "_quarto", "index.qmd"))
   expect_true("# examplepkg" %in% home)
   expect_true("Some text." %in% home)
 })

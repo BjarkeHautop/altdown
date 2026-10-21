@@ -90,20 +90,21 @@ community_file_source <- function(path, name) {
 import_markdown_files <- function(path) {
   out <- project_dir(path)
   read <- function(file) readLines(file, warn = FALSE, encoding = "UTF-8")
+  read_md <- function(file) github_markdown_to_quarto(read(file))
   write <- function(lines, name) {
     writeLines(enc2utf8(lines), file.path(out, name), useBytes = TRUE)
   }
 
   news <- file.path(path, "NEWS.md")
   if (file.exists(news)) {
-    write(link_news(read(news), pkg_github_url(path)), "NEWS.md")
+    write(link_news(read_md(news), pkg_github_url(path)), "NEWS.md")
   }
   for (name in community_files) {
     src <- community_file_source(path, name)
-    if (!is.null(src)) write(read(file.path(path, src)), name)
+    if (!is.null(src)) write(read_md(file.path(path, src)), name)
   }
   if (file.exists(file.path(path, "LICENSE.md"))) {
-    write(read(file.path(path, "LICENSE.md")), "LICENSE.md")
+    write(read_md(file.path(path, "LICENSE.md")), "LICENSE.md")
   }
   if (file.exists(file.path(path, "LICENSE"))) {
     write(
@@ -120,6 +121,43 @@ import_markdown_files <- function(path) {
     )
   }
   invisible()
+}
+
+# Rewrites GitHub-flavored Markdown that Quarto doesn't render: alerts
+# (`> [!NOTE]` and the lines quoted after it) become callouts, and with
+# `mermaid = TRUE`, ```` ```mermaid ```` blocks become ```` ```{mermaid} ````
+# diagrams. Quarto runs those as code, so only in a .qmd file, not a .md. Code
+# blocks are left alone.
+github_markdown_to_quarto <- function(lines, mermaid = FALSE) {
+  alert_pattern <- "^\\s*>\\s*\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]\\s*$"
+  out <- character()
+  fence <- NULL # The open code block's fence, if any.
+  i <- 1L
+  while (i <= length(lines)) {
+    line <- lines[[i]]
+    i <- i + 1L
+    if (!is.null(fence)) {
+      if (grepl(paste0("^\\s*", fence, "\\s*$"), line)) fence <- NULL
+      out <- c(out, line)
+    } else if (grepl("^\\s*(```+|~~~+)", line)) {
+      fence <- sub("^\\s*(```+|~~~+).*$", "\\1", line)
+      if (mermaid) {
+        line <- sub("^(\\s*(```+|~~~+))\\s*mermaid\\s*$", "\\1{mermaid}", line)
+      }
+      out <- c(out, line)
+    } else if (grepl(alert_pattern, line, ignore.case = TRUE)) {
+      type <- tolower(sub(alert_pattern, "\\1", line, ignore.case = TRUE))
+      body <- character()
+      while (i <= length(lines) && grepl("^\\s*>", lines[[i]])) {
+        body <- c(body, sub("^\\s*> ?", "", lines[[i]]))
+        i <- i + 1L
+      }
+      out <- c(out, "", paste0("::: {.callout-", type, "}"), body, ":::", "")
+    } else {
+      out <- c(out, line)
+    }
+  }
+  out
 }
 
 # Links issues and pull requests (`#123`) and GitHub users (`@user`). Code

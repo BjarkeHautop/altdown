@@ -44,6 +44,10 @@ quartodown::build_site() # also previews it when interactive
    `#123`/`@user` links), `LICENSE.md`, `LICENSE` as `LICENSE-text.md`, and
    CODE_OF_CONDUCT/CONTRIBUTING/SUPPORT `.md` from the root or `.github/`
    (pkgdown's layout), plus:
+   - These `.md` files and the README go through `github_markdown_to_quarto()`:
+     GitHub alerts (`> [!NOTE]`) → callouts; in the README only (written as
+     `.qmd`, since Quarto won't run code cells in `.md`), ```` ```mermaid ````
+     → ```` ```{mermaid} ````.
    - `reference/<topic>.qmd` ([R/rd2qmd.R](R/rd2qmd.R)): each Rd parsed with the
      package's Rd macros ([R/rd-macros.R](R/rd-macros.R)), rendered with
      `tools::Rd2HTML()` running build/install/render `\Sexpr` stages (with the
@@ -65,7 +69,7 @@ quartodown::build_site() # also previews it when interactive
      overrides from `_quartodown.yml`'s `quarto:` key are applied by
      `merge_quarto_config()` (unnamed lists append, other values replace, `~`
      removes).
-   - `index.md`: README + sidebar ([R/sidebar.R](R/sidebar.R)); badges are
+   - `index.qmd`: README + sidebar ([R/sidebar.R](R/sidebar.R)); badges are
      pulled out of the `<!-- badges: start/end -->` block, and `<picture>`
      light/dark images are rewritten to `.light-content`/`.dark-content`
      `<img>`s.

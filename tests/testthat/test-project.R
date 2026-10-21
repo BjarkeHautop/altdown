@@ -66,6 +66,53 @@ test_that("link_news() links issues and users, but not in code or existing links
   expect_identical(link_news(lines, NA_character_), lines)
 })
 
+test_that("github_markdown_to_quarto() turns alerts into callouts and mermaid blocks into diagrams", {
+  lines <- c(
+    "Intro.",
+    "> [!Warning]",
+    "> Be careful.",
+    ">",
+    "> Really.",
+    "After.",
+    "> A plain quote.",
+    "```mermaid",
+    "graph TD; A-->B;",
+    "```",
+    "````md",
+    "> [!NOTE]",
+    "```mermaid",
+    "````"
+  )
+  converted <- github_markdown_to_quarto(lines, mermaid = TRUE)
+  expect_identical(
+    converted,
+    c(
+      "Intro.",
+      "",
+      "::: {.callout-warning}",
+      "Be careful.",
+      "",
+      "Really.",
+      ":::",
+      "",
+      "After.",
+      "> A plain quote.",
+      "```{mermaid}",
+      "graph TD; A-->B;",
+      "```",
+      "````md",
+      "> [!NOTE]",
+      "```mermaid",
+      "````"
+    )
+  )
+  # Only the mermaid block differs without `mermaid = TRUE`.
+  expect_identical(
+    github_markdown_to_quarto(lines),
+    replace(converted, converted == "```{mermaid}", "```mermaid")
+  )
+})
+
 test_that("copy_vignettes() puts the source file under each vignette's title", {
   dir <- new_pkg(articles = "technical")
   write_vignette(dir, "examplepkg.Rmd")

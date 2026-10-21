@@ -37,7 +37,7 @@ instead (see [Customizing your site](../customizing.qmd)).
 ```text
 _quarto/
 ├── _quarto.yml                   # Quarto configuration (navbar, footer, theme)
-├── index.md                      # home page
+├── index.qmd                     # home page
 ├── reference/
 │   ├── index.qmd                 # function reference index
 │   └── <topic>.qmd               # a page per man/*.Rd
