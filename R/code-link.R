@@ -57,7 +57,11 @@ link_annotated <- function(pre) {
   calls <- xml2::xml_find_all(pre, ".//span[@class = 'fu'][not(a)]")
   for (call in calls) {
     name <- xml2::xml_text(call)
-    url <- downlit::autolink_url(paste0(call_prefix(call), name, "()"))
+    ns <- call_namespace(call)
+    if (!is.null(ns)) {
+      highlight_namespace(ns)
+    }
+    url <- downlit::autolink_url(paste0(ns$prefix, name, "()"))
     if (is.na(url)) {
       next
     }
@@ -84,23 +88,37 @@ link_span <- function(span, url) {
   xml2::xml_add_child(span, "a", name, href = url)
 }
 
-# "pkg::" for a call highlighted as `pkg<span class="sc">::</span><span
-# class="fu">fun</span>`, otherwise "".
-call_prefix <- function(call) {
+# For a call highlighted as `pkg<span class="sc">::</span><span
+# class="fu">fun</span>`: its `prefix` ("pkg::"), the text node ending in
+# `pkg` and the `op` span. NULL for a call without one.
+call_namespace <- function(call) {
   op <- xml2::xml_find_first(call, "preceding-sibling::node()[1]")
   if (
     !identical(xml2::xml_attr(op, "class"), "sc") ||
       !xml2::xml_text(op) %in% c("::", ":::")
   ) {
-    return("")
+    return(NULL)
   }
-  pkg <- xml2::xml_find_first(op, "preceding-sibling::node()[1]")
-  if (inherits(pkg, "xml_missing") || xml2::xml_type(pkg) != "text") {
-    return("")
+  text <- xml2::xml_find_first(op, "preceding-sibling::node()[1]")
+  if (inherits(text, "xml_missing") || xml2::xml_type(text) != "text") {
+    return(NULL)
   }
   pkg <- regmatches(
-    xml2::xml_text(pkg),
-    regexpr("[A-Za-z][A-Za-z0-9.]*$", xml2::xml_text(pkg))
+    xml2::xml_text(text),
+    regexpr("[A-Za-z][A-Za-z0-9.]*$", xml2::xml_text(text))
   )
-  if (length(pkg) == 0) "" else paste0(pkg, xml2::xml_text(op))
+  if (length(pkg) == 0) {
+    return(NULL)
+  }
+  list(prefix = paste0(pkg, xml2::xml_text(op)), text = text, op = op)
+}
+
+# Highlights `pkg::` as downlit does in the other blocks: `pkg` and `::` each
+# in a `fu` span.
+highlight_namespace <- function(ns) {
+  pkg <- sub("::+$", "", ns$prefix)
+  text <- xml2::xml_text(ns$text)
+  xml2::xml_add_sibling(ns$text, "span", pkg, class = "fu", .where = "after")
+  xml2::xml_text(ns$text) <- substr(text, 1, nchar(text) - nchar(pkg))
+  xml2::xml_set_attr(ns$op, "class", "fu")
 }

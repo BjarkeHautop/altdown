@@ -31,6 +31,11 @@ test_that("annotated blocks keep their markup and get calls linked", {
   expect_match(html, "<span class=\"ot\">", fixed = TRUE)
   expect_match(
     html,
+    "x <span class=\"ot\">&lt;-</span> <span class=\"fu\">stats</span><span class=\"fu\">::</span>",
+    fixed = TRUE
+  )
+  expect_match(
+    html,
     "<span class=\"fu\"><a href=\"https://rdrr.io/r/stats/median.html\">median</a></span>",
     fixed = TRUE
   )
@@ -80,14 +85,14 @@ test_that("library() calls in an annotated block attach packages", {
   expect_match(html, "load_all.html\">load_all</a>", fixed = TRUE)
 })
 
-test_that("call_prefix() reads the package before ::", {
+test_that("call_namespace() reads the package before ::", {
   html <- xml2::read_html(paste0(
     "<code>a <span class=\"sc\">+</span><span class=\"fu\">f</span>",
     " stats<span class=\"sc\">::</span><span class=\"fu\">g</span>",
     "<span class=\"fu\">h</span></code>"
   ))
   calls <- xml2::xml_find_all(html, ".//span[@class = 'fu']")
-  expect_equal(call_prefix(calls[[1]]), "")
-  expect_equal(call_prefix(calls[[2]]), "stats::")
-  expect_equal(call_prefix(calls[[3]]), "")
+  expect_null(call_namespace(calls[[1]]))
+  expect_equal(call_namespace(calls[[2]])$prefix, "stats::")
+  expect_null(call_namespace(calls[[3]]))
 })
