@@ -21,6 +21,9 @@ This writes `_quartodown.yml` at the package root, and adds the files the build
 generates to `.gitignore` and `.Rbuildignore`. `_quartodown.yml` is where you can
 [customize your
 site](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html).
+If your package already has a `_pkgdown.yml`, see [Coming from
+pkgdown](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html#coming-from-pkgdown)
+for how its settings carry over.
 
 ## Build the site
 

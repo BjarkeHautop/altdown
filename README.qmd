@@ -15,16 +15,13 @@ vignettes into a website, rendered entirely by Quarto.
 
 ## Why quartodown?
 
-pkgdown can render Quarto vignettes, but it replaces Quarto's styling with its
-own (`theme: "none"`, `minimal: TRUE`). As a result, Quarto features such as
-callout blocks, code annotations and tabsets don't render correctly; callouts,
-for instance, become plain blockquotes.
+Every page, help pages included, is a Quarto page, so you get:
 
-quartodown renders the whole site with Quarto itself, so you get:
-
-- full Quarto support, on every page;
-- a package website layout: a home page sidebar, a grouped function reference,
-  articles and a changelog;
+- every Quarto feature, from callouts and tabsets to code annotations and
+  cross-references, on every page;
+- Quarto's themes, extensions and settings;
+- the package website layout R users know from pkgdown: a home page sidebar,
+  a grouped function reference, articles and a changelog;
 - function links with hover tooltips.
 
 ## Installation

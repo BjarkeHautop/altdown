@@ -171,3 +171,21 @@ format:
 
 To change a single code chunk, use a chunk option such as
 `#| code-fold: true`.
+
+## Coming from pkgdown
+
+Moving a site
+over is very easy, and mostly means moving `_pkgdown.yml`'s settings into `_quartodown.yml`:
+
+- `reference:` has the same format and selectors, so it can be copied as is.
+- `navbar:` lists items differently; see [The navbar](#the-navbar).
+- `template:` (Bootstrap version, bslib variables, theme) has no equivalent:
+  style the site with Quarto's `theme:` under `quarto: format: html:`, as in
+  [Other Quarto settings](#other-quarto-settings).
+- `articles:` has no equivalent: group vignettes with navbar menus instead.
+
+The rest works as with pkgdown, except that vignettes are published under
+`vignettes/` rather than `articles/`: `articles/foo.html` becomes
+`vignettes/foo.html`, and `articles/bar.html`, from
+`vignettes/articles/bar.Rmd`, becomes `vignettes/articles/bar.html`, so update
+any links pointing to them.
