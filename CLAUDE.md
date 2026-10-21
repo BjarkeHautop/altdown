@@ -143,15 +143,15 @@ builds the navbar from the `left:` and `right:` lists under `_quartodown.yml`'s
   - `reference`: the reference index.
   - `articles`: an "Articles" menu of every vignette no other entry links.
   - `news`: "Changelog", linking `NEWS.md`.
-  - `github`: the repository icon (GitHub, GitLab, else generic), linking the
-    repo from `DESCRIPTION`'s `URL`.
+  - `repo`: the repository icon (GitHub, GitLab, else generic), linking the repo
+    from `DESCRIPTION`'s `URL`.
 - Any other string: a vignette path relative to `vignettes/`, without extension,
   linked with its title.
 - A Quarto navbar item (`text:` plus `href:`/`menu:`), passed through. Strings
   in its `menu:` are vignette paths too, and one ending in `/` expands to every
   vignette in that folder.
 
-The default is `left: [intro, reference, articles, news]`, `right: [github]`.
+The default is `left: [intro, reference, articles, news]`, `right: [repo]`.
 
 With `navbar: style: sidebar`, `quarto_config()` moves the resolved `left` items
 into a docked `website: sidebar:` (`sidebar_contents()`): menus become sections,

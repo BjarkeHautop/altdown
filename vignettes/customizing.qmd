@@ -75,7 +75,7 @@ default is:
 ```yaml
 navbar:
   left: [intro, reference, articles, news]
-  right: [github]
+  right: [repo]
 ```
 
 Each of these is a keyword that quartodown turns into an item, and leaves out if
@@ -87,7 +87,7 @@ the package has nothing for it:
   | `reference` | "Reference": the function reference index                                                                |
   | `articles`  | "Articles": a menu of every vignette no other item links, top-level ones first, then those in subfolders |
   | `news`      | "Changelog": `NEWS.md`                                                                                   |
-  | `github`    | The repository in `DESCRIPTION`'s `URL`, with a GitHub or GitLab icon (else a generic one)               |
+  | `repo`      | The repository in `DESCRIPTION`'s `URL`, with a GitHub or GitLab icon (else a generic one)               |
 
 Any other item is a vignette, given as its path relative to `vignettes/` without
 extension and linked with its title, or a [Quarto navbar
@@ -116,7 +116,7 @@ navbar:
   right:
     - text: Blog
       href: https://example.com/blog
-    - github
+    - repo
 ```
 
 1. `vignettes/get-started/installation.qmd`.
@@ -163,8 +163,7 @@ home:
 
 It can be Markdown (`.md`) or a Quarto document (`.qmd`), whose code runs when
 the site is built, as in a vignette. Write links and image paths in it relative
-to the package root, as in the README. Add the file to `.Rbuildignore` so
-`R CMD check` doesn't complain.
+to the package root, as in the README.
 
 Next to the page, a sidebar shows the package's links, license, community files,
 citation, authors and badges. `sidebar:` can reorder its sections, drop some, or
@@ -505,7 +504,7 @@ A custom navbar item, such as a link to CRAN, is a Quarto navbar item:
 ```yaml
 navbar:
   right:
-    - github
+    - repo
     - text: CRAN
       href: https://cran.r-project.org/package=mypkg
 ```

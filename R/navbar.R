@@ -5,11 +5,11 @@
 # item. A built-in item the package has nothing for (e.g. "news" without
 # NEWS.md) is left out.
 
-builtin_navbar_items <- c("intro", "reference", "articles", "news", "github")
+builtin_navbar_items <- c("intro", "reference", "articles", "news", "repo")
 
 default_navbar <- list(
   left = list("intro", "reference", "articles", "news"),
-  right = list("github")
+  right = list("repo")
 )
 
 # A list of `left` and `right` Quarto navbar items.
@@ -62,12 +62,12 @@ navbar_items <- function(path, config = list()) {
   if ("news" %in% used && file.exists(file.path(path, "NEWS.md"))) {
     builtins$news <- list(text = "Changelog", file = "NEWS.md")
   }
-  if ("github" %in% used) {
+  if ("repo" %in% used) {
     home <- pkg_repo(path, config)$home
     if (!is.na(home)) {
       host <- repo_host(home)
       labels <- c(github = "GitHub", gitlab = "GitLab", codeberg = "Codeberg")
-      builtins$github <- list(
+      builtins$repo <- list(
         # Bootstrap Icons has none for Codeberg or other hosts.
         icon = if (host %in% c("github", "gitlab")) host else "git",
         href = home,
