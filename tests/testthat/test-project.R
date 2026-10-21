@@ -66,6 +66,49 @@ test_that("link_news() links issues and users, but not in code or existing links
   expect_identical(link_news(lines, NA_character_), lines)
 })
 
+test_that("copy_vignettes() puts the source file under each vignette's title", {
+  dir <- new_pkg(articles = "technical")
+  write_vignette(dir, "examplepkg.Rmd")
+  writeLines("x", file.path(dir, "vignettes", "data.csv"))
+  desc::desc_set(
+    URL = "https://github.com/someuser/examplepkg",
+    file = dir,
+    normalize = FALSE
+  )
+
+  copy_vignettes(dir)
+  out <- file.path(dir, "_quarto", "vignettes")
+  expect_identical(
+    readLines(file.path(out, "articles", "technical.qmd")),
+    c(
+      "---",
+      "title: \"technical\"",
+      "---",
+      "",
+      "<p class=\"source-note\"><small class=\"dont-index\">Source: <a href=\"https://github.com/someuser/examplepkg/blob/HEAD/vignettes/articles/technical.qmd\"><code>vignettes/articles/technical.qmd</code></a></small></p>",
+      "",
+      "content"
+    )
+  )
+  expect_match(
+    readLines(file.path(out, "examplepkg.Rmd"))[[5]],
+    "Source: .*<code>vignettes/examplepkg.Rmd</code>"
+  )
+  expect_identical(readLines(file.path(out, "data.csv")), "x")
+})
+
+test_that("insert_after_front_matter() inserts after the front matter, or at the top", {
+  expect_identical(
+    insert_after_front_matter(c("", "---", "a: 1", "...", "text"), "x"),
+    c("", "---", "a: 1", "...", "", "x", "text")
+  )
+  expect_identical(insert_after_front_matter("text", "x"), c("x", "text"))
+  expect_identical(
+    insert_after_front_matter(c("---", "unclosed"), "x"),
+    c("x", "---", "unclosed")
+  )
+})
+
 test_that("copy_figures() copies man/figures/ and README_files/", {
   dir <- new_pkg_with_man()
   write_rd(dir, "foo")

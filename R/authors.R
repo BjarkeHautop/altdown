@@ -26,14 +26,7 @@ pkg_citation <- function(path) {
 
 citation_source_note <- function(path) {
   rel <- if (has_pkg_citation_file(path)) "inst/CITATION" else "DESCRIPTION"
-  gh_url <- pkg_github_url(path)
-  # The file isn't part of the site, so there's only a link to the repository.
-  source <- if (is.na(gh_url)) {
-    sprintf("<code>%s</code>", rel)
-  } else {
-    sprintf('<a href="%s/blob/HEAD/%s"><code>%s</code></a>', gh_url, rel, rel)
-  }
-  sprintf('<p><small class="dont-index">Source: %s</small></p>', source)
+  source_note(rel, pkg_github_url(path))
 }
 
 # A person()'s comment without the ORCID/ROR identifiers, which are shown as icons.

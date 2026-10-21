@@ -81,6 +81,21 @@ pkg_github_url <- function(path) {
   if (length(gh_url) == 0) NA_character_ else sub("/+$", "", gh_url[[1]])
 }
 
+# A "Source: <files>" line for a page made from `files` (relative to the
+# package root). The files aren't part of the site, so each links to the
+# GitHub repository `gh_url`, if there is one. `class` is the `<p>`'s.
+source_note <- function(files, gh_url = NA_character_, class = NULL) {
+  links <- sprintf("<code>%s</code>", files)
+  if (!is.na(gh_url)) {
+    links <- sprintf('<a href="%s/blob/HEAD/%s">%s</a>', gh_url, files, links)
+  }
+  sprintf(
+    '<p%s><small class="dont-index">Source: %s</small></p>',
+    if (is.null(class)) "" else sprintf(' class="%s"', class),
+    paste(links, collapse = ", ")
+  )
+}
+
 data_sidebar_links <- function(path) {
   gh_url <- pkg_github_url(path)
   gh_url <- if (is.na(gh_url)) character() else gh_url

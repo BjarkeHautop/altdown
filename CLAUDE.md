@@ -55,7 +55,11 @@ quartodown::preview_site()
      `../../pkg/html/` hrefs likewise. Usage and R6 method usage → fenced
      ```` ```r ````; prose stays HTML except inline `<code>` → Markdown code
      spans, `reqn` → `$`/`$$` math, `$` escaped, language-tagged `<pre>` →
-     fenced blocks. Examples are rebuilt from `tools::Rd2ex()` markers into run
+     fenced blocks. A `Source:` line under the title links the files roxygen's
+     `% Please edit documentation in` header names (else the `.Rd`) to
+     `<GitHub URL>/blob/HEAD/` (`source_note()`, shared with the authors
+     page and the vignettes, which `copy_vignettes()` gives one after their
+     front matter). Examples are rebuilt from `tools::Rd2ex()` markers into run
      / `\dontrun` (plain block) / `\dontshow` (hidden chunk) blocks, with
      `@examplesIf` evaluated at build time.
    - `_quarto.yml`: fully resolved Quarto config (navbar, footer, theme). User

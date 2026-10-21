@@ -30,12 +30,39 @@ copy_dir <- function(from, to) {
 # ---- package files ----------------------------------------------------------------
 
 # Vignettes, including vignettes/articles/, are rendered by Quarto itself,
-# alongside any images or data files they use.
+# alongside any images or data files they use. Each gets a source_note() under
+# its title, ruled off from the text below like a heading (see
+# quartodown.scss), as a reference page's is by its first `##` heading.
 copy_vignettes <- function(path) {
-  copy_dir(
-    file.path(path, "vignettes"),
-    file.path(project_dir(path), "vignettes")
-  )
+  out <- file.path(project_dir(path), "vignettes")
+  copy_dir(file.path(path, "vignettes"), out)
+  gh_url <- pkg_github_url(path)
+  for (vignette in find_vignettes(path)) {
+    file <- file.path(out, vignette)
+    lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
+    note <- source_note(
+      file.path("vignettes", vignette),
+      gh_url,
+      class = "source-note"
+    )
+    writeLines(
+      enc2utf8(insert_after_front_matter(lines, c(note, ""))),
+      file,
+      useBytes = TRUE
+    )
+  }
+}
+
+# `lines` with `insert` after the YAML front matter (`---` to `---` or `...`),
+# or at the top if there's none.
+insert_after_front_matter <- function(lines, insert) {
+  first <- which(nzchar(trimws(lines)))[1]
+  end <- 0L
+  if (!is.na(first) && trimws(lines[first]) == "---") {
+    close <- which(grepl("^(---|\\.\\.\\.)\\s*$", lines[-seq_len(first)]))[1]
+    if (!is.na(close)) end <- first + close
+  }
+  append(lines, c(if (end > 0) "", insert), after = end)
 }
 
 # man/figures/ holds the images README.md and `\figure{}` use. README.Rmd's

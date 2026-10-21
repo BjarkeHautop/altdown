@@ -20,11 +20,13 @@ write_man_pages <- function(path, config = list()) {
   macros <- rd_macros(path)
   pkg <- desc::desc_get_field("Package", file = path)
   pages <- topic_pages(topics)
+  gh_url <- pkg_github_url(path)
   n <- 0L
   for (rd_file in rd_files) {
     rd <- tools::parse_Rd(rd_file, macros = macros)
+    note <- source_note(rd_source_files(rd_file), gh_url)
     lines <- tryCatch(
-      rd_to_qmd(rd, pkg, pages),
+      rd_to_qmd(rd, pkg, pages, note),
       error = function(e) {
         cli::cli_abort("Failed to convert {.file {rd_file}}.", parent = e)
       }
@@ -41,9 +43,28 @@ write_man_pages <- function(path, config = list()) {
   invisible()
 }
 
+# The files roxygen generated `rd_file` from, relative to the package root,
+# as its header names them: "% Please edit documentation in R/a.R, R/b.R",
+# wrapped onto "%   " lines. A hand-written Rd file is its own source.
+rd_source_files <- function(rd_file) {
+  lines <- readLines(rd_file, n = 20, warn = FALSE, encoding = "UTF-8")
+  start <- grep("^% Please edit documentation in ", lines)[1]
+  if (is.na(start)) {
+    return(file.path("man", basename(rd_file)))
+  }
+  end <- start
+  while (end < length(lines) && startsWith(lines[end + 1L], "%   ")) {
+    end <- end + 1L
+  }
+  text <- sub("^% Please edit documentation in ", "", lines[start:end])
+  files <- trimws(unlist(strsplit(sub("^%", "", text), ",", fixed = TRUE)))
+  files[nzchar(files)]
+}
+
 # The lines of the reference/*.qmd page for the parsed Rd `rd`. `pages` maps
-# the package's topics to their pages, see topic_pages().
-rd_to_qmd <- function(rd, pkg, pages = character()) {
+# the package's topics to their pages, see topic_pages(). `note` (HTML, see
+# source_note()) goes under the title.
+rd_to_qmd <- function(rd, pkg, pages = character(), note = NULL) {
   html <- rd_html(link_rd(rd, pkg, pages))
   html <- link_help_hrefs(html, pkg, pages)
 
@@ -79,7 +100,14 @@ rd_to_qmd <- function(rd, pkg, pages = character()) {
 
   title <- paste(rd_html_to_markdown(title), collapse = " ")
   front_matter <- yaml::as.yaml(list(title = title), line.sep = "\n")
-  c("---", sub("\n$", "", front_matter), "---", "", unlist(sections))
+  c(
+    "---",
+    sub("\n$", "", front_matter),
+    "---",
+    "",
+    if (!is.null(note)) c(note, ""),
+    unlist(sections)
+  )
 }
 
 # The HTML `tools::Rd2HTML()` makes of `rd`, from the title's `<h2>` up to the
