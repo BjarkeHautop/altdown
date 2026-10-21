@@ -61,6 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="site_libs/quarto-nav/quarto-nav.js"></script><script src="site_libs/quarto-nav/headroom.min.js"></script><script src="site_libs/clipboard/clipboard.min.js"></script><script src="site_libs/quarto-search/autocomplete.umd.js"></script><script src="site_libs/quarto-search/fuse.min.js"></script><script src="site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="./">
+<link href="./man/figures/logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script><script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="site_libs/quarto-html/popper.min.js"></script><script src="site_libs/quarto-html/tippy.umd.min.js"></script><script src="site_libs/quarto-html/anchor.min.js"></script><link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
@@ -110,7 +111,18 @@ visitors who prefer it, before Quarto reads the stored choice.
     // No localStorage: keep Quarto's light default.
   }
 })();
-</script>
+</script><meta property="og:title" content="Authors and Citation – quartodown 0.0.0.9000">
+<meta property="og:description" content="Package Websites Built Entirely with ‘Quarto’">
+<meta property="og:image" content="https://bjarkehautop.github.io/quartodown/man/figures/logo.png">
+<meta property="og:site_name" content="quartodown 0.0.0.9000">
+<meta property="og:image:height" content="600">
+<meta property="og:image:width" content="520">
+<meta name="twitter:title" content="Authors and Citation – quartodown 0.0.0.9000">
+<meta name="twitter:description" content="Package Websites Built Entirely with ‘Quarto’">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/quartodown/man/figures/logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image-height" content="600">
+<meta name="twitter:image-width" content="520">
 </head>
 <body class="nav-fixed quarto-light">
 <script id="quarto-html-before-body" type="application/javascript">
@@ -564,7 +576,7 @@ Hautop Kristensen B (2026). <em>quartodown: Package Websites Built Entirely with
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/bjarkehautop\.github\.io\/quartodown");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

@@ -61,6 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script><script src="../site_libs/quarto-nav/headroom.min.js"></script><script src="../site_libs/clipboard/clipboard.min.js"></script><script src="../site_libs/quarto-search/autocomplete.umd.js"></script><script src="../site_libs/quarto-search/fuse.min.js"></script><script src="../site_libs/quarto-search/quarto-search.js"></script><meta name="quarto:offset" content="../">
+<link href="../man/figures/logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
@@ -110,7 +111,18 @@ visitors who prefer it, before Quarto reads the stored choice.
     // No localStorage: keep Quarto's light default.
   }
 })();
-</script>
+</script><meta property="og:title" content="Build the package website – quartodown 0.0.0.9000">
+<meta property="og:description" content="Package Websites Built Entirely with ‘Quarto’">
+<meta property="og:image" content="https://bjarkehautop.github.io/quartodown/man/figures/logo.png">
+<meta property="og:site_name" content="quartodown 0.0.0.9000">
+<meta property="og:image:height" content="600">
+<meta property="og:image:width" content="520">
+<meta name="twitter:title" content="Build the package website – quartodown 0.0.0.9000">
+<meta name="twitter:description" content="Package Websites Built Entirely with ‘Quarto’">
+<meta name="twitter:image" content="https://bjarkehautop.github.io/quartodown/man/figures/logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image-height" content="600">
+<meta name="twitter:image-width" content="520">
 <!-- quartodown-tooltips -->
 <style>
 .quartodown-tip-float{display:none;position:fixed;z-index:10000;min-width:220px;max-width:420px;background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);border:1px solid var(--bs-border-color,#444);border-radius:6px;padding:.5em .75em;font-size:.85em;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);white-space:normal;text-align:left;font-weight:normal;font-style:normal;}
@@ -448,6 +460,9 @@ Logical. Open the built site in a web browser with <code><a class="quartodown-ti
 <p><code>_quartodown.yml</code>, at the package root, is optional; <code><a class="quartodown-tip-ref" data-quartodown-tip="t3" href="./use_quartodown.html">use_quartodown()</a></code> creates one. It can contain:</p>
 <ul>
 <li>
+<p><code>url</code>: the site’s address, if it isn’t the first <code>URL</code> in <code>DESCRIPTION</code> that isn’t a source repository.</p>
+</li>
+<li>
 <p><code>reference</code>: the sections of the function reference index and the topics each lists, by name or with selectors such as <code>starts_with()</code>. The format is the same as pkgdown’s.</p>
 </li>
 <li>
@@ -460,7 +475,7 @@ Logical. Open the built site in a web browser with <code><a class="quartodown-ti
 <p><code>quarto</code>: settings merged over the generated Quarto configuration.</p>
 </li>
 </ul>
-<p>See <code>vignette("customizing", package = "quartodown")</code> for the details.</p>
+<p>See <code><a href="https://bjarkehautop.github.io/quartodown/vignettes/customizing.html">vignette("customizing", package = "quartodown")</a></code> for the details.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -619,7 +634,7 @@ Logical. Open the built site in a web browser with <code><a class="quartodown-ti
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/bjarkehautop\.github\.io\/quartodown");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
