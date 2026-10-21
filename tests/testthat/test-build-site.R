@@ -649,7 +649,7 @@ sidebar:
   expect_true("Supported by [a grant](https://example.com)." %in% sidebar)
 
   home$sidebar$structure <- list("nope")
-  expect_error(build_sidebar_markdown(dir, config = list(home = home)), "nope")
+  expect_error(check_home_config(home), "nope")
 
   # Without `structure:`, components come after the built-in sections.
   home$sidebar$structure <- NULL
@@ -1338,4 +1338,21 @@ test_that("build_reference_qmd() errors on a selector matching no topic", {
     "      - not_a_real_function"
   ))
   expect_error(build_reference_qmd(dir, config), "known")
+})
+
+test_that("check_config() catches mistakes the build would only hit later", {
+  dir <- new_pkg_with_man()
+  write_rd(dir, "foo")
+  topics <- rd_topics(dir)
+  expect_no_error(check_config(dir, list(), topics))
+
+  check <- function(config) check_config(dir, config, topics)
+  expect_error(check(list(home = list(file = "missing.md"))), "doesn't exist")
+  expect_error(check(list(theme = "flatly")), "light.*dark")
+  expect_error(check(list(navbar = list(style = "left"))), "top.*sidebar")
+  expect_error(check(list(navbar = list(left = list("nope")))), "nope")
+  expect_error(
+    check(list(reference = list(list(contents = "bar")))),
+    "known"
+  )
 })

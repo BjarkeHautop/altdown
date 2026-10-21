@@ -4,7 +4,9 @@
 # page, with a tooltip showing the signature and a one-line summary. Any
 # existing downlit href is replaced, as downlit can't resolve the package's
 # own, unpublished topics. Matched are `fu`/`va` spans and `%op%` `op`/`sc`
-# spans in code blocks, and inline `<code>`, linked or not.
+# spans in code blocks, and inline `<code>`, linked or not, in the HTML as
+# xml2 writes it (see postprocess_pages()). The tooltip's style and script are
+# in quartodown.scss and quartodown-after-body.html.
 
 tooltip_link_re <- paste0(
   # One group number each for the class and the name in either kind of span.
@@ -16,89 +18,36 @@ tooltip_link_re <- paste0(
   "|<a href=\"[^\"]*\"><code>([^<]*?)</code></a>)"
 )
 
-# Marks a processed page so a rerun of add_tooltips() skips it.
-tooltip_marker <- "<!-- quartodown-tooltips -->"
-
-# Adds tooltips to every docs/**/*.html file. Returns, invisibly, how many
-# files and reference links were touched.
-add_tooltips <- function(
-  path = ".",
-  config = list(),
-  topics = rd_topics(path),
-  quiet = FALSE
+# The page `html` with tooltips (see inject_tooltips_html()) and, if it has
+# any, their contents in a hidden element at the end of the body, which
+# quartodown-after-body.html's script shows. Returns `html` and `n`, the
+# number of links.
+add_tooltips_html <- function(
+  html,
+  index,
+  href_prefix = "reference/",
+  pkg = NULL
 ) {
-  docs_dir <- file.path(path, "docs")
-  if (!dir.exists(file.path(docs_dir, "reference"))) {
-    cli::cli_abort(
-      "No built site with a {.path reference/} directory found at {.path {docs_dir}}."
-    )
-  }
-
-  index <- build_topic_index(path, config, topics, quiet = quiet)
-  if (length(index) == 0) {
-    return(invisible(list(files = 0L, links = 0L)))
-  }
-  pkg <- desc::desc_get_field("Package", file = path)
-
-  html_files <- fs::dir_ls(docs_dir, regexp = "\\.html$", recurse = TRUE)
-  n_files <- 0L
-  n_links <- 0L
-
-  for (f in html_files) {
-    html <- paste(
-      readLines(f, warn = FALSE, encoding = "UTF-8"),
-      collapse = "\n"
-    )
-    if (grepl(tooltip_marker, html, fixed = TRUE)) {
-      next
-    }
-
-    href_prefix <- reference_href_prefix(f, docs_dir)
-    result <- inject_tooltips_html(html, index, href_prefix, pkg = pkg)
-    if (result$n == 0) {
-      next
-    }
-
-    new_html <- sub(
-      "</head>",
-      paste0(tooltip_css_block(), "</head>"),
-      result$html,
-      fixed = TRUE
-    )
-    body_addition <- paste0(
-      tooltip_payload_html(result$tips),
-      tooltip_script_block()
-    )
+  result <- inject_tooltips_html(html, index, href_prefix, pkg = pkg)
+  html <- result$html
+  if (result$n > 0) {
+    payload <- tooltip_payload_html(result$tips)
     # The last </body>, as a script may contain the string too.
-    if (grepl("</body>\\s*</html>\\s*$", new_html, perl = TRUE)) {
-      new_html <- sub(
-        "</body>(\\s*</html>\\s*)$",
-        paste0(body_addition, "</body>\\1"),
-        new_html,
-        perl = TRUE
-      )
+    end <- "</body>(\\s*</html>\\s*)$"
+    html <- if (grepl(end, html, perl = TRUE)) {
+      sub(end, paste0(payload, "</body>\\1"), html, perl = TRUE)
     } else {
-      new_html <- paste0(new_html, body_addition)
+      paste0(html, payload)
     }
-
-    writeLines(new_html, f, useBytes = TRUE)
-    n_files <- n_files + 1L
-    n_links <- n_links + result$n
   }
-
-  if (!quiet) {
-    cli::cli_inform(
-      "Added tooltips to {n_links} reference link{?s} across {n_files} file{?s}."
-    )
-  }
-  invisible(list(files = n_files, links = n_links))
+  list(html = html, n = result$n)
 }
 
 # Relative path from a rendered page to docs/reference/, e.g. "reference/"
 # from docs/index.html or "../reference/" one directory down.
-reference_href_prefix <- function(file, docs_dir) {
+reference_href_prefix <- function(file, docs) {
   rel <- fs::path_rel(
-    fs::path(docs_dir, "reference"),
+    fs::path(docs, "reference"),
     start = fs::path_dir(file)
   )
   paste0(as.character(rel), "/")
@@ -375,36 +324,11 @@ first_sentence <- function(text, max_chars = 200) {
   list(text = sentence, clipped = clipped)
 }
 
-# ---- tooltip assets -----------------------------------------------------------
-#
-# One `position: fixed` tooltip shared by the page, so code blocks'
-# `overflow: auto` can't clip it.
+# ---- tooltip contents ---------------------------------------------------------
 
-tooltip_css_block <- function() {
-  paste0(
-    tooltip_marker,
-    "\n",
-    "<style>\n",
-    ".quartodown-tip-float{display:none;position:fixed;z-index:10000;",
-    "min-width:220px;max-width:420px;",
-    "background:var(--bs-body-bg,#1e1e1e);color:var(--bs-body-color,#eee);",
-    "border:1px solid var(--bs-border-color,#444);",
-    "border-radius:6px;padding:.5em .75em;font-size:.85em;",
-    "line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.35);",
-    "white-space:normal;text-align:left;font-weight:normal;",
-    "font-style:normal;}\n",
-    ".quartodown-tip-float .quartodown-tip-sig{display:block;white-space:pre-wrap;",
-    "font-family:ui-monospace,SFMono-Regular,Consolas,monospace;",
-    "font-weight:600;color:var(--bs-link-color,#9cdcfe);margin-bottom:.35em;",
-    "background-color:transparent;padding:0;border-radius:0;}\n",
-    ".quartodown-tip-float .quartodown-tip-brief{margin:0;color:var(--bs-secondary-color,#ccc);}\n",
-    "a.quartodown-tip-ref{cursor:help;}\n",
-    "</style>\n"
-  )
-}
-
-# `tips`: id -> list(usage, brief, name), rendered as a hidden payload the
-# script below reads via `data-for`/`data-quartodown-tip`.
+# `tips`: id -> list(usage, brief, name), rendered as a hidden payload that
+# quartodown-after-body.html's script reads via
+# `data-for`/`data-quartodown-tip`.
 tooltip_payload_html <- function(tips) {
   entries <- vapply(
     names(tips),
@@ -431,53 +355,5 @@ tooltip_payload_html <- function(tips) {
     '<div class="quartodown-tip-payload" hidden>',
     paste(entries, collapse = ""),
     "</div>\n"
-  )
-}
-
-tooltip_script_block <- function() {
-  paste0(
-    "<script>\n",
-    "(function(){\n",
-    "  var payload = document.currentScript.previousElementSibling;\n",
-    "  var float = document.createElement('div');\n",
-    "  float.className = 'quartodown-tip-float';\n",
-    "  float.setAttribute('role', 'tooltip');\n",
-    "  document.body.appendChild(float);\n",
-    "  var hideTimer;\n",
-    "  function place(el){\n",
-    "    var r = el.getBoundingClientRect();\n",
-    "    var top = r.bottom + 6;\n",
-    "    var left = r.left;\n",
-    "    var maxLeft = window.innerWidth - float.offsetWidth - 8;\n",
-    "    if (left > maxLeft) left = Math.max(8, maxLeft);\n",
-    "    var maxTop = window.innerHeight - float.offsetHeight - 8;\n",
-    "    if (top > maxTop) top = Math.max(8, r.top - float.offsetHeight - 6);\n",
-    "    float.style.top = top + 'px';\n",
-    "    float.style.left = left + 'px';\n",
-    "  }\n",
-    "  function show(el){\n",
-    "    var key = el.getAttribute('data-quartodown-tip');\n",
-    "    var tip = payload.querySelector('[data-for=\"' + key + '\"]');\n",
-    "    if (!tip) return;\n",
-    "    float.innerHTML = tip.innerHTML;\n",
-    "    float.style.display = 'block';\n",
-    "    place(el);\n",
-    "  }\n",
-    "  function hide(){ float.style.display = 'none'; }\n",
-    "  function cancelHide(){ clearTimeout(hideTimer); }\n",
-    "  function scheduleHide(){ hideTimer = setTimeout(hide, 150); }\n",
-    "  var links = document.querySelectorAll('a.quartodown-tip-ref');\n",
-    "  for (var i = 0; i < links.length; i++) {\n",
-    "    (function(el){\n",
-    "      el.addEventListener('mouseenter', function(){ cancelHide(); show(el); });\n",
-    "      el.addEventListener('mouseleave', scheduleHide);\n",
-    "      el.addEventListener('focus', function(){ show(el); });\n",
-    "      el.addEventListener('blur', hide);\n",
-    "    })(links[i]);\n",
-    "  }\n",
-    "  float.addEventListener('mouseenter', cancelHide);\n",
-    "  float.addEventListener('mouseleave', scheduleHide);\n",
-    "})();\n",
-    "</script>\n"
   )
 }

@@ -87,6 +87,8 @@ build_site <- function(
 ) {
   config <- read_config(path)
   check_quarto()
+  topics <- rd_topics(path)
+  check_config(path, config, topics)
 
   # Lets code (`\Sexpr`, `@examplesIf`, examples, vignettes) tell it is
   # building the site, and whose. Quarto's R processes inherit them.
@@ -106,7 +108,6 @@ build_site <- function(
     install_envvars(path, scratch)
   }
 
-  topics <- with_libpaths(envvars, rd_topics(path))
   reset_project(path, freeze = freeze)
   copy_vignettes(path, config)
   copy_figures(path)
@@ -122,13 +123,7 @@ build_site <- function(
 
   render_project(path, envvars, quiet = quiet)
   write_pkgdown_yml(path, settings$website$`site-url`)
-  protect_ansi(path)
-  link_code(path)
-  ansi_to_html(path)
-
-  if (isTRUE(tooltips)) {
-    add_tooltips(path, config, topics)
-  }
+  postprocess_pages(path, config, topics, tooltips = tooltips)
   write_redirects(path, config)
 
   if (isTRUE(preview) && !identical(Sys.getenv("TESTTHAT"), "true")) {
@@ -141,7 +136,7 @@ build_site <- function(
     }
   }
 
-  invisible(file.path(path, "docs"))
+  invisible(docs_dir(path))
 }
 
 theme_files <- c(
@@ -217,6 +212,18 @@ read_config <- function(path) {
   }
   config_redirects(config) # Checks it before the slow render.
   config
+}
+
+# Runs the checks of the settings read_config() can't check on its own, which
+# need the package's files and topics, so a mistake fails before the slow
+# install and render rather than during them.
+check_config <- function(path, config, topics) {
+  home_file(path, config)
+  quarto_theme(path, config)
+  navbar_style(config)
+  navbar_layout(path, config)
+  reference_block_topics(reference_blocks(config, topics), topics)
+  invisible()
 }
 
 # Warns about fields of _quartodown.yml (or of its `parent:`) that quartodown
@@ -423,21 +430,7 @@ write_quarto_config <- function(
 # The home page is `home: file:` from _quartodown.yml, else README.md, else
 # made from DESCRIPTION; with a sidebar unless `home: sidebar: false`.
 write_home <- function(path, config = list()) {
-  file <- config$home$file
-  if (!is.null(file)) {
-    if (!is.character(file) || length(file) != 1) {
-      cli::cli_abort(
-        "_quartodown.yml `home: file:` must be a single file path."
-      )
-    }
-    if (!file.exists(file.path(path, file))) {
-      cli::cli_abort(
-        "_quartodown.yml `home: file:` is {.path {file}}, which doesn't exist."
-      )
-    }
-  } else if (file.exists(file.path(path, "README.md"))) {
-    file <- "README.md"
-  }
+  file <- home_file(path, config)
   lines <- if (is.null(file)) {
     description_home(path)
   } else {
@@ -448,6 +441,26 @@ write_home <- function(path, config = list()) {
     file.path(project_dir(path), "index.qmd"),
     useBytes = TRUE
   )
+}
+
+# The home page's source, relative to `path`: `home: file:`, else README.md
+# if there is one, else NULL.
+home_file <- function(path, config = list()) {
+  file <- config$home$file
+  if (is.null(file)) {
+    return(if (file.exists(file.path(path, "README.md"))) "README.md")
+  }
+  if (!is.character(file) || length(file) != 1) {
+    cli::cli_abort(
+      "_quartodown.yml `home: file:` must be a single file path."
+    )
+  }
+  if (!file.exists(file.path(path, file))) {
+    cli::cli_abort(
+      "_quartodown.yml `home: file:` is {.path {file}}, which doesn't exist."
+    )
+  }
+  file
 }
 
 # The page GitHub Pages (and Netlify) show for a URL that doesn't exist, with
@@ -482,6 +495,13 @@ check_home_config <- function(home) {
       c("structure", "components"),
       "home: sidebar"
     )
+    known <- c(sidebar_sections, names(sidebar$components))
+    for (name in setdiff(unlist(sidebar$structure), known)) {
+      cli::cli_abort(c(
+        "_quartodown.yml `home: sidebar: structure:` has {.val {name}}, which isn't a section.",
+        "i" = "Sections: {.val {sidebar_sections}}, or one of your own under `components:`."
+      ))
+    }
     for (name in names(sidebar$components)) {
       component <- sidebar$components[[name]]
       if (!is.character(component$title) || !is.character(component$text)) {

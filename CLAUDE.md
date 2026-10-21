@@ -108,23 +108,25 @@ quartodown::build_site() # also previews it when interactive
    writes `docs/pkgdown.yml` (`urls` + `articles`, all downlit reads). The name
    is fixed: downlit fetches `<site URL>/pkgdown.yml` to link other packages'
    code to this site, so it must not be renamed.
-3. **After rendering** — `link_code()` ([R/code-link.R](R/code-link.R)) runs
-   downlit over every `docs/**/*.html` (replacing Quarto's `code-link`, which
-   would wipe code annotations). `pre.code-annotated` blocks are hidden from
-   downlit and their `span.fu` tokens (and `span.sc` `%op%`s) linked one by one
-   with `downlit::autolink_url()` instead. xml2 drops the ESC of ANSI codes, so
+3. **After rendering** — `postprocess_pages()` ([R/code-link.R](R/code-link.R))
+   reads and writes each `docs/**/*.html` once. In between, `link_code_html()`
+   runs downlit over it (replacing Quarto's `code-link`, which would wipe code
+   annotations). `pre.code-annotated` blocks are hidden from downlit and their
+   `span.fu` tokens (and `span.sc` `%op%`s) linked one by one with
+   `downlit::autolink_url()` instead. xml2 drops the ESC of ANSI codes, so
    `protect_ansi()` ([R/ansi.R](R/ansi.R)) first swaps it for a private-use
-   character (and strips the codes from `search.json`), and `ansi_to_html()`
-   afterwards converts them with `fansi::sgr_to_html()` (not `cli::ansi_html()`,
-   which loses colors of nested styles). Then `add_tooltips()`
-   ([R/tooltips.R](R/tooltips.R)) regex-rewrites every `docs/**/*.html`, linking
-   references to the package's own topics (`<span class="fu|va">` in code
-   blocks, and `op`/`sc` spans holding a `%op%`, and `<code>name()</code>`
-   inline) to their reference page with a hover tooltip. Pages are marked with
-   `<!-- quartodown-tooltips -->` so reruns skip them. Then `write_redirects()`
-   ([R/redirects.R](R/redirects.R)) writes redirect pages for
-   `_quartodown.yml`'s `redirects:` (pkgdown's format; Quarto's `aliases:` needs
-   front matter, which generated pages lack). Finally, with
+   character, and `ansi_to_html()` afterwards converts them with
+   `fansi::sgr_to_html()` (not `cli::ansi_html()`, which loses colors of nested
+   styles); `strip_search_ansi()` strips them from `search.json`. Before that,
+   `add_tooltips_html()` ([R/tooltips.R](R/tooltips.R)) regex-rewrites the HTML
+   xml2 wrote, linking references to the package's own topics
+   (`<span class="fu|va">` in code blocks, and `op`/`sc` spans holding a `%op%`,
+   and `<code>name()</code>` inline) to their reference page, and appends the
+   tips' contents in a hidden `.quartodown-tip-payload`; the tooltip's style and
+   script are in `quartodown.scss` and `quartodown-after-body.html`. Then
+   `write_redirects()` ([R/redirects.R](R/redirects.R)) writes redirect pages
+   for `_quartodown.yml`'s `redirects:` (pkgdown's format; Quarto's `aliases:`
+   needs front matter, which generated pages lack). Finally, with
    `preview = interactive()`, `serve_site()` ([R/project.R](R/project.R)) serves
    `docs/` with `servr::httw()`. The server is kept in the package-level `the`
    environment and reused by later builds, whose open page live-reloads.
@@ -157,8 +159,8 @@ With `navbar: style: sidebar`, `quarto_config()` moves the resolved `left` items
 into a docked `website: sidebar:` (`sidebar_contents()`): menus become sections,
 and the reference item becomes a section listing every topic the index lists
 (`sidebar_reference()`, one sub-section per titled group). Labels are plain
-text, not code spans, since `add_tooltips()` would nest a link in the sidebar
-link; `quartodown.scss` sets them in the code font. Pages then have
+text, not code spans, since `add_tooltips_html()` would nest a link in the
+sidebar link; `quartodown.scss` sets them in the code font. Pages then have
 `body.docked`, which turns off the navbar's width cap and the after-body
 script's title alignment, so the title sits above the sidebar.
 
@@ -166,7 +168,7 @@ script's title alignment, so the title sits above the sidebar.
 
 - `build_site()` parses `man/*.Rd` once with `rd_topics()` (each topic keeps its
   parsed `rd`) and passes the topics to `write_man_pages()`,
-  `build_reference_qmd()`, `quarto_config()` and `add_tooltips()`; their
+  `build_reference_qmd()`, `quarto_config()` and `postprocess_pages()`; their
   `topics = rd_topics(path)` default is for tests. Use `has_page()` for whether
   a topic has a page.
 

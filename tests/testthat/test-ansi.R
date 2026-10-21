@@ -1,4 +1,4 @@
-test_that("colored output survives link_code() and becomes styled spans", {
+test_that("colored output survives postprocess_pages() and becomes styled spans", {
   dir <- withr::local_tempdir()
   dir.create(file.path(dir, "docs"))
   esc <- "\u001b"
@@ -29,9 +29,7 @@ test_that("colored output survives link_code() and becomes styled spans", {
     file.path(dir, "docs", "search.json")
   )
 
-  protect_ansi(dir)
-  link_code(dir)
-  ansi_to_html(dir)
+  postprocess_pages(dir, tooltips = FALSE)
 
   html <- readLines(file.path(dir, "docs", "page.html"), encoding = "UTF-8")
   expect_false(any(grepl(esc, html, fixed = TRUE)))

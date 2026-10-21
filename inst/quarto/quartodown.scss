@@ -301,6 +301,52 @@ img.ror {
   vertical-align: text-bottom;
 }
 
+/* tooltips =================================================================== */
+
+// References to the package's own topics, linked by add_tooltips_html(). One
+// `position: fixed` tooltip per page (see quartodown-after-body.html), so code
+// blocks' `overflow: auto` can't clip it.
+a.quartodown-tip-ref {
+  cursor: help;
+}
+
+.quartodown-tip-float {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  min-width: 220px;
+  max-width: 420px;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 6px;
+  padding: 0.5em 0.75em;
+  font-size: 0.85em;
+  line-height: 1.4;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  white-space: normal;
+  text-align: left;
+  font-weight: normal;
+  font-style: normal;
+
+  .quartodown-tip-sig {
+    display: block;
+    white-space: pre-wrap;
+    font-family: $font-family-monospace;
+    font-weight: 600;
+    color: var(--bs-link-color);
+    margin-bottom: 0.35em;
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .quartodown-tip-brief {
+    margin: 0;
+    color: var(--bs-secondary-color);
+  }
+}
+
 /* footer ===================================================================== */
 
 .nav-footer {

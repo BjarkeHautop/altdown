@@ -14,22 +14,8 @@ default_navbar <- list(
 
 # A list of `left` and `right` Quarto navbar items.
 navbar_items <- function(path, config = list()) {
-  layout <- default_navbar
-  for (side in setdiff(names(config$navbar), "style")) {
-    if (!side %in% names(default_navbar)) {
-      cli::cli_abort(
-        "_quartodown.yml `navbar:` has {.field {side}}, but only {.field left}, {.field right} and {.field style}."
-      )
-    }
-    layout[[side]] <- as.list(config$navbar[[side]])
-  }
-
-  # Other items first: "Get started" and "Articles" skip the vignettes they
-  # link.
   vignettes <- find_vignettes(path)
-  layout <- lapply(layout, lapply, function(item) {
-    if (is_builtin_item(item)) item else nav_item(item, path, vignettes)
-  })
+  layout <- navbar_layout(path, config, vignettes)
   items <- unlist(layout, recursive = FALSE)
   used <- unlist(Filter(is.character, items))
   listed <- nav_vignettes(Filter(Negate(is.character), items))
@@ -81,6 +67,28 @@ navbar_items <- function(path, config = list()) {
       if (is.character(item)) builtins[[item]] else item
     })
     Filter(Negate(is.null), side)
+  })
+}
+
+# The `left` and `right` items of `navbar:`, with every item but the
+# built-in ones (still their name) made a Quarto navbar item. These go first:
+# "Get started" and "Articles" skip the vignettes they link.
+navbar_layout <- function(
+  path,
+  config = list(),
+  vignettes = find_vignettes(path)
+) {
+  layout <- default_navbar
+  for (side in setdiff(names(config$navbar), "style")) {
+    if (!side %in% names(default_navbar)) {
+      cli::cli_abort(
+        "_quartodown.yml `navbar:` has {.field {side}}, but only {.field left}, {.field right} and {.field style}."
+      )
+    }
+    layout[[side]] <- as.list(config$navbar[[side]])
+  }
+  lapply(layout, lapply, function(item) {
+    if (is_builtin_item(item)) item else nav_item(item, path, vignettes)
   })
 }
 
@@ -222,7 +230,7 @@ sidebar_reference <- function(config, topics) {
 }
 
 # A topic's first name from its usage, as plain text: inline code would get
-# a tooltip link inside the sidebar's link (see add_tooltips()), so
+# a tooltip link inside the sidebar's link (see add_tooltips_html()), so
 # quartodown.scss sets it in the code font instead.
 topic_label <- function(topic) {
   html_unescape(gsub("<[^>]+>", "", topic$names[[1]]))

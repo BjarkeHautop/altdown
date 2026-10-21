@@ -569,9 +569,23 @@ test_that("code in the brief is rendered as <code>, with its contents escaped", 
   )
 })
 
-# ---- add_tooltips() -----------------------------------------------------------
+# ---- add_tooltips_html() / postprocess_pages() --------------------------------
 
-test_that("add_tooltips() rewrites pages on disk and is idempotent on rerun", {
+test_that("add_tooltips_html() adds the tips' contents before </body>", {
+  html <- sample_html("<p><code>foo()</code></p>")
+  result <- add_tooltips_html(html, foo_index)
+  expect_equal(result$n, 1L)
+  expect_match(
+    result$html,
+    "Adds a and b.</span></div></div>\n</body></html>$"
+  )
+
+  # Without any reference, the page is unchanged.
+  other <- sample_html("<p><code>bar()</code></p>")
+  expect_identical(add_tooltips_html(other, foo_index)$html, other)
+})
+
+test_that("postprocess_pages() links and adds tooltips to pages on disk", {
   dir <- withr::local_tempdir()
   writeLines("Package: p", file.path(dir, "DESCRIPTION"))
   write_rd(
@@ -589,25 +603,16 @@ test_that("add_tooltips() rewrites pages on disk and is idempotent on rerun", {
       "}"
     )
   )
-  dir.create(file.path(dir, "docs", "reference"), recursive = TRUE)
-  page <- file.path(dir, "docs", "index.html")
-  writeLines(
-    sample_html(
-      "<span class=\"fu\"><a href=\"https://rdrr.io/pkg/p/man/foo.html\">foo</a></span>"
-    ),
-    page
-  )
+  dir.create(file.path(dir, "docs", "vignettes"), recursive = TRUE)
+  page <- file.path(dir, "docs", "vignettes", "a.html")
+  writeLines(sample_html("<p>Use <code>foo()</code>.</p>"), page)
 
-  res1 <- add_tooltips(dir, quiet = TRUE)
-  expect_equal(res1, list(files = 1L, links = 1L))
+  expect_message(postprocess_pages(dir), "1 reference link across 1 file")
   html <- paste(readLines(page), collapse = "\n")
-  expect_match(html, 'href="reference/foo.html"', fixed = TRUE)
-  expect_match(html, paste0(tooltip_marker, "\n<style>"), fixed = TRUE)
-  expect_match(html, "</script>\n</body></html>", fixed = TRUE)
-
-  expect_equal(add_tooltips(dir, quiet = TRUE), list(files = 0L, links = 0L))
-})
-
-test_that("add_tooltips() errors when the site hasn't been built", {
-  expect_error(add_tooltips(withr::local_tempdir()), "reference/")
+  expect_match(html, 'href="../reference/foo.html">foo()</a>', fixed = TRUE)
+  expect_match(
+    html,
+    '<div class="quartodown-tip-payload" hidden>',
+    fixed = TRUE
+  )
 })

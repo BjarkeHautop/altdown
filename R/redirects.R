@@ -6,7 +6,7 @@
 # which generated pages such as the reference pages don't take.
 
 write_redirects <- function(path, config = list()) {
-  docs <- file.path(path, "docs")
+  docs <- docs_dir(path)
   redirects <- config_redirects(config)
   for (from in names(redirects)) {
     if (file.exists(file.path(docs, from))) {

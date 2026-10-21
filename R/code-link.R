@@ -1,42 +1,75 @@
+# ---- after rendering ----------------------------------------------------------
+#
+# Each docs/**/*.html page is read and written once, and in between: its ANSI
+# codes protected from xml2 (see protect_ansi()), its code linked
+# (link_code_html()), references to the package's own topics given tooltips
+# (add_tooltips_html()) and the ANSI codes made `<span>`s (ansi_to_html()).
+
+postprocess_pages <- function(
+  path,
+  config = list(),
+  topics = rd_topics(path),
+  tooltips = TRUE
+) {
+  docs <- docs_dir(path)
+  index <- if (isTRUE(tooltips)) build_topic_index(path, config, topics)
+  pkg <- if (length(index) > 0) desc::desc_get_field("Package", file = path)
+  n_files <- 0L
+  n_links <- 0L
+  for (f in fs::dir_ls(docs, regexp = "\\.html$", recurse = TRUE)) {
+    lines <- readLines(f, warn = FALSE, encoding = "UTF-8")
+    html <- link_code_html(protect_ansi(paste(lines, collapse = "\n")))
+    if (length(index) > 0) {
+      prefix <- reference_href_prefix(f, docs)
+      result <- add_tooltips_html(html, index, prefix, pkg = pkg)
+      html <- result$html
+      n_files <- n_files + (result$n > 0)
+      n_links <- n_links + result$n
+    }
+    html <- paste(ansi_to_html(split_lines(html)), collapse = "\n")
+    writeLines(enc2utf8(html), f, sep = "", useBytes = TRUE)
+  }
+  strip_search_ansi(path)
+  if (length(index) > 0) {
+    cli::cli_inform(
+      "Added tooltips to {n_links} reference link{?s} across {n_files} file{?s}."
+    )
+  }
+  invisible()
+}
+
 # ---- code linking -------------------------------------------------------------
 #
 # Replaces Quarto's `code-link`, which only covers knitr pages and drops the
 # markers of annotated code blocks. Those are linked token by token instead
 # (link_annotated()).
 
-# Links code on every docs/**/*.html file.
-link_code <- function(path = ".") {
-  html_files <- fs::dir_ls(
-    file.path(path, "docs"),
-    regexp = "\\.html$",
-    recurse = TRUE
-  )
-  for (f in html_files) {
-    link_code_file(f)
-  }
-  invisible(html_files)
-}
-
-link_code_file <- function(file) {
+# The page `html` (a string) with its code linked, as xml2 writes it.
+link_code_html <- function(html) {
   # downlit collects the packages a page attaches with `library()` in this
   # option; reset it so they don't carry over to the next page.
   old <- options(downlit.attached = NULL)
   on.exit(options(old))
 
-  html <- xml2::read_html(file, encoding = "UTF-8")
+  doc <- xml2::read_html(html, encoding = "UTF-8")
   # downlit rewrites every `pre.sourceCode.r`; hide annotated blocks from it.
   annotated <- xml2::xml_find_all(
-    html,
+    doc,
     ".//pre[contains(@class, 'code-annotated')]"
   )
   classes <- xml2::xml_attr(annotated, "class")
   xml2::xml_set_attr(annotated, "class", "quartodown-annotated")
-  downlit::downlit_html_node(html)
+  downlit::downlit_html_node(doc)
   for (i in seq_along(annotated)) {
     xml2::xml_set_attr(annotated[[i]], "class", classes[[i]])
     link_annotated(annotated[[i]])
   }
-  xml2::write_html(html, file, format = FALSE)
+  con <- rawConnection(raw(0), "wb")
+  on.exit(close(con), add = TRUE)
+  xml2::write_html(doc, con)
+  html <- rawToChar(rawConnectionValue(con))
+  Encoding(html) <- "UTF-8"
+  html
 }
 
 # Links an annotated block's `fu` spans (with any `pkg::`) and `%op%` `sc`

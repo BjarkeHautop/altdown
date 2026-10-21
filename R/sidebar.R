@@ -371,11 +371,8 @@ build_sidebar_markdown <- function(
       community = data_sidebar_community(path),
       citation = data_sidebar_citation(path),
       authors = data_sidebar_authors(path, config),
-      dev = data_sidebar_devstatus(badges),
-      cli::cli_abort(c(
-        "_quartodown.yml `home: sidebar: structure:` has {.val {name}}, which isn't a section.",
-        "i" = "Sections: {.val {sidebar_sections}}, or one of your own under `components:`."
-      ))
+      # Any other name was rejected by check_home_config().
+      dev = data_sidebar_devstatus(badges)
     )
   })
   sections <- Filter(length, sections)

@@ -6,6 +6,9 @@
 
 project_dir <- function(path) file.path(path, "_quarto")
 
+# The built site.
+docs_dir <- function(path) file.path(path, "docs")
+
 reset_project <- function(path, freeze = FALSE) {
   dir <- project_dir(path)
   files <- list.files(dir, all.files = TRUE, no.. = TRUE, full.names = TRUE)
@@ -198,7 +201,7 @@ check_quarto <- function() {
 # `envvars` makes the package available to the pages' R processes, see
 # install_envvars() and load_all_envvars().
 render_project <- function(path, envvars, quiet = TRUE) {
-  docs <- file.path(path, "docs")
+  docs <- docs_dir(path)
   # A stale page would otherwise outlive its source. CNAME (GitHub Pages'
   # custom domain) and hidden files such as .nojekyll stay.
   files <- list.files(docs, full.names = TRUE)
@@ -335,7 +338,7 @@ write_pkgdown_yml <- function(path, url = site_url(path)) {
       ),
       articles = articles
     ),
-    file.path(path, "docs", "pkgdown.yml")
+    file.path(docs_dir(path), "pkgdown.yml")
   )
 }
 
@@ -363,7 +366,7 @@ preview_site <- function(path = ".") {
 # Serves `docs/`, starting a server unless one already serves it. `reopen`
 # opens the page again in the browser when it does.
 serve_site <- function(path, reopen) {
-  docs <- file.path(path, "docs")
+  docs <- docs_dir(path)
   if (!file.exists(file.path(docs, "index.html"))) {
     cli::cli_abort(c(
       "No built site found in {.path {docs}}.",

@@ -1,31 +1,22 @@
 annotated_page <- function(code) {
-  file <- withr::local_tempfile(
-    fileext = ".html",
-    .local_envir = parent.frame()
+  paste0(
+    "<html><body><div class=\"sourceCode\">",
+    "<pre class=\"sourceCode r code-annotation-code code-annotated\">",
+    "<code class=\"sourceCode r\">",
+    "<span id=\"cell-1\" class=\"code-annotation-target\">",
+    code,
+    "</span></code></pre></div></body></html>"
   )
-  writeLines(
-    paste0(
-      "<html><body><div class=\"sourceCode\">",
-      "<pre class=\"sourceCode r code-annotation-code code-annotated\">",
-      "<code class=\"sourceCode r\">",
-      "<span id=\"cell-1\" class=\"code-annotation-target\">",
-      code,
-      "</span></code></pre></div></body></html>"
-    ),
-    file
-  )
-  file
 }
 
 test_that("annotated blocks keep their markup and get calls linked", {
-  file <- annotated_page(paste0(
+  html <- annotated_page(paste0(
     "x <span class=\"ot\">&lt;-</span> stats<span class=\"sc\">::</span>",
     "<span class=\"fu\">median</span>(<span class=\"dv\">1</span>) ",
     "<span class=\"fu\">sd</span>(x) ",
     "<span class=\"fu\">not_a_function_anywhere</span>()"
   ))
-  link_code_file(file)
-  html <- paste(readLines(file), collapse = "\n")
+  html <- link_code_html(html)
 
   expect_match(html, "code-annotation-target", fixed = TRUE)
   expect_match(html, "<span class=\"ot\">", fixed = TRUE)
@@ -52,13 +43,12 @@ test_that("annotated blocks keep their markup and get calls linked", {
 })
 
 test_that("annotated blocks get %op% operators linked, other operators not", {
-  file <- annotated_page(paste0(
+  html <- annotated_page(paste0(
     "x <span class=\"sc\">%in%</span> y ",
     "<span class=\"sc\">%not_an_op_anywhere%</span> ",
     "<span class=\"sc\">+</span> <span class=\"dv\">1</span>"
   ))
-  link_code_file(file)
-  html <- paste(readLines(file), collapse = "\n")
+  html <- link_code_html(html)
 
   expect_match(
     html,
@@ -75,12 +65,11 @@ test_that("annotated blocks get %op% operators linked, other operators not", {
 
 test_that("library() calls in an annotated block attach packages", {
   skip_if_not_installed("pkgload")
-  file <- annotated_page(paste0(
+  html <- annotated_page(paste0(
     "<span class=\"fu\">library</span>(pkgload)\n",
     "<span class=\"fu\">load_all</span>()"
   ))
-  link_code_file(file)
-  html <- paste(readLines(file), collapse = "\n")
+  html <- link_code_html(html)
 
   expect_match(html, "load_all.html\">load_all</a>", fixed = TRUE)
 })
