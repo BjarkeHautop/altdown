@@ -9,6 +9,12 @@
 #' `CONTRIBUTING.md` and `SUPPORT.md` (at the top level or in `.github/`). See
 #' `vignette("quartodown")` for what the site contains.
 #'
+#' While it builds, the environment variable `IN_QUARTODOWN` is `"true"`, so
+#' the package's examples and vignettes can check
+#' `identical(Sys.getenv("IN_QUARTODOWN"), "true")`. `IN_QUARTODOWN_PKG` is
+#' the name of the package whose site it is, which code shared between
+#' packages can check.
+#'
 #' @section Configuration:
 #' `_quartodown.yml`, at the package root, is optional; [use_quartodown()]
 #' creates one. It can contain:
@@ -57,6 +63,13 @@ build_site <- function(
 ) {
   config <- read_config(path)
   check_quarto()
+
+  # Lets code (`\Sexpr`, `@examplesIf`, examples, vignettes) tell it is
+  # building the site, and whose. Quarto's R processes inherit them.
+  local_envvars(c(
+    IN_QUARTODOWN = "true",
+    IN_QUARTODOWN_PKG = desc::desc_get_field("Package", file = path)
+  ))
 
   # The package is installed first: build-stage `\Sexpr` macros in the Rd
   # files, such as Rdpack's `\insertRef{}`, need it, as in `R CMD build`.

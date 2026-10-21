@@ -183,6 +183,8 @@ over is very easy, and mostly means moving `_pkgdown.yml`'s settings into `_quar
   style the site with Quarto's `theme:` under `quarto: format: html:`, as in
   [Other Quarto settings](#other-quarto-settings).
 - `articles:` has no equivalent: group vignettes with navbar menus instead.
+- Code that checks `IN_PKGDOWN` (or `pkgdown::in_pkgdown()`) should check
+  `identical(Sys.getenv("IN_QUARTODOWN"), "true")` instead.
 
 The rest works as with pkgdown, except that vignettes are published under
 `vignettes/` rather than `articles/`: `articles/foo.html` becomes

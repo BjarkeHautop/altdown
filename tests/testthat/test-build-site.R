@@ -564,6 +564,24 @@ test_that("build_authors_qmd() prefers an inst/CITATION file and links the Sourc
   )))
 })
 
+test_that("the citation year comes from DESCRIPTION's Date, not the build date", {
+  dir <- withr::local_tempdir()
+  writeLines(
+    c(
+      "Package: examplepkg",
+      "Version: 1.0.0",
+      "Title: Example Package",
+      "Date: 2001-02-03",
+      "Authors@R: person(\"Jane\", \"Doe\", role = c(\"aut\", \"cre\"))"
+    ),
+    file.path(dir, "DESCRIPTION")
+  )
+  expect_identical(pkg_citation(dir)$year, "2001")
+
+  desc::desc_del("Date", file = dir)
+  expect_identical(pkg_citation(dir)$year, format(Sys.Date(), "%Y"))
+})
+
 test_that("rd_topics() reads alias/title/concept/keyword tags from every man/*.Rd", {
   dir <- new_pkg_with_man()
   write_rd(

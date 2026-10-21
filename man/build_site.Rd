@@ -50,6 +50,12 @@ package sources and \verb{_quartodown.yml}, then renders it. It uses
 \code{NEWS.md}, \code{LICENSE}/\code{LICENSE.md}, and \code{CODE_OF_CONDUCT.md},
 \code{CONTRIBUTING.md} and \code{SUPPORT.md} (at the top level or in \verb{.github/}). See
 \code{vignette("quartodown")} for what the site contains.
+
+While it builds, the environment variable \code{IN_QUARTODOWN} is \code{"true"}, so
+the package's examples and vignettes can check
+\code{identical(Sys.getenv("IN_QUARTODOWN"), "true")}. \code{IN_QUARTODOWN_PKG} is
+the name of the package whose site it is, which code shared between
+packages can check.
 }
 \section{Configuration}{
 

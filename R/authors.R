@@ -1,9 +1,12 @@
-# From the source tree, as an installed copy may be stale.
+# From the source tree, as an installed copy may be stale. Without a
+# Date/Publication (only CRAN adds it), the year comes from `Date`, so it
+# doesn't change with each build; only failing that, from today.
 pkg_citation_meta <- function(path) {
   desc <- desc::description$new(path)
   meta <- as.list(desc$get(desc$fields()))
   if (is.null(meta[["Date/Publication"]])) {
-    meta[["Date/Publication"]] <- Sys.time()
+    date <- as.Date(trimws(c(meta[["Date"]], "")[1]), optional = TRUE)
+    meta[["Date/Publication"]] <- if (is.na(date)) Sys.time() else date
   }
   if (!is.null(meta$Title)) {
     meta$Title <- trimws(gsub("\\s+", " ", meta$Title))
