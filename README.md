@@ -46,6 +46,10 @@ that lists your package’s current functions in one section; edit it to
 group them however you’d like. It also gitignores the files the build
 generates.
 
+If your package already has a pkgdown site, most of `_pkgdown.yml` can
+be copied over as is; see [Coming from
+pkgdown](https://bjarkehautop.github.io/quartodown/vignettes/customizing.html#coming-from-pkgdown).
+
 Then build the site:
 
 ``` r
