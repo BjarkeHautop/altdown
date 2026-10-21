@@ -271,16 +271,13 @@ rd_usage_blocks <- function(usage_node) {
   current <- character(0)
   method <- NULL
 
-  flush <- function() {
-    if (length(current) > 0) {
-      text <- trimws(paste(current, collapse = ""))
-      if (nchar(text) > 0) {
-        alias <- rd_usage_alias(text, method)
-        blocks <<- c(blocks, structure(text, names = alias))
-      }
+  # The signature made of the pieces `current`, or nothing if they're blank.
+  usage_block <- function(current, method) {
+    text <- trimws(paste(current, collapse = ""))
+    if (nchar(text) == 0) {
+      return(character(0))
     }
-    current <<- character(0)
-    method <<- NULL
+    structure(text, names = rd_usage_alias(text, method))
   }
 
   for (child in usage_node) {
@@ -299,15 +296,16 @@ rd_usage_blocks <- function(usage_node) {
     } else {
       piece <- paste(unlist(child), collapse = "")
       if (nchar(trimws(piece)) == 0) {
-        flush() # a blank-only run separates one signature from the next
+        # A blank-only run separates one signature from the next.
+        blocks <- c(blocks, usage_block(current, method))
+        current <- character(0)
+        method <- NULL
       } else {
         current[[length(current) + 1L]] <- piece
       }
     }
   }
-  flush()
-
-  blocks
+  c(blocks, usage_block(current, method))
 }
 
 # The alias the \usage{} block `block` documents. For a method, `method` is

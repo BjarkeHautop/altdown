@@ -7,7 +7,17 @@ test_that("colored output survives link_code() and becomes styled spans", {
       "<html><body>",
       "<div class=\"sourceCode\"><pre class=\"sourceCode r\"><code class=\"sourceCode r\">",
       "<span><span class=\"fu\">f</span>()</span>",
-      paste0("<span><span class=\"co\">#&gt; ", esc, "[31mred &amp; ", esc, "[1mbold", esc, "[22m", esc, "[39m</span></span>"),
+      paste0(
+        "<span><span class=\"co\">#&gt; ",
+        esc,
+        "[31mred &amp; ",
+        esc,
+        "[1mbold",
+        esc,
+        "[22m",
+        esc,
+        "[39m</span></span>"
+      ),
       "</code></pre></div>",
       paste0("<pre><code>#&gt; ", esc, "[32mgreen", esc, "[39m</code></pre>"),
       "</body></html>"

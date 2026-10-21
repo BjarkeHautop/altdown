@@ -438,19 +438,23 @@ example_segments <- function(rd) {
 
   segments <- list()
   stack <- "run"
-  add <- function(type, line) {
+  add <- function(segments, type, line) {
     n <- length(segments)
     if (n > 0 && segments[[n]]$type == type && !segments[[n]]$closed) {
-      segments[[n]]$code <<- c(segments[[n]]$code, line)
+      segments[[n]]$code <- c(segments[[n]]$code, line)
     } else {
-      segments[[n + 1L]] <<- list(type = type, code = line, closed = FALSE)
+      segments[[n + 1L]] <- list(type = type, code = line, closed = FALSE)
     }
+    segments
   }
   # Ends the current run, so code after a marker never joins the code before
   # it, even of the same type: an @examplesIf wrapper must stay on its own.
-  close <- function() {
+  close <- function(segments) {
     n <- length(segments)
-    if (n > 0) segments[[n]]$closed <<- TRUE
+    if (n > 0) {
+      segments[[n]]$closed <- TRUE
+    }
+    segments
   }
 
   marker_pattern <- sprintf(
@@ -463,21 +467,25 @@ example_segments <- function(rd) {
     if (grepl(marker_pattern, marker) && nzchar(inline)) {
       # A one-line block, e.g. `\dontrun{f()}`, has neither an end marker
       # nor "##D ".
-      close()
-      add(markers[[sub(marker_pattern, "\\1", marker)]], inline)
-      close()
+      segments <- close(segments)
+      segments <- add(
+        segments,
+        markers[[sub(marker_pattern, "\\1", marker)]],
+        inline
+      )
+      segments <- close(segments)
     } else if (marker %in% names(markers)) {
-      close()
+      segments <- close(segments)
       stack <- c(stack, markers[[marker]])
     } else if (marker %in% end_markers) {
-      close()
+      segments <- close(segments)
       stack <- utils::head(stack, -1)
     } else {
       type <- if ("dontrun" %in% stack) "dontrun" else utils::tail(stack, 1)
       if (type == "dontrun") {
         line <- sub("^##D ?", "", line)
       }
-      add(type, line)
+      segments <- add(segments, type, line)
     }
   }
   segments <- resolve_examples_if(segments)

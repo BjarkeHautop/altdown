@@ -67,8 +67,8 @@ quartodown::build_site(devel = TRUE) # <2>
 ```
 
 1. Write `_quartodown.yml` and gitignore the build output.
-2. Build the site, loading the package with `pkgload::load_all()`, and open
-   it in your browser.
+2. Build the site, loading the package with `pkgload::load_all()`, and open it
+   in your browser.
 
 ## Function links
 

@@ -341,7 +341,11 @@ test_that("rd_source_files() reads roxygen's header, else names the Rd file", {
   )
   expect_identical(
     rd_source_files(file),
-    c("R/aaaaaaaaaaaaaaaaaaaa.R", "R/bbbbbbbbbbbbbbbbbbbb.R", "R/cccccccccccccccccccc.R")
+    c(
+      "R/aaaaaaaaaaaaaaaaaaaa.R",
+      "R/bbbbbbbbbbbbbbbbbbbb.R",
+      "R/cccccccccccccccccccc.R"
+    )
   )
 
   writeLines("\\name{foo}", file)

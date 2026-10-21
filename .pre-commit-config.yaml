@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/jolars/panache-pre-commit
-    rev: v3.16.0
+    rev: v3.17.0
 
     hooks:
       - id: panache-format
@@ -12,7 +12,7 @@ repos:
       - id: air-format
 
   - repo: https://github.com/etiennebacher/jarl-pre-commit
-    rev: 0.6.0
+    rev: 0.7.1
     hooks:
       - id: jarl-check
 
