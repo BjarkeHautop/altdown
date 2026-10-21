@@ -30,15 +30,15 @@ find_getting_started_vignette <- function(
     return(top)
   }
 
-  pkg_name <- desc::desc_get_field("Package", file = path)
-  named <- top[strip_ext(top) == pkg_name]
+  pkg <- pkg_name(path)
+  named <- top[strip_ext(top) == pkg]
   if (length(named) == 1) {
     return(named)
   }
 
   if (length(top) > 1) {
     cli::cli_inform(c(
-      "No \"Get started\" link: found several top-level vignettes and none is named {.file {pkg_name}.qmd}.",
+      "No \"Get started\" link: found several top-level vignettes and none is named {.file {pkg}.qmd}.",
       "i" = "They're all listed under \"Articles\" instead."
     ))
   }

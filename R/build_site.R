@@ -94,7 +94,7 @@ build_site <- function(
   # building the site, and whose. Quarto's R processes inherit them.
   local_envvars(c(
     IN_QUARTODOWN = "true",
-    IN_QUARTODOWN_PKG = desc::desc_get_field("Package", file = path)
+    IN_QUARTODOWN_PKG = pkg_name(path)
   ))
 
   # The package is installed first: build-stage `\Sexpr` macros in the Rd
@@ -226,6 +226,27 @@ check_config <- function(path, config, topics) {
   invisible()
 }
 
+# Errors about _quartodown.yml's `field:` with `message`, whose first element
+# is said of the field, e.g. `config_abort("theme", "must be a list.")` for
+# "_quartodown.yml `theme:` must be a list.". `field` is interpolated too.
+config_abort <- function(field, message, ..., .envir = parent.frame()) {
+  cli::cli_abort(
+    config_message(field, message),
+    ...,
+    call = .envir,
+    .envir = .envir
+  )
+}
+
+config_warn <- function(field, message, ..., .envir = parent.frame()) {
+  cli::cli_warn(config_message(field, message), ..., .envir = .envir)
+}
+
+config_message <- function(field, message) {
+  message[[1]] <- paste0("_quartodown.yml `", field, ":` ", message[[1]])
+  message
+}
+
 # Warns about fields of _quartodown.yml (or of its `parent:`) that quartodown
 # doesn't know, such as typos or pkgdown settings, which are ignored.
 warn_unknown_fields <- function(fields, known, parent = NULL) {
@@ -268,7 +289,7 @@ quarto_config <- function(
   freeze = FALSE,
   topics = rd_topics(path)
 ) {
-  pkg_name <- desc::desc_get_field("Package", file = path)
+  pkg <- pkg_name(path)
   version <- desc::desc_get_field("Version", default = "", file = path)
 
   navbar <- list(search = TRUE)
@@ -293,7 +314,7 @@ quarto_config <- function(
     language = list(`search-text-placeholder` = " Search for"),
     website = list(
       # after-body script splits the version into its own <small>.
-      title = trimws(paste(pkg_name, version)),
+      title = trimws(paste(pkg, version)),
       search = list(location = "navbar", type = "textbox"),
       navbar = navbar,
       `page-footer` = list(
@@ -352,10 +373,13 @@ quarto_config <- function(
 # overrides quartodown's.
 quarto_theme <- function(path, config = list()) {
   if (!is.null(config$theme) && !is.list(config$theme)) {
-    cli::cli_abort(c(
-      "_quartodown.yml `theme:` must list a {.field light} and/or {.field dark} theme.",
-      "i" = "For example, {.code theme: {{light: flatly, dark: darkly}}}."
-    ))
+    config_abort(
+      "theme",
+      c(
+        "must list a {.field light} and/or {.field dark} theme.",
+        "i" = "For example, {.code theme: {{light: flatly, dark: darkly}}}."
+      )
+    )
   }
   theme <- list(light = "default", dark = "darkly")
   for (mode in names(theme)) {
@@ -364,8 +388,9 @@ quarto_theme <- function(path, config = list()) {
       next
     }
     if (!is.character(value) || length(value) != 1) {
-      cli::cli_abort(
-        "_quartodown.yml `theme: {mode}:` must be a single theme name."
+      config_abort(
+        "theme: {mode}",
+        "must be a single theme name."
       )
     }
     theme[[mode]] <- value
@@ -451,13 +476,15 @@ home_file <- function(path, config = list()) {
     return(if (file.exists(file.path(path, "README.md"))) "README.md")
   }
   if (!is.character(file) || length(file) != 1) {
-    cli::cli_abort(
-      "_quartodown.yml `home: file:` must be a single file path."
+    config_abort(
+      "home: file",
+      "must be a single file path."
     )
   }
   if (!file.exists(file.path(path, file))) {
-    cli::cli_abort(
-      "_quartodown.yml `home: file:` is {.path {file}}, which doesn't exist."
+    config_abort(
+      "home: file",
+      "is {.path {file}}, which doesn't exist."
     )
   }
   file
@@ -497,28 +524,34 @@ check_home_config <- function(home) {
     )
     known <- c(sidebar_sections, names(sidebar$components))
     for (name in setdiff(unlist(sidebar$structure), known)) {
-      cli::cli_abort(c(
-        "_quartodown.yml `home: sidebar: structure:` has {.val {name}}, which isn't a section.",
-        "i" = "Sections: {.val {sidebar_sections}}, or one of your own under `components:`."
-      ))
+      config_abort(
+        "home: sidebar: structure",
+        c(
+          "has {.val {name}}, which isn't a section.",
+          "i" = "Sections: {.val {sidebar_sections}}, or one of your own under `components:`."
+        )
+      )
     }
     for (name in names(sidebar$components)) {
       component <- sidebar$components[[name]]
       if (!is.character(component$title) || !is.character(component$text)) {
-        cli::cli_abort(
-          "_quartodown.yml `home: sidebar: components: {name}:` needs a {.field title} and a {.field text}."
+        config_abort(
+          "home: sidebar: components: {name}",
+          "needs a {.field title} and a {.field text}."
         )
       }
     }
   } else if (!is.null(sidebar) && !isTRUE(sidebar) && !isFALSE(sidebar)) {
-    cli::cli_abort(
-      "_quartodown.yml `home: sidebar:` must be true, false, or a list with {.field structure} and {.field components}."
+    config_abort(
+      "home: sidebar",
+      "must be true, false, or a list with {.field structure} and {.field components}."
     )
   }
   for (link in home$links) {
     if (!is.character(link$text) || !is.character(link$href)) {
-      cli::cli_abort(
-        "Each of _quartodown.yml's `home: links:` needs a {.field text} and an {.field href}."
+      config_abort(
+        "home: links",
+        "entries each need a {.field text} and an {.field href}."
       )
     }
   }
@@ -527,7 +560,7 @@ check_home_config <- function(home) {
 
 # A home page for a package without a README: its name and description.
 description_home <- function(path) {
-  pkg <- desc::desc_get_field("Package", file = path)
+  pkg <- pkg_name(path)
   description <- desc::desc_get_field("Description", default = "", file = path)
   c(paste("#", pkg), "", trimws(gsub("\\s+", " ", description)))
 }

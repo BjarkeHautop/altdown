@@ -10,15 +10,17 @@ write_redirects <- function(path, config = list()) {
   redirects <- config_redirects(config)
   for (from in names(redirects)) {
     if (file.exists(file.path(docs, from))) {
-      cli::cli_warn(
-        "_quartodown.yml `redirects:` redirects {.file {from}}, which is a page of the site. Not redirecting it."
+      config_warn(
+        "redirects",
+        "redirects {.file {from}}, which is a page of the site. Not redirecting it."
       )
       redirects <- redirects[names(redirects) != from]
     } else if (!is_url(redirects[[from]])) {
       target <- sub("#.*", "", redirects[[from]])
       if (!file.exists(file.path(docs, target))) {
-        cli::cli_warn(
-          "_quartodown.yml `redirects:` redirects {.file {from}} to {.file {target}}, which isn't a page of the site."
+        config_warn(
+          "redirects",
+          "redirects {.file {from}} to {.file {target}}, which isn't a page of the site."
         )
       }
     }
@@ -44,10 +46,13 @@ config_redirects <- function(config = list()) {
     ))
   if (!ok) {
     if (!is.null(pairs)) {
-      cli::cli_abort(c(
-        "_quartodown.yml `redirects:` must be a list of pairs of paths.",
-        "i" = 'For example, {.code - ["reference/old.html", "reference/new.html"]}.'
-      ))
+      config_abort(
+        "redirects",
+        c(
+          "must be a list of pairs of paths.",
+          "i" = 'For example, {.code - ["reference/old.html", "reference/new.html"]}.'
+        )
+      )
     }
     return(character())
   }

@@ -184,6 +184,22 @@ test_that("rd_to_qmd() names the Rd file whose \\Sexpr{}s fail", {
   expect_warning(rd_to_qmd(rd, "examplepkg"), "man/file.*\\.Rd")
 })
 
+test_that("rd_to_qmd() runs a section's \\Sexpr{} once, not again for the examples", {
+  log <- withr::local_tempfile()
+  qmd <- rd_qmd(c(
+    "\\name{foo}",
+    "\\alias{foo}",
+    "\\title{Foo}",
+    sprintf(
+      "\\description{\\Sexpr[stage=build]{cat('x\\\\n', file = '%s', append = TRUE)}}",
+      log
+    ),
+    "\\examples{foo()}"
+  ))
+  expect_length(readLines(log), 1)
+  expect_true("foo()" %in% qmd)
+})
+
 test_that("rd_to_qmd() keeps a custom Examples section as prose", {
   qmd <- rd_qmd(c(
     "\\name{foo}",

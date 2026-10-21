@@ -27,11 +27,7 @@
 #' list.files(pkg, recursive = TRUE, all.files = TRUE)
 #' unlink(pkg, recursive = TRUE)
 use_quartodown_action <- function(path = ".", overwrite = FALSE) {
-  if (!file.exists(file.path(path, "DESCRIPTION"))) {
-    cli::cli_abort(
-      "No {.file DESCRIPTION} found at {.path {path}}. Is this a package root?"
-    )
-  }
+  check_pkg_root(path)
 
   dest <- file.path(path, ".github", "workflows", "quartodown.yaml")
   if (file.exists(dest) && !overwrite) {
@@ -50,11 +46,9 @@ use_quartodown_action <- function(path = ".", overwrite = FALSE) {
     cli::cli_alert_success("Wrote {.path {dest}}.")
   }
 
-  .add_ignore_lines(path, ".Rbuildignore", "^\\.github$")
+  add_ignore_lines(path, ".Rbuildignore", "^\\.github$")
 
-  cli::cli_text("")
-  cli::cli_text("Next steps:")
-  cli::cli_ol(c(
+  cli_next_steps(c(
     "Commit and push the workflow.",
     "Once its first run has created the {.code gh-pages} branch, go to the Pages section of the repository's settings on GitHub and choose to deploy from that branch."
   ))

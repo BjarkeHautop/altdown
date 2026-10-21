@@ -9,6 +9,8 @@ project_dir <- function(path) file.path(path, "_quarto")
 # The built site.
 docs_dir <- function(path) file.path(path, "docs")
 
+pkg_name <- function(path) desc::desc_get_field("Package", file = path)
+
 reset_project <- function(path, freeze = FALSE) {
   dir <- project_dir(path)
   files <- list.files(dir, all.files = TRUE, no.. = TRUE, full.names = TRUE)
@@ -229,7 +231,7 @@ render_project <- function(path, envvars, quiet = TRUE) {
 install_envvars <- function(path, scratch) {
   lib <- file.path(scratch, "library")
   dir.create(lib)
-  pkg <- desc::desc_get_field("Package", file = path)
+  pkg <- pkg_name(path)
   cli::cli_inform("Installing {.pkg {pkg}} into a temporary library.")
   output <- suppressWarnings(system2(
     file.path(R.home("bin"), "R"),
@@ -316,7 +318,7 @@ site_url <- function(path, config = list()) {
   if (!is.null(config$url)) {
     return(sub("/+$", "", config$url))
   }
-  urls <- tryCatch(desc::desc_get_urls(path), error = function(e) character())
+  urls <- desc::desc_get_urls(path)
   urls <- urls[is.na(repo_host(urls))]
   if (length(urls) == 0) NA_character_ else sub("/+$", "", urls[[1]])
 }

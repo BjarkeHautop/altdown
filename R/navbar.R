@@ -81,8 +81,9 @@ navbar_layout <- function(
   layout <- default_navbar
   for (side in setdiff(names(config$navbar), "style")) {
     if (!side %in% names(default_navbar)) {
-      cli::cli_abort(
-        "_quartodown.yml `navbar:` has {.field {side}}, but only {.field left}, {.field right} and {.field style}."
+      config_abort(
+        "navbar",
+        "has {.field {side}}, but only {.field left}, {.field right} and {.field style}."
       )
     }
     layout[[side]] <- as.list(config$navbar[[side]])
@@ -136,11 +137,14 @@ nav_vignettes <- function(items) {
 match_vignette <- function(name, vignettes) {
   hit <- vignettes[strip_ext(vignettes) == strip_ext(name)]
   if (length(hit) == 0) {
-    cli::cli_abort(c(
-      "_quartodown.yml `navbar:` lists {.val {name}}, which is not a vignette.",
-      "i" = "Known vignettes: {.val {strip_ext(vignettes)}}.",
-      "i" = "Built-in items: {.val {builtin_navbar_items}}."
-    ))
+    config_abort(
+      "navbar",
+      c(
+        "lists {.val {name}}, which is not a vignette.",
+        "i" = "Known vignettes: {.val {strip_ext(vignettes)}}.",
+        "i" = "Built-in items: {.val {builtin_navbar_items}}."
+      )
+    )
   }
   hit[[1]]
 }
@@ -148,8 +152,9 @@ match_vignette <- function(name, vignettes) {
 match_folder <- function(folder, vignettes) {
   hit <- vignettes[startsWith(vignettes, folder)]
   if (length(hit) == 0) {
-    cli::cli_abort(
-      "_quartodown.yml `navbar:` lists {.val {folder}}, but {.path vignettes/{folder}} has no vignettes."
+    config_abort(
+      "navbar",
+      "lists {.val {folder}}, but {.path vignettes/{folder}} has no vignettes."
     )
   }
   hit
@@ -168,8 +173,9 @@ navbar_style <- function(config = list()) {
     return("top")
   }
   if (!identical(style, "top") && !identical(style, "sidebar")) {
-    cli::cli_abort(
-      "_quartodown.yml `navbar: style:` must be {.val top} or {.val sidebar}."
+    config_abort(
+      "navbar: style",
+      "must be {.val top} or {.val sidebar}."
     )
   }
   style

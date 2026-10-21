@@ -277,16 +277,18 @@ match_eval <- function(string, env) {
 
   expr <- tryCatch(str2lang(string), error = function(e) NULL)
   if (is.null(expr)) {
-    cli::cli_abort(
-      "_quartodown.yml `reference:` entry {.val {string}} must be valid R code."
+    config_abort(
+      "reference",
+      "entry {.val {string}} must be valid R code."
     )
   }
 
   if (is.symbol(expr)) {
     val <- mget(as.character(expr), envir = env, ifnotfound = list(NULL))[[1]]
     if (!is.numeric(val)) {
-      cli::cli_abort(
-        "_quartodown.yml `reference:` entry {.val {string}} must be a known \\alias{{}} or selector."
+      config_abort(
+        "reference",
+        "entry {.val {string}} must be a known \\alias{{}} or selector."
       )
     }
     as.integer(val)
@@ -294,8 +296,9 @@ match_eval <- function(string, env) {
     tryCatch(
       as.integer(eval(expr, envir = env)),
       error = function(e) {
-        cli::cli_abort(
-          "_quartodown.yml `reference:` entry {.val {string}} failed to evaluate.",
+        config_abort(
+          "reference",
+          "entry {.val {string}} failed to evaluate.",
           parent = e
         )
       }
@@ -318,8 +321,9 @@ select_topics <- function(match_strings, topics) {
     if (all(x < 0)) {
       return("-")
     }
-    cli::cli_abort(
-      "_quartodown.yml `reference:` entry {.val {text}} must be all positive or all negative."
+    config_abort(
+      "reference",
+      "entry {.val {text}} must be all positive or all negative."
     )
   }
 

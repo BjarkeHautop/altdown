@@ -10,7 +10,7 @@ write_man_pages <- function(path, config = list(), topics = rd_topics(path)) {
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
   topics <- topics[has_page(topics, config)]
-  pkg <- desc::desc_get_field("Package", file = path)
+  pkg <- pkg_name(path)
   pages <- topic_pages(topics)
   source <- pkg_repo(path, config)$source
   for (topic in topics) {
@@ -384,6 +384,10 @@ example_blocks <- function(rd, pkg) {
 example_segments <- function(rd) {
   out <- tempfile(fileext = ".R")
   on.exit(unlink(out))
+  # Only the sections Rd2ex() needs, so the `\Sexpr` macros of the others,
+  # which rd_html() ran already, don't run again.
+  rd[!rd_tags(rd) %in% c("\\name", "\\title", "\\encoding", "\\examples")] <-
+    NULL
   # Rd2ex() marks each \dontrun{}, \donttest{} and \dontshow{} block, and
   # comments out the \dontrun{} code with "##D ".
   with_sexpr_stages(rd, function(stages) {

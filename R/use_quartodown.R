@@ -45,37 +45,31 @@
 #' readLines(file.path(pkg, "_quartodown", "_quartodown.yml"))
 #' unlink(pkg, recursive = TRUE)
 use_quartodown <- function(path = ".") {
-  if (!file.exists(file.path(path, "DESCRIPTION"))) {
-    cli::cli_abort(
-      "No {.file DESCRIPTION} found at {.path {path}}. Is this a package root?"
-    )
-  }
+  check_pkg_root(path)
 
   config_dest <- file.path(path, config_file)
   if (file.exists(config_dest)) {
     cli::cli_alert_info("Skipping {.path {config_dest}}: already exists.")
   } else {
     dir.create(dirname(config_dest), showWarnings = FALSE)
-    writeLines(.starter_config_yml(path), config_dest)
+    writeLines(starter_config_yml(path), config_dest)
     cli::cli_alert_success(
       "Wrote {.path {config_dest}} (edit this to group your functions)."
     )
   }
 
-  .add_ignore_lines(
+  add_ignore_lines(
     path,
     ".gitignore",
     c("_quarto/*", "!_quarto/_freeze/")
   )
-  .add_ignore_lines(
+  add_ignore_lines(
     path,
     ".Rbuildignore",
     c("^docs$", "^_quarto$", "^_quartodown$")
   )
 
-  cli::cli_text("")
-  cli::cli_text("Next steps:")
-  cli::cli_ol(c(
+  cli_next_steps(c(
     "Edit {.file {config_file}} to group your functions the way you want.",
     "Build and preview the site with {.run quartodown::build_site()}."
   ))
@@ -83,9 +77,25 @@ use_quartodown <- function(path = ".") {
   invisible(config_dest)
 }
 
+check_pkg_root <- function(path, call = parent.frame()) {
+  if (!file.exists(file.path(path, "DESCRIPTION"))) {
+    cli::cli_abort(
+      "No {.file DESCRIPTION} found at {.path {path}}. Is this a package root?",
+      call = call
+    )
+  }
+}
+
+# A numbered list of what to do next, after a blank line.
+cli_next_steps <- function(steps, .envir = parent.frame()) {
+  cli::cli_text("")
+  cli::cli_text("Next steps:")
+  cli::cli_ol(steps, .envir = .envir)
+}
+
 # Appends any of `lines` not already present (as a whole line) in
 # `<path>/<file_name>`, creating the file first if needed.
-.add_ignore_lines <- function(path, file_name, lines) {
+add_ignore_lines <- function(path, file_name, lines) {
   dest <- file.path(path, file_name)
   existing <- if (file.exists(dest)) {
     readLines(dest, warn = FALSE)
@@ -103,7 +113,7 @@ use_quartodown <- function(path = ".") {
   invisible()
 }
 
-.starter_config_yml <- function(path) {
+starter_config_yml <- function(path) {
   c(
     "# Configuration for quartodown::build_site(). See",
     "# vignette(\"customizing\", package = \"quartodown\") for all fields,",
@@ -113,12 +123,12 @@ use_quartodown <- function(path = ".") {
     "# Groups the function reference index into sections, each with a `title:`",
     "# and the `contents:` it lists (topic names or selectors such as",
     "# starts_with(\"read_\")).",
-    .starter_reference_yml(path)
+    starter_reference_yml(path)
   )
 }
 
 # Every public topic, sorted, in a single "All functions" section.
-.starter_reference_yml <- function(path) {
+starter_reference_yml <- function(path) {
   topics <- Filter(function(t) !t$internal, rd_topics(path))
   names <- sort(vapply(topics, function(t) t$name, character(1)))
 

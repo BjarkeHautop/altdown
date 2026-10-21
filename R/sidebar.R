@@ -76,14 +76,14 @@ sidebar_section <- function(heading, bullets) {
 
 # The package's CRAN page, if it is on CRAN. Looked up once per session, so
 # rebuilds don't wait on CRAN.
-cran_url_if_available <- function(pkg_name) {
-  if (is.na(pkg_name) || !requireNamespace("httr2", quietly = TRUE)) {
+cran_url_if_available <- function(pkg) {
+  if (!requireNamespace("httr2", quietly = TRUE)) {
     return(NA_character_)
   }
-  if (!is.null(the$cran_urls[[pkg_name]])) {
-    return(the$cran_urls[[pkg_name]])
+  if (!is.null(the$cran_urls[[pkg]])) {
+    return(the$cran_urls[[pkg]])
   }
-  cran_url <- paste0("https://cloud.r-project.org/package=", pkg_name)
+  cran_url <- paste0("https://cloud.r-project.org/package=", pkg)
   resp <- tryCatch(
     httr2::req_perform(httr2::req_error(
       httr2::req_timeout(httr2::request(cran_url), 5),
@@ -98,7 +98,7 @@ cran_url_if_available <- function(pkg_name) {
   }
   # Not when offline: the next build looks again.
   if (!is.null(resp)) {
-    the$cran_urls[[pkg_name]] <- url
+    the$cran_urls[[pkg]] <- url
   }
   url
 }
@@ -121,7 +121,7 @@ repo_host <- function(urls) {
 # `<repo>/tree/<branch>/<folder>` (Codeberg's `<repo>/src/branch/...`), is a
 # package in that folder of that branch. Each is NA if unknown.
 pkg_repo <- function(path, config = list()) {
-  urls <- tryCatch(desc::desc_get_urls(path), error = function(e) character())
+  urls <- desc::desc_get_urls(path)
   url <- urls[!is.na(repo_host(urls))][1]
   repo <- list(
     home = NA_character_,
@@ -185,14 +185,7 @@ source_note <- function(files, source = NA_character_, class = NULL) {
 # listed after the package's own.
 data_sidebar_links <- function(path, links = list(), config = list()) {
   home <- pkg_repo(path, config)$home
-  bug_reports <- tryCatch(
-    desc::desc_get_field("BugReports", default = NA, file = path),
-    error = function(e) NA
-  )
-  pkg_name <- tryCatch(
-    desc::desc_get_field("Package", default = NA, file = path),
-    error = function(e) NA
-  )
+  bug_reports <- desc::desc_get_field("BugReports", default = NA, file = path)
 
   extra <- vapply(
     links,
@@ -200,7 +193,7 @@ data_sidebar_links <- function(path, links = list(), config = list()) {
     character(1)
   )
   links <- character()
-  cran_url <- cran_url_if_available(pkg_name)
+  cran_url <- cran_url_if_available(pkg_name(path))
   if (!is.na(cran_url)) {
     links <- c(links, sprintf("[View on CRAN](%s)", cran_url))
   }
@@ -251,10 +244,7 @@ autolink_license <- function(license_field, has_license_file) {
 }
 
 data_sidebar_license <- function(path) {
-  license_field <- tryCatch(
-    desc::desc_get_field("License", default = NA, file = path),
-    error = function(e) NA
-  )
+  license_field <- desc::desc_get_field("License", default = NA, file = path)
   if (is.na(license_field)) {
     return(character())
   }
@@ -292,10 +282,9 @@ data_sidebar_community <- function(path) {
 }
 
 data_sidebar_citation <- function(path) {
-  pkg_name <- desc::desc_get_field("Package", file = path)
   sidebar_section(
     "Citation",
-    sprintf("[Citing %s](authors.html#citation)", pkg_name)
+    sprintf("[Citing %s](authors.html#citation)", pkg_name(path))
   )
 }
 

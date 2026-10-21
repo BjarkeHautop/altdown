@@ -13,7 +13,7 @@ postprocess_pages <- function(
 ) {
   docs <- docs_dir(path)
   index <- if (isTRUE(tooltips)) build_topic_index(path, config, topics)
-  pkg <- if (length(index) > 0) desc::desc_get_field("Package", file = path)
+  pkg <- if (length(index) > 0) pkg_name(path)
   n_files <- 0L
   n_links <- 0L
   for (f in fs::dir_ls(docs, regexp = "\\.html$", recurse = TRUE)) {
