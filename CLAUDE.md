@@ -113,7 +113,10 @@ quartodown::build_site() # also previews it when interactive
    references to the package's own topics (`<span class="fu|va">` in code
    blocks, and `op`/`sc` spans holding a `%op%`, and `<code>name()</code>`
    inline) to their reference page with a hover tooltip. Pages are marked with
-   `<!-- quartodown-tooltips -->` so reruns skip them. Finally, with
+   `<!-- quartodown-tooltips -->` so reruns skip them. Then `write_redirects()`
+   ([R/redirects.R](R/redirects.R)) writes redirect pages for
+   `_quartodown.yml`'s `redirects:` (pkgdown's format; Quarto's `aliases:` needs
+   front matter, which generated pages lack). Finally, with
    `preview = interactive()`, `serve_site()` ([R/project.R](R/project.R)) serves
    `docs/` with `servr::httw()`. The server is kept in the package-level `the`
    environment and reused by later builds, whose open page live-reloads.

@@ -77,6 +77,8 @@ sidebar.
 \item \code{theme}: the \code{light} and \code{dark} themes: names of Quarto's built-in
 themes, such as \code{flatly} and \code{darkly}, or \code{.scss} files in
 \verb{_quartodown/}. By default, \code{default} and \code{darkly}.
+\item \code{redirects}: pairs of paths, from an old page to the one replacing it,
+such as \verb{["reference/old.html", "reference/new.html"]}.
 \item \code{quarto}: settings merged over the generated Quarto configuration.
 }
 

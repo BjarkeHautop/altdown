@@ -14,8 +14,8 @@ pages, and every Quarto feature works.
    writes a Quarto project into `_quarto/`.
 2. **During rendering**, Quarto renders `_quarto/` into `docs/`, running the
    examples and vignettes against that package.
-3. **After rendering**, it links code to its documentation and adds hover
-   tooltips.
+3. **After rendering**, it links code to its documentation, adds hover tooltips
+   and writes the [redirect](../customizing.qmd#redirects) pages.
 
 In an interactive session it then serves `docs/` with `preview_site()`. The
 server keeps running for the rest of the session, so after a rebuild the open

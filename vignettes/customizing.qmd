@@ -10,7 +10,7 @@ vignette: >
 If you want to customize your site, you can do so by editing
 `_quartodown/_quartodown.yml`, which `quartodown::use_quartodown()` creates. The
 `_quartodown/` folder at the package root also holds the files that [style the
-site](#styling-and-layout). `_quartodown.yml` has six fields, all optional:
+site](#styling-and-layout). `_quartodown.yml` has seven fields, all optional:
 
 - `url:` is the site's address, if it isn't the first non-GitHub `URL` in
   `DESCRIPTION`.
@@ -18,6 +18,7 @@ site](#styling-and-layout). `_quartodown.yml` has six fields, all optional:
 - `navbar:` lays out the navbar.
 - `home:` picks the home page's source.
 - `theme:` picks the light and dark themes.
+- `redirects:` sends visitors from old addresses to new ones.
 - `quarto:` changes any other Quarto setting.
 
 ## The reference index
@@ -175,6 +176,22 @@ home:
 
 The page then shows the file as written. Like any other page, it then gets a
 table of contents, which `toc: false` in its front matter can turn off.
+
+## Redirects
+
+When a page moves, such as a function's reference page after it is renamed you
+can use `redirects:` so links to the old address keeps working. Each entry is a
+pair: the old address and the new one, both relative to the site's root:
+
+```yaml
+redirects:
+  - ["reference/foo.bar.html", "reference/foo_bar.html"]
+  - ["articles/old-guide.html", "vignettes/guide.html"]
+```
+
+For a vignette, Quarto's own
+[`aliases:`](https://quarto.org/docs/websites/website-navigation.html#redirects)
+in its front matter does the same.
 
 ## Other Quarto settings
 
@@ -338,13 +355,73 @@ settings into `_quartodown/_quartodown.yml`:
 - `reference:` has the same format and selectors, so it can be copied as is.
 - `navbar:` lists items differently; see [The navbar](#the-navbar).
 - `articles:` has no equivalent: group vignettes with navbar menus instead.
+- `template: bootswatch:` becomes [`theme: light:`](#styling-and-layout).
+- `template: bslib:` fonts go in `_quartodown/extra.scss`, as below.
+- `redirects:` has the same format, so it can be copied as is.
+- `home: title:` and `description:`, and `template: opengraph:`, are Quarto
+  settings, as below.
+- `footer:` is Quarto's `page-footer:`; see [Other Quarto
+  settings](#other-quarto-settings).
 - A separate home page (an `index.md` used instead of the README) isn't picked
   up automatically: set it with [`home: file:`](#the-home-page).
 - Code that checks `IN_PKGDOWN` (or `pkgdown::in_pkgdown()`) should check
   `identical(Sys.getenv("IN_QUARTODOWN"), "true")` instead.
 
+For example, this part of a `_pkgdown.yml`:
+
+```yaml
+template:
+  bootswatch: flatly
+  bslib:
+    base_font: {google: "Inter"}
+    code_font: {google: "Fira Code"}
+  opengraph:
+    twitter:
+      creator: "@me"
+      card: summary_large_image
+home:
+  title: "mypkg: Do Things"
+  description: A package that does things.
+```
+
+becomes, in `_quartodown/_quartodown.yml`:
+
+```yaml
+theme:
+  light: flatly
+quarto:
+  website:
+    description: A package that does things.
+    twitter-card:
+      creator: "@me"
+      card-style: summary_large_image
+```
+
+and, in `_quartodown/extra.scss`:
+
+```scss
+/*-- scss:defaults --*/
+@import url("https://fonts.googleapis.com/css2?family=Inter&family=Fira+Code&display=swap");
+$font-family-sans-serif: "Inter", sans-serif;
+$font-family-monospace: "Fira Code", monospace;
+```
+
+A custom navbar item, such as a link to CRAN, is a Quarto navbar item:
+
+```yaml
+navbar:
+  right:
+    - github
+    - text: CRAN
+      href: https://cran.r-project.org/package=mypkg
+```
+
+The navbar's title is the package's name and version. To show another, set
+`quarto: website: navbar: title:`.
+
 The rest works as with pkgdown, except that vignettes are published under
 `vignettes/` rather than `articles/`: `articles/foo.html` becomes
 `vignettes/foo.html`, and `articles/bar.html`, from
-`vignettes/articles/bar.Rmd`, becomes `vignettes/articles/bar.html`, so update
-any links pointing to them.
+`vignettes/articles/bar.Rmd`, becomes `vignettes/articles/bar.html`. Likewise,
+the changelog is `NEWS.html` rather than `news/index.html`. Update links to
+them, or keep the old addresses working with [`redirects:`](#redirects).

@@ -399,5 +399,7 @@ serve_site <- function(path, reopen) {
   invisible(the$server)
 }
 
-# The preview server, kept across calls so rebuilds reuse it.
+# The preview server, kept across calls so rebuilds reuse it, and the
+# packages' CRAN pages (see cran_url_if_available()).
 the <- new.env(parent = emptyenv())
+the$cran_urls <- list()

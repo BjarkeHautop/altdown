@@ -34,6 +34,8 @@
 #' * `theme`: the `light` and `dark` themes: names of Quarto's built-in
 #'   themes, such as `flatly` and `darkly`, or `.scss` files in
 #'   `_quartodown/`. By default, `default` and `darkly`.
+#' * `redirects`: pairs of paths, from an old page to the one replacing it,
+#'   such as `["reference/old.html", "reference/new.html"]`.
 #' * `quarto`: settings merged over the generated Quarto configuration.
 #'
 #' `_quartodown/extra.scss` and `_quartodown/extra.css`, if they exist, style
@@ -119,6 +121,7 @@ build_site <- function(
   if (isTRUE(tooltips)) {
     add_tooltips(path)
   }
+  write_redirects(path, config)
 
   if (isTRUE(preview) && !identical(Sys.getenv("TESTTHAT"), "true")) {
     if (requireNamespace("servr", quietly = TRUE)) {
@@ -164,7 +167,7 @@ read_config <- function(path) {
   }
   warn_unknown_fields(
     names(config),
-    c("url", "reference", "navbar", "home", "theme", "quarto")
+    c("url", "reference", "navbar", "home", "theme", "redirects", "quarto")
   )
   if (is.list(config$home)) {
     warn_unknown_fields(names(config$home), c("file", "sidebar"), "home")
@@ -172,6 +175,7 @@ read_config <- function(path) {
   if (is.list(config$theme)) {
     warn_unknown_fields(names(config$theme), c("light", "dark"), "theme")
   }
+  config_redirects(config) # Checks it before the slow render.
   config
 }
 

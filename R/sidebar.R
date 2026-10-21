@@ -54,9 +54,14 @@ sidebar_section <- function(heading, bullets) {
   )
 }
 
+# The package's CRAN page, if it is on CRAN. Looked up once per session, so
+# rebuilds don't wait on CRAN.
 cran_url_if_available <- function(pkg_name) {
   if (is.na(pkg_name) || !requireNamespace("httr2", quietly = TRUE)) {
     return(NA_character_)
+  }
+  if (!is.null(the$cran_urls[[pkg_name]])) {
+    return(the$cran_urls[[pkg_name]])
   }
   cran_url <- paste0("https://cloud.r-project.org/package=", pkg_name)
   resp <- tryCatch(
@@ -66,11 +71,16 @@ cran_url_if_available <- function(pkg_name) {
     )),
     error = function(e) NULL
   )
-  if (!is.null(resp) && !httr2::resp_is_error(resp)) {
+  url <- if (!is.null(resp) && !httr2::resp_is_error(resp)) {
     cran_url
   } else {
     NA_character_
   }
+  # Not when offline: the next build looks again.
+  if (!is.null(resp)) {
+    the$cran_urls[[pkg_name]] <- url
+  }
+  url
 }
 
 pkg_github_url <- function(path) {
