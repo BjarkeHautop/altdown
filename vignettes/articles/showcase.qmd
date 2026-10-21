@@ -122,6 +122,31 @@ Tables can be cross-referenced in the same way, as in @tbl-cars.
 knitr::kable(head(mtcars[, 1:6]))
 ```
 
+## Colored output
+
+Output keeps the colors it has in the console, such as cli's messages and
+errors:
+
+```{r}
+#| label: colored-cli
+#| error: true
+
+cli::cli_h2("Checking {.pkg quartodown}")
+cli::cli_alert_success("Found {.val {3}} vignettes.")
+cli::cli_abort(c(
+  "Can't find {.file _quartodown.yml}.",
+  "i" = "Create one with {.fn quartodown::use_quartodown}."
+))
+```
+
+and tibbles:
+
+```{r}
+#| label: colored-tibble
+
+tibble::tibble(x = c(-1.5, NA, 3), y = c("a", NA, "c"))
+```
+
 ## Math
 
 Inline math, like $e^{i\pi} + 1 = 0$, and display math:

@@ -33,6 +33,7 @@ Imports:
     cli,
     desc,
     downlit,
+    fansi,
     fs,
     quarto,
     tools,
@@ -47,5 +48,6 @@ Suggests:
     withr
 VignetteBuilder:
     quarto
+Config/Needs/website: tibble
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

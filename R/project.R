@@ -203,7 +203,8 @@ render_project <- function(path, envvars, quiet = TRUE) {
   files <- list.files(docs, full.names = TRUE)
   unlink(files[basename(files) != "CNAME"], recursive = TRUE)
 
-  local_envvars(envvars)
+  # Colored output, as in a terminal; see ansi_to_html().
+  local_envvars(c(envvars, R_CLI_NUM_COLORS = "256"))
   quarto::quarto_render(
     input = project_dir(path),
     quiet = quiet,

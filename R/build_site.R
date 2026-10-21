@@ -95,7 +95,9 @@ build_site <- function(
 
   render_project(path, envvars, quiet = quiet)
   write_pkgdown_yml(path)
+  protect_ansi(path)
   link_code(path)
+  ansi_to_html(path)
 
   if (isTRUE(tooltips)) {
     add_tooltips(path)
@@ -138,6 +140,11 @@ copy_theme_files <- function(path) {
     mustWork = TRUE
   )
   file.copy(src, file.path(project_dir(path), theme_files), overwrite = TRUE)
+  write(
+    ansi_scss_rules(),
+    file.path(project_dir(path), "quartodown.scss"),
+    append = TRUE
+  )
   invisible()
 }
 

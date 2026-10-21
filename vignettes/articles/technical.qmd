@@ -76,3 +76,6 @@ build without tooltips, use `build_site(tooltips = FALSE)`.
 The site uses Quarto's `default` theme in light mode and `darkly` in dark mode,
 with `quartodown.scss` on top of each. The mode follows the browser's
 preference.
+
+Code output keeps the colors packages such as cli give it in a terminal, in
+shades that suit the light or dark theme.

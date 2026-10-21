@@ -80,11 +80,13 @@ quartodown::build_site() # also previews it when interactive
      `internal = TRUE`.
    - `authors.qmd` ([R/authors.R](R/authors.R)).
    - Theme files copied verbatim from [inst/quarto/](inst/quarto/)
-     (`quartodown.scss`, header/after-body HTML).
+     (`quartodown.scss`, header/after-body HTML), with `ansi_scss_rules()`
+     ([R/ansi.R](R/ansi.R)) appended to `quartodown.scss`.
 2. **Rendering** — clears `docs/` (keeping `CNAME` and hidden files), makes the
    package available to the pages' R processes (installed into a temp library
    prepended via `R_LIBS`, or with `devel = TRUE` a generated `R_PROFILE_USER`
-   profile that runs `pkgload::load_all()`), renders `_quarto/` into it
+   profile that runs `pkgload::load_all()`; plus `R_CLI_NUM_COLORS=256` for
+   colored output), renders `_quarto/` into it
    (`output-dir: ../docs/`) and writes `docs/pkgdown.yml` (`urls` + `articles`,
    all downlit reads). The name is fixed: downlit fetches
    `<site URL>/pkgdown.yml` to link other packages' code to this site, so it
@@ -93,7 +95,11 @@ quartodown::build_site() # also previews it when interactive
    downlit over every `docs/**/*.html` (replacing Quarto's `code-link`, which
    would wipe code annotations). `pre.code-annotated` blocks are hidden from
    downlit and their `span.fu` tokens (and `span.sc` `%op%`s) linked one by one
-   with `downlit::autolink_url()` instead. Then `add_tooltips()`
+   with `downlit::autolink_url()` instead. xml2 drops the ESC of ANSI codes, so
+   `protect_ansi()` ([R/ansi.R](R/ansi.R)) first swaps it for a private-use
+   character (and strips the codes from `search.json`), and `ansi_to_html()`
+   afterwards converts them with `fansi::sgr_to_html()` (not
+   `cli::ansi_html()`, which loses colors of nested styles). Then `add_tooltips()`
    ([R/tooltips.R](R/tooltips.R)) regex-rewrites every `docs/**/*.html`, linking
    references to the package's own topics (`<span class="fu|va">` in code
    blocks, and `op`/`sc` spans holding a `%op%`, and `<code>name()</code>`
