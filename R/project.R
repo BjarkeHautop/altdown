@@ -17,6 +17,13 @@ site_dir <- function(path, config = list()) {
 
 dev_modes <- c("release", "devel", "unreleased", "auto")
 
+# Whether the site is set to have a development version's site, which is
+# looked for and linked even from a release build (see dev_mode_meta()).
+has_dev_mode <- function(config = list()) {
+  !is.null(config$development$mode) ||
+    nzchar(Sys.getenv("QUARTODOWN_DEV_MODE"))
+}
+
 # _quartodown.yml's `development: mode:` (or the QUARTODOWN_DEV_MODE
 # environment variable, which takes precedence): "release" (the
 # default), "devel" (a site in dev/ for the development version, alongside

@@ -289,17 +289,20 @@ copy_theme_files <- function(path, config = list()) {
     file.path(project_dir(path), "quartodown.scss"),
     append = TRUE
   )
-  write(
-    dev_mode_meta(dev_mode(path, config)),
-    file.path(project_dir(path), "quartodown-header.html"),
-    append = TRUE
-  )
+  # Without `development:`, there's only ever the one site.
+  if (has_dev_mode(config)) {
+    write(
+      dev_mode_meta(dev_mode(path, config)),
+      file.path(project_dir(path), "quartodown-header.html"),
+      append = TRUE
+    )
+  }
   invisible()
 }
 
 # The site's dev_mode(), for the after-body script, which labels the navbar's
-# version with it. A development site isn't indexed by search engines, which
-# should send people to the released version's.
+# version with it and links the other site. A development site isn't indexed
+# by search engines, which should send people to the released version's.
 dev_mode_meta <- function(mode) {
   c(
     sprintf('<meta name="quartodown-dev-mode" content="%s">', mode),

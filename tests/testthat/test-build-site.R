@@ -1362,7 +1362,11 @@ test_that("copy_theme_files() marks a development site for the navbar and search
   dir <- new_pkg()
   header <- file.path(dir, "_quarto", "quartodown-header.html")
 
+  # Without `development:`, there's no other site to link.
   copy_theme_files(dir)
+  expect_false(any(grepl("quartodown-dev-mode", readLines(header))))
+
+  copy_theme_files(dir, list(development = list(mode = "release")))
   lines <- readLines(header)
   expect_true(
     '<meta name="quartodown-dev-mode" content="release">' %in% lines
