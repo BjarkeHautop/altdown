@@ -524,3 +524,45 @@ test_that("render_error_log() keeps Quarto's output from the failing file", {
   )
   expect_identical(unname(render_error_log("ERROR: bad")), "ERROR: bad")
 })
+
+test_that("rendering_file() reads the page Quarto starts", {
+  expect_identical(rendering_file("\r[ 2/31] reference/foo.qmd\r"), "reference/foo.qmd")
+  expect_identical(rendering_file("[2/2] vignettes\\a\\b.qmd"), "vignettes/a/b.qmd")
+  expect_identical(rendering_file("processing file: index.qmd"), NA_character_)
+  expect_identical(rendering_file("1/3 [unnamed-chunk-1]"), NA_character_)
+})
+
+test_that("render_time_bullets() sums the reference and other pages", {
+  times <- c(
+    "index.qmd" = 1.25,
+    "reference/index.qmd" = 0.5,
+    "reference/a.qmd" = 1,
+    "reference/b.qmd" = 2,
+    "vignettes/fast.qmd" = 3,
+    "vignettes/articles/slow.qmd" = 20,
+    "NEWS.md" = 0.25,
+    "authors.qmd" = 0.5
+  )
+  expect_identical(
+    render_time_bullets(times),
+    structure(
+      c(
+        "2 reference pages: 3.0s",
+        "vignettes/articles/slow.qmd: 20.0s",
+        "vignettes/fast.qmd: 3.0s",
+        "Home page: 1.2s",
+        "3 other pages: 1.2s"
+      ),
+      names = rep("*", 5)
+    )
+  )
+  expect_identical(
+    unname(render_time_bullets(times, max_vignettes = 1))[2:3],
+    c("vignettes/articles/slow.qmd: 20.0s", "1 more vignette: 3.0s")
+  )
+  expect_identical(
+    unname(render_time_bullets(c("vignettes/{x}.qmd" = 1))),
+    "vignettes/{{x}}.qmd: 1.0s"
+  )
+  expect_identical(render_time_bullets(numeric()), structure(character(), names = character()))
+})
