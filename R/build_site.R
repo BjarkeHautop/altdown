@@ -338,7 +338,7 @@ quarto_config <- function(
       type = "website",
       `output-dir` = if (mode == "devel") "../docs/dev/" else "../docs/"
     ),
-    language = list(`search-text-placeholder` = " Search for"),
+    language = list(`search-text-placeholder` = " Search"),
     website = list(
       # after-body script splits the version into its own <small>.
       title = trimws(paste(pkg, version)),
