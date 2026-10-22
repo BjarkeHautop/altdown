@@ -214,7 +214,10 @@ $quartodown-mix: 100%;
 }
 
 #quarto-search .aa-Input,
-#quarto-search .aa-Input::placeholder {
+#quarto-search .aa-Input::placeholder,
+#quarto-search .aa-Form .aa-Label svg,
+#quarto-search .aa-Form .aa-LoadingIndicator svg,
+#quarto-search .aa-Form .aa-ClearButton {
   color: $body-color;
 }
 
