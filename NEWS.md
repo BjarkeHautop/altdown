@@ -8,6 +8,10 @@
 * The search box's magnifying glass and clear button are now readable in dark
   mode.
 
+* The reference pages' examples now run before rendering, all in one R
+  process, rather than Quarto starting one for each page, which made most of
+  the build's time for packages with many examples.
+
 * `build_site()` reports its progress in a few steps (installing the package,
   writing the Quarto project, rendering, linking code), each with the time it
   took, and where it built the site. When a page fails to render with

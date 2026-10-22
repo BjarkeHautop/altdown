@@ -134,6 +134,7 @@ build_site <- function(
 
   cli::cli_progress_done()
 
+  run_examples(path, envvars, settings, freeze = freeze)
   render_project(path, envvars, config, quiet = quiet)
 
   done <- if (isTRUE(tooltips)) "Linked code and added tooltips" else "Linked code"

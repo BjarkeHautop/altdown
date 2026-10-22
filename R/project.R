@@ -344,9 +344,10 @@ clear_site <- function(path, config = list()) {
 
 # ---- the package for the pages' code ------------------------------------------
 #
-# Quarto runs each page's code in a new R process. The package is either
-# installed into a temporary library first on its library path, or, with
-# `devel = TRUE`, loaded with pkgload::load_all() by an R profile.
+# Quarto runs each page's code in a new R process, as run_examples() does the
+# reference pages' examples, all in one. The package is either installed into
+# a temporary library first on its library path, or, with `devel = TRUE`,
+# loaded with pkgload::load_all() by an R profile.
 
 install_envvars <- function(path, scratch) {
   lib <- file.path(scratch, "library")
