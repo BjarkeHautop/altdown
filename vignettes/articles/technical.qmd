@@ -17,7 +17,11 @@ pages, and every Quarto feature works.
 3. **After rendering**, it links code to its documentation, adds hover tooltips
    and writes the [redirect](../customizing.qmd#redirects) pages.
 
-In an interactive session it then serves `docs/` with `preview_site()`. The
+With [`development: mode: devel`](../customizing.qmd#development-and-release-sites),
+the site goes in `docs/dev/` instead, and a build into `docs/` leaves `dev/` as
+it is.
+
+In an interactive session it then serves the site with `preview_site()`. The
 server keeps running for the rest of the session, so after a rebuild the open
 page reloads instead of a new one opening.
 

@@ -100,7 +100,12 @@ quartodown::build_site() # also previews it when interactive
      paths in `quarto:` settings resolve the same (Quarto doesn't render `_`
      folders). `extra.scss` is appended to both themes and `extra.css` set as
      `css:`. `docs/.nojekyll` keeps GitHub Pages from dropping it.
-2. **Rendering** — clears `docs/` (keeping `CNAME` and hidden files), makes the
+2. **Rendering** — clears the site's folder (`site_dir()`: `docs/`, or
+   `docs/dev/` when `dev_mode()`, from `_quartodown.yml`'s pkgdown-style
+   `development: mode:` or `QUARTODOWN_DEV_MODE`, is `devel`; that also puts
+   `site-url` under `dev/` and a `noindex` meta in `quartodown-header.html`),
+   keeping `CNAME`, hidden files and, in `docs/`, `dev/` (which
+   `postprocess_pages()` then skips too), makes the
    package available to the pages' R processes (installed into a temp library
    prepended via `R_LIBS`, or with `devel = TRUE` a generated `R_PROFILE_USER`
    profile that runs `pkgload::load_all()`; plus `R_CLI_NUM_COLORS=256` for

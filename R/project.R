@@ -6,8 +6,54 @@
 
 project_dir <- function(path) file.path(path, "_quarto")
 
-# The built site.
+# The built site's folder, which may also hold the development site in dev/.
 docs_dir <- function(path) file.path(path, "docs")
+
+# Where this build goes: docs/, or docs/dev/ for the development site.
+site_dir <- function(path, config = list()) {
+  docs <- docs_dir(path)
+  if (dev_mode(path, config) == "devel") file.path(docs, "dev") else docs
+}
+
+dev_modes <- c("release", "devel", "unreleased", "auto")
+
+# _quartodown.yml's `development: mode:` (or the QUARTODOWN_DEV_MODE
+# environment variable, which takes precedence): "release" (the
+# default), "devel" (a site in dev/ for the development version, alongside
+# the released version's), or "unreleased" (in the root, for a package not
+# yet released). "auto" picks from the version: a fourth component makes it
+# devel, and a 0.0.0.* version unreleased.
+dev_mode <- function(path, config = list()) {
+  mode <- Sys.getenv("QUARTODOWN_DEV_MODE")
+  if (!nzchar(mode)) {
+    mode <- config$development$mode
+    if (is.null(mode)) {
+      mode <- "release"
+    }
+    if (!is.character(mode) || length(mode) != 1 || !mode %in% dev_modes) {
+      config_abort(
+        "development: mode",
+        "must be one of {.or {.val {dev_modes}}}."
+      )
+    }
+  } else if (!mode %in% dev_modes) {
+    cli::cli_abort(
+      "{.envvar QUARTODOWN_DEV_MODE} must be one of {.or {.val {dev_modes}}}, not {.val {mode}}."
+    )
+  }
+  if (mode != "auto") {
+    return(mode)
+  }
+  version <- desc::desc_get_field("Version", default = "0.0.0", file = path)
+  version <- unclass(package_version(version))[[1]]
+  if (length(version) < 4) {
+    "release"
+  } else if (all(version[1:3] == 0)) {
+    "unreleased"
+  } else {
+    "devel"
+  }
+}
 
 pkg_name <- function(path) desc::desc_get_field("Package", file = path)
 
@@ -202,12 +248,8 @@ check_quarto <- function() {
 
 # `envvars` makes the package available to the pages' R processes, see
 # install_envvars() and load_all_envvars().
-render_project <- function(path, envvars, quiet = TRUE) {
-  docs <- docs_dir(path)
-  # A stale page would otherwise outlive its source. CNAME (GitHub Pages'
-  # custom domain) and hidden files such as .nojekyll stay.
-  files <- list.files(docs, full.names = TRUE)
-  unlink(files[basename(files) != "CNAME"], recursive = TRUE)
+render_project <- function(path, envvars, config = list(), quiet = TRUE) {
+  clear_site(path, config)
 
   # Colored output, as in a terminal; see ansi_to_html().
   local_envvars(c(envvars, R_CLI_NUM_COLORS = "256"))
@@ -218,7 +260,19 @@ render_project <- function(path, envvars, quiet = TRUE) {
   )
   # Without it, GitHub Pages runs the site through Jekyll, which drops `_`
   # folders such as _quartodown/.
-  file.create(file.path(docs, ".nojekyll"))
+  file.create(file.path(docs_dir(path), ".nojekyll"))
+  invisible()
+}
+
+# Empties the folder this build goes in (see site_dir()), as a stale page would
+# otherwise outlive its source. CNAME (GitHub Pages' custom domain) and hidden
+# files such as .nojekyll stay, and so does the development site in dev/,
+# which a release build doesn't replace.
+clear_site <- function(path, config = list()) {
+  dir <- site_dir(path, config)
+  files <- list.files(dir, full.names = TRUE)
+  keep <- if (dir == docs_dir(path)) c("CNAME", "dev") else "CNAME"
+  unlink(files[!basename(files) %in% keep], recursive = TRUE)
   invisible()
 }
 
@@ -325,7 +379,7 @@ site_url <- function(path, config = list()) {
 
 # downlit finds a package's reference pages and vignettes through the
 # pkgdown.yml at its site's root.
-write_pkgdown_yml <- function(path, url = site_url(path)) {
+write_pkgdown_yml <- function(path, url = site_url(path), config = list()) {
   if (is.null(url) || is.na(url)) {
     return(invisible())
   }
@@ -340,13 +394,15 @@ write_pkgdown_yml <- function(path, url = site_url(path)) {
       ),
       articles = articles
     ),
-    file.path(docs_dir(path), "pkgdown.yml")
+    file.path(site_dir(path, config), "pkgdown.yml")
   )
 }
 
 #' Preview the built site
 #'
-#' Serves `docs/`, as built by [build_site()], in a web browser, and reloads
+#' Serves `docs/` (or `docs/dev/`, for a development site; see the
+#' Configuration section of [build_site()]), as built by [build_site()], in a
+#' web browser, and reloads
 #' the page when the site is rebuilt. The server keeps running for the rest of
 #' the R session and is reused by later calls, including [build_site()]'s
 #' (which, with a server already running, leaves the open page to reload
@@ -362,13 +418,13 @@ write_pkgdown_yml <- function(path, url = site_url(path)) {
 #' preview_site()
 #' }
 preview_site <- function(path = ".") {
-  serve_site(path, reopen = TRUE)
+  serve_site(path, read_config(path), reopen = TRUE)
 }
 
-# Serves `docs/`, starting a server unless one already serves it. `reopen`
-# opens the page again in the browser when it does.
-serve_site <- function(path, reopen) {
-  docs <- docs_dir(path)
+# Serves the site (see site_dir()), starting a server unless one already
+# serves it. `reopen` opens the page again in the browser when it does.
+serve_site <- function(path, config = list(), reopen) {
+  docs <- site_dir(path, config)
   if (!file.exists(file.path(docs, "index.html"))) {
     cli::cli_abort(c(
       "No built site found in {.path {docs}}.",

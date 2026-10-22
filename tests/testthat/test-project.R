@@ -399,3 +399,88 @@ test_that("local_envvars() restores set and unset variables on exit", {
   expect_identical(Sys.getenv("QUARTODOWN_A"), "old")
   expect_identical(Sys.getenv("QUARTODOWN_B", unset = NA), NA_character_)
 })
+
+test_that("dev_mode() is `development: mode:`, release by default", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  expect_identical(dev_mode(dir), "release")
+  expect_identical(dev_mode(dir, list(development = list(mode = "devel"))), "devel")
+  expect_error(
+    dev_mode(dir, list(development = list(mode = "dev"))),
+    "development: mode:"
+  )
+
+  withr::local_envvar(QUARTODOWN_DEV_MODE = "unreleased")
+  expect_identical(
+    dev_mode(dir, list(development = list(mode = "devel"))),
+    "unreleased"
+  )
+  withr::local_envvar(QUARTODOWN_DEV_MODE = "dev")
+  expect_error(dev_mode(dir), "QUARTODOWN_DEV_MODE")
+})
+
+test_that("dev_mode() picks from the version with `mode: auto`", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  auto <- list(development = list(mode = "auto"))
+  expect_identical(dev_mode(dir, auto), "release")
+  desc::desc_set_version("1.0.0.9000", file = dir)
+  expect_identical(dev_mode(dir, auto), "devel")
+  desc::desc_set_version("0.0.0.9000", file = dir)
+  expect_identical(dev_mode(dir, auto), "unreleased")
+})
+
+test_that("a development site goes in docs/dev/, under the site URL's dev/", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  desc::desc_set_urls("https://o.github.io/examplepkg/", file = dir)
+  devel <- list(development = list(mode = "devel"))
+  expect_identical(site_dir(dir), file.path(dir, "docs"))
+  expect_identical(site_dir(dir, devel), file.path(dir, "docs", "dev"))
+
+  settings <- quarto_config(dir, devel)
+  expect_identical(settings$project$`output-dir`, "../docs/dev/")
+  expect_identical(
+    settings$website$`site-url`,
+    "https://o.github.io/examplepkg/dev"
+  )
+  expect_identical(
+    quarto_config(dir)$website$`site-url`,
+    "https://o.github.io/examplepkg"
+  )
+})
+
+test_that("clear_site() keeps the development site in a release build", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  docs <- file.path(dir, "docs")
+  dir.create(file.path(docs, "dev"), recursive = TRUE)
+  file.create(file.path(docs, c("index.html", "CNAME", "dev/index.html")))
+
+  clear_site(dir, list(development = list(mode = "devel")))
+  expect_setequal(
+    list.files(docs, recursive = TRUE),
+    c("index.html", "CNAME")
+  )
+
+  file.create(file.path(docs, "dev/index.html"))
+  clear_site(dir)
+  expect_setequal(
+    list.files(docs, recursive = TRUE),
+    c("CNAME", "dev/index.html")
+  )
+})
+
+test_that("postprocess_pages() leaves the development site to its own build", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  docs <- file.path(dir, "docs")
+  dir.create(file.path(docs, "dev"), recursive = TRUE)
+  page <- "<html><body><p>Hi</p></body></html>"
+  writeLines(page, file.path(docs, "index.html"))
+  writeLines(page, file.path(docs, "dev", "index.html"))
+
+  postprocess_pages(dir, tooltips = FALSE, topics = list())
+  expect_identical(readLines(file.path(docs, "dev", "index.html")), page)
+  expect_false(identical(readLines(file.path(docs, "index.html")), page))
+})

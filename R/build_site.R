@@ -43,6 +43,12 @@
 #'   `_quartodown/`. By default, `default` and `darkly`.
 #' * `redirects`: pairs of paths, from an old page to the one replacing it,
 #'   such as `["reference/old.html", "reference/new.html"]`.
+#' * `development`: `mode`, `release` (the default) to build the site into
+#'   `docs/`, or `devel` to build a site for the development version into
+#'   `docs/dev/`, next to the released version's; `unreleased` marks the
+#'   version as unreleased, and `auto` picks from the version number. The
+#'   environment variable `QUARTODOWN_DEV_MODE` overrides it. The format is
+#'   the same as pkgdown's.
 #' * `quarto`: settings merged over the generated Quarto configuration.
 #'
 #' `_quartodown/extra.scss` and `_quartodown/extra.css`, if they exist, style
@@ -113,7 +119,7 @@ build_site <- function(
   copy_figures(path)
   with_libpaths(envvars, write_man_pages(path, config, topics))
   import_markdown_files(path, config)
-  copy_theme_files(path)
+  copy_theme_files(path, config)
   copy_site_files(path)
   write_home(path, config)
   build_reference_qmd(path, config, topics)
@@ -121,14 +127,14 @@ build_site <- function(
   settings <- write_quarto_config(path, config, freeze, topics)
   write_404(path, settings$website$`site-url`)
 
-  render_project(path, envvars, quiet = quiet)
-  write_pkgdown_yml(path, settings$website$`site-url`)
+  render_project(path, envvars, config, quiet = quiet)
+  write_pkgdown_yml(path, settings$website$`site-url`, config)
   postprocess_pages(path, config, topics, tooltips = tooltips)
   write_redirects(path, config)
 
   if (isTRUE(preview) && !identical(Sys.getenv("TESTTHAT"), "true")) {
     if (requireNamespace("servr", quietly = TRUE)) {
-      serve_site(path, reopen = FALSE)
+      serve_site(path, config, reopen = FALSE)
     } else {
       cli::cli_inform(c(
         "i" = "Install {.pkg servr} to preview the site in your browser."
@@ -136,7 +142,7 @@ build_site <- function(
     }
   }
 
-  invisible(docs_dir(path))
+  invisible(site_dir(path, config))
 }
 
 theme_files <- c(
@@ -179,6 +185,7 @@ read_config <- function(path) {
       "repo",
       "theme",
       "redirects",
+      "development",
       "quarto"
     )
   )
@@ -192,6 +199,9 @@ read_config <- function(path) {
   }
   if (is.list(config$theme)) {
     warn_unknown_fields(names(config$theme), c("light", "dark"), "theme")
+  }
+  if (is.list(config$development)) {
+    warn_unknown_fields(names(config$development), "mode", "development")
   }
   if (is.list(config$repo)) {
     warn_unknown_fields(names(config$repo), c("url", "branch"), "repo")
@@ -218,6 +228,7 @@ read_config <- function(path) {
 # need the package's files and topics, so a mistake fails before the slow
 # install and render rather than during them.
 check_config <- function(path, config, topics) {
+  dev_mode(path, config)
   home_file(path, config)
   quarto_theme(path, config)
   navbar_style(config)
@@ -265,7 +276,7 @@ warn_unknown_fields <- function(fields, known, parent = NULL) {
   }
 }
 
-copy_theme_files <- function(path) {
+copy_theme_files <- function(path, config = list()) {
   src <- system.file(
     "quarto",
     theme_files,
@@ -278,7 +289,22 @@ copy_theme_files <- function(path) {
     file.path(project_dir(path), "quartodown.scss"),
     append = TRUE
   )
+  write(
+    dev_mode_meta(dev_mode(path, config)),
+    file.path(project_dir(path), "quartodown-header.html"),
+    append = TRUE
+  )
   invisible()
+}
+
+# The site's dev_mode(), for the after-body script, which labels the navbar's
+# version with it. A development site isn't indexed by search engines, which
+# should send people to the released version's.
+dev_mode_meta <- function(mode) {
+  c(
+    sprintf('<meta name="quartodown-dev-mode" content="%s">', mode),
+    if (mode == "devel") '<meta name="robots" content="noindex">'
+  )
 }
 
 # ---- Quarto configuration -----------------------------------------------------
@@ -291,6 +317,7 @@ quarto_config <- function(
 ) {
   pkg <- pkg_name(path)
   version <- desc::desc_get_field("Version", default = "", file = path)
+  mode <- dev_mode(path, config)
 
   navbar <- list(search = TRUE)
   items <- navbar_items(path, config)
@@ -309,7 +336,7 @@ quarto_config <- function(
   settings <- list(
     project = list(
       type = "website",
-      `output-dir` = "../docs/"
+      `output-dir` = if (mode == "devel") "../docs/dev/" else "../docs/"
     ),
     language = list(`search-text-placeholder` = " Search for"),
     website = list(
@@ -348,7 +375,11 @@ quarto_config <- function(
   # For the sitemap, among others.
   url <- site_url(path, config)
   if (!is.na(url)) {
-    settings$website$`site-url` <- url
+    settings$website$`site-url` <- if (mode == "devel") {
+      paste0(url, "/dev")
+    } else {
+      url
+    }
   }
   settings$website <- c(settings$website, social_cards(path))
   logos <- c("man/figures/logo.png", "man/figures/logo.svg")
