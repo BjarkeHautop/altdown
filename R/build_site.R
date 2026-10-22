@@ -67,7 +67,8 @@
 #'   build, for pages whose source hasn't changed since? Uses Quarto's
 #'   [freeze](https://quarto.org/docs/projects/code-execution.html#freeze),
 #'   which keeps them in `_quarto/_freeze/`.
-#' @param quiet Logical. Hide Quarto's rendering output?
+#' @param quiet Logical. Hide Quarto's rendering output? If a page fails to
+#'   render, its error is shown either way.
 #' @param devel Logical. By default, the examples and vignettes run against
 #'   the package installed from `path` into a temporary library. With
 #'   `devel = TRUE`, they run against it loaded with [pkgload::load_all()]
@@ -114,6 +115,10 @@ build_site <- function(
     install_envvars(path, scratch)
   }
 
+  cli::cli_progress_step(
+    "Writing the Quarto project to {.path _quarto/}",
+    msg_done = "Wrote the Quarto project to {.path _quarto/}"
+  )
   reset_project(path, freeze = freeze)
   copy_vignettes(path, config)
   copy_figures(path)
@@ -127,10 +132,17 @@ build_site <- function(
   settings <- write_quarto_config(path, config, freeze, topics)
   write_404(path, settings$website$`site-url`)
 
+  cli::cli_progress_done()
+
   render_project(path, envvars, config, quiet = quiet)
+
+  done <- if (isTRUE(tooltips)) "Linked code and added tooltips" else "Linked code"
+  cli::cli_progress_step("Linking code", msg_done = done)
   write_pkgdown_yml(path, settings$website$`site-url`, config)
   postprocess_pages(path, config, topics, tooltips = tooltips)
   write_redirects(path, config)
+  cli::cli_progress_done()
+  cli::cli_alert_success("Built the site in {.path {site_dir(path, config)}}")
 
   if (isTRUE(preview) && !identical(Sys.getenv("TESTTHAT"), "true")) {
     if (requireNamespace("servr", quietly = TRUE)) {

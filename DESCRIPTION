@@ -34,6 +34,7 @@ Imports:
     downlit,
     fansi,
     fs,
+    processx,
     quarto,
     tools,
     utils,

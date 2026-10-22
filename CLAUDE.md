@@ -7,7 +7,7 @@ code in this repository.
 
 quartodown is an R package that builds Bootstrap 5 package websites with Quarto.
 It generates a Quarto website project in `_quarto/` from the package sources,
-renders it into `docs/` with `quarto::quarto_render()`, then post-processes the
+renders it into `docs/` with `quarto render` (run through `processx`), then post-processes the
 HTML. Configuration is the optional `_quartodown/_quartodown.yml`. The exported
 API is `use_quartodown()` (one-time setup, writes `_quartodown/_quartodown.yml`
 and gitignore entries), `use_quartodown_action()` (writes the GitHub Pages
@@ -109,7 +109,9 @@ quartodown::build_site() # also previews it when interactive
    package available to the pages' R processes (installed into a temp library
    prepended via `R_LIBS`, or with `devel = TRUE` a generated `R_PROFILE_USER`
    profile that runs `pkgload::load_all()`; plus `R_CLI_NUM_COLORS=256` for
-   colored output), renders `_quarto/` into it (`output-dir: ../docs/`) and
+   colored output), renders `_quarto/` into it (`output-dir: ../docs/`; with
+   `processx` rather than `quarto::quarto_render()`, whose `quiet` passes
+   `--quiet`, which hides errors too, so `render_error_log()` can show them) and
    writes `docs/pkgdown.yml` (`urls` + `articles`, all downlit reads). The name
    is fixed: downlit fetches `<site URL>/pkgdown.yml` to link other packages'
    code to this site, so it must not be renamed.

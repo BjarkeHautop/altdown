@@ -26,7 +26,8 @@ build, for pages whose source hasn't changed since? Uses Quarto's
 \href{https://quarto.org/docs/projects/code-execution.html#freeze}{freeze},
 which keeps them in \verb{_quarto/_freeze/}.}
 
-\item{quiet}{Logical. Hide Quarto's rendering output?}
+\item{quiet}{Logical. Hide Quarto's rendering output? If a page fails to
+render, its error is shown either way.}
 
 \item{devel}{Logical. By default, the examples and vignettes run against
 the package installed from \code{path} into a temporary library. With

@@ -484,3 +484,43 @@ test_that("postprocess_pages() leaves the development site to its own build", {
   expect_identical(readLines(file.path(docs, "dev", "index.html")), page)
   expect_false(identical(readLines(file.path(docs, "index.html")), page))
 })
+
+test_that("render_inputs() lists the files Quarto renders", {
+  dir <- withr::local_tempdir()
+  for (f in c("index.qmd", "NEWS.md", "reference/foo.qmd", "a/b.Rmd",
+              "_quartodown/x.md", "_freeze/y.md", ".hidden.qmd",
+              "_draft.qmd", "theme.scss")) {
+    dir.create(dirname(file.path(dir, f)), recursive = TRUE, showWarnings = FALSE)
+    file.create(file.path(dir, f))
+  }
+  expect_setequal(
+    render_inputs(dir),
+    c("index.qmd", "NEWS.md", "reference/foo.qmd", "a/b.Rmd")
+  )
+})
+
+test_that("render_error_log() keeps Quarto's output from the failing file", {
+  stderr <- paste(
+    "\r[1/3] a.qmd\r",
+    "\r[2/3] index.qmd\r",
+    "\r\r",
+    "processing file: index.qmd\r\r",
+    "Error:\r\r",
+    "! boom {x}\r\r",
+    "Quitting from index.qmd:5-7 [unnamed-chunk-1]\r\r",
+    "WARN: Error encountered when rendering files\r",
+    sep = "\n"
+  )
+  expect_identical(
+    unname(render_error_log(stderr)),
+    c(
+      "[2/3] index.qmd",
+      "processing file: index.qmd",
+      "Error:",
+      "! boom {{x}}",
+      "Quitting from index.qmd:5-7 [unnamed-chunk-1]",
+      "WARN: Error encountered when rendering files"
+    )
+  )
+  expect_identical(unname(render_error_log("ERROR: bad")), "ERROR: bad")
+})

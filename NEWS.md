@@ -8,6 +8,12 @@
 * The search box's magnifying glass and clear button are now readable in dark
   mode.
 
+* `build_site()` reports its progress in a few steps (installing the package,
+  writing the Quarto project, rendering, linking code), each with the time it
+  took, and where it built the site. When a page fails to render with
+  `quiet = TRUE`, Quarto's error is now shown rather than a suggestion to
+  rerun with `quiet = FALSE`.
+
 # quartodown 0.1.0
 
 * Initial release.

@@ -258,17 +258,76 @@ check_quarto <- function() {
 render_project <- function(path, envvars, config = list(), quiet = TRUE) {
   clear_site(path, config)
 
-  # Colored output, as in a terminal; see ansi_to_html().
-  local_envvars(c(envvars, R_CLI_NUM_COLORS = "256"))
-  quarto::quarto_render(
-    input = project_dir(path),
-    quiet = quiet,
-    as_job = FALSE
-  )
+  n <- length(render_inputs(project_dir(path)))
+  # Quarto's own output goes to the console unless `quiet`, and a progress
+  # step's line would be redrawn over it.
+  if (quiet) {
+    cli::cli_progress_step(
+      "Rendering {n} page{?s} with Quarto",
+      msg_done = "Rendered {n} page{?s} with Quarto"
+    )
+  } else {
+    cli::cli_inform("Rendering {n} page{?s} with Quarto.")
+  }
+
+  result <- run_quarto_render(path, envvars, quiet)
+  if (result$status != 0) {
+    cli::cli_abort(c(
+      "Quarto failed to render the site.",
+      if (quiet) render_error_log(result$stderr)
+    ))
+  }
   # Without it, GitHub Pages runs the site through Jekyll, which drops `_`
   # folders such as _quartodown/.
   file.create(file.path(docs_dir(path), ".nojekyll"))
   invisible()
+}
+
+# The environment variables are set only while Quarto runs, so the progress
+# step's messages aren't colored as for the pages.
+run_quarto_render <- function(path, envvars, quiet) {
+  # Colored output, as in a terminal; see ansi_to_html(). QUARTO_R, unless set
+  # already, makes Quarto run the pages' code with this R.
+  local_envvars(c(
+    envvars,
+    R_CLI_NUM_COLORS = "256",
+    if (!nzchar(Sys.getenv("QUARTO_R"))) c(QUARTO_R = R.home("bin"))
+  ))
+  # Not quarto::quarto_render(): its `quiet` passes `--quiet`, which drops
+  # Quarto's error messages too. Without it, Quarto writes its progress and
+  # errors to stderr, kept here to show the error.
+  processx::run(
+    quarto::quarto_path(),
+    c("render", project_dir(path)),
+    echo = !quiet,
+    error_on_status = FALSE
+  )
+}
+
+# The files Quarto renders in the project `dir`: those it can render, outside
+# `_`/`.` folders and not themselves `_`/`.`-prefixed.
+render_inputs <- function(dir) {
+  files <- list.files(
+    dir,
+    pattern = "\\.(qmd|md|Rmd|ipynb)$",
+    recursive = TRUE,
+    ignore.case = TRUE
+  )
+  files[!grepl("(^|/)[_.]", files)]
+}
+
+# The end of Quarto's output, from the line naming the file that failed
+# ("[2/31] reference/foo.qmd"), as cli bullets.
+render_error_log <- function(stderr) {
+  lines <- gsub("\r", "", split_lines(stderr), fixed = TRUE)
+  lines <- lines[nzchar(trimws(lines))]
+  start <- utils::tail(grep("^\\[\\s*\\d+/\\d+\\]", lines), 1)
+  if (length(start) == 1) {
+    lines <- lines[start:length(lines)]
+  }
+  # Braces escaped so cli doesn't interpolate them.
+  lines <- gsub("([{}])", "\\1\\1", utils::tail(lines, 30))
+  structure(lines, names = rep(" ", length(lines)))
 }
 
 # Empties the folder this build goes in (see site_dir()), as a stale page would
@@ -293,7 +352,10 @@ install_envvars <- function(path, scratch) {
   lib <- file.path(scratch, "library")
   dir.create(lib)
   pkg <- pkg_name(path)
-  cli::cli_inform("Installing {.pkg {pkg}} into a temporary library.")
+  cli::cli_progress_step(
+    "Installing {.pkg {pkg}} into a temporary library",
+    msg_done = "Installed {.pkg {pkg}} into a temporary library"
+  )
   output <- suppressWarnings(system2(
     file.path(R.home("bin"), "R"),
     c(

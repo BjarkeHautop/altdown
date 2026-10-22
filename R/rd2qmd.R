@@ -28,7 +28,6 @@ write_man_pages <- function(path, config = list(), topics = rd_topics(path)) {
       useBytes = TRUE
     )
   }
-  cli::cli_alert_success("Converted {length(topics)} man page{?s}.")
   invisible()
 }
 
