@@ -6,8 +6,61 @@
 
 project_dir <- function(path) file.path(path, "_quarto")
 
-# The built site.
+# The built site's folder, which may also hold the development site in dev/.
 docs_dir <- function(path) file.path(path, "docs")
+
+# Where this build goes: docs/, or docs/dev/ for the development site.
+site_dir <- function(path, config = list()) {
+  docs <- docs_dir(path)
+  if (dev_mode(path, config) == "devel") file.path(docs, "dev") else docs
+}
+
+dev_modes <- c("release", "devel", "unreleased", "auto")
+
+# Whether the site is set to have a development version's site, which is
+# looked for and linked even from a release build (see dev_mode_meta()).
+has_dev_mode <- function(config = list()) {
+  !is.null(config$development$mode) ||
+    nzchar(Sys.getenv("QUARTODOWN_DEV_MODE"))
+}
+
+# _quartodown.yml's `development: mode:` (or the QUARTODOWN_DEV_MODE
+# environment variable, which takes precedence): "release" (the
+# default), "devel" (a site in dev/ for the development version, alongside
+# the released version's), or "unreleased" (in the root, for a package not
+# yet released). "auto" picks from the version: a fourth component makes it
+# devel, and a 0.0.0.* version unreleased.
+dev_mode <- function(path, config = list()) {
+  mode <- Sys.getenv("QUARTODOWN_DEV_MODE")
+  if (!nzchar(mode)) {
+    mode <- config$development$mode
+    if (is.null(mode)) {
+      mode <- "release"
+    }
+    if (!is.character(mode) || length(mode) != 1 || !mode %in% dev_modes) {
+      config_abort(
+        "development: mode",
+        "must be one of {.or {.val {dev_modes}}}."
+      )
+    }
+  } else if (!mode %in% dev_modes) {
+    cli::cli_abort(
+      "{.envvar QUARTODOWN_DEV_MODE} must be one of {.or {.val {dev_modes}}}, not {.val {mode}}."
+    )
+  }
+  if (mode != "auto") {
+    return(mode)
+  }
+  version <- desc::desc_get_field("Version", default = "0.0.0", file = path)
+  version <- unclass(package_version(version))[[1]]
+  if (length(version) < 4) {
+    "release"
+  } else if (all(version[1:3] == 0)) {
+    "unreleased"
+  } else {
+    "devel"
+  }
+}
 
 pkg_name <- function(path) desc::desc_get_field("Package", file = path)
 
@@ -202,37 +255,189 @@ check_quarto <- function() {
 
 # `envvars` makes the package available to the pages' R processes, see
 # install_envvars() and load_all_envvars().
-render_project <- function(path, envvars, quiet = TRUE) {
-  docs <- docs_dir(path)
-  # A stale page would otherwise outlive its source. CNAME (GitHub Pages'
-  # custom domain) and hidden files such as .nojekyll stay.
-  files <- list.files(docs, full.names = TRUE)
-  unlink(files[basename(files) != "CNAME"], recursive = TRUE)
+render_project <- function(path, envvars, config = list(), quiet = TRUE) {
+  clear_site(path, config)
 
-  # Colored output, as in a terminal; see ansi_to_html().
-  local_envvars(c(envvars, R_CLI_NUM_COLORS = "256"))
-  quarto::quarto_render(
-    input = project_dir(path),
-    quiet = quiet,
-    as_job = FALSE
-  )
+  n <- length(render_inputs(project_dir(path)))
+  # Quarto's own output goes to the console unless `quiet`, and a progress
+  # step's line would be redrawn over it.
+  current <- ""
+  step <- if (quiet) {
+    cli::cli_progress_step(
+      "Rendering {n} page{?s} with Quarto{current}",
+      msg_done = "Rendered {n} page{?s} with Quarto"
+    )
+  } else {
+    cli::cli_inform("Rendering {n} page{?s} with Quarto.")
+  }
+
+  # Each page's time runs from Quarto's line starting it to the line starting
+  # the next, and the last page's to "Output created", after which Quarto only
+  # finishes the site (search index, sitemap). The first page's includes
+  # compiling the theme. The step names the page being rendered only where its
+  # line can be redrawn, else each update would print a line.
+  show_page <- quiet && cli::is_dynamic_tty()
+  pages <- character()
+  starts <- numeric()
+  end <- NA_real_
+  on_line <- function(line, proc) {
+    file <- rendering_file(line)
+    if (!is.na(file)) {
+      pages <<- c(pages, file)
+      starts <<- c(starts, as.numeric(Sys.time()))
+      if (show_page) {
+        current <<- paste0(": ", gsub("([{}])", "\\1\\1", file))
+        cli::cli_progress_update(id = step, force = TRUE)
+      }
+    } else if (is.na(end) && grepl("^\\s*Output created", line)) {
+      end <<- as.numeric(Sys.time())
+    }
+  }
+
+  result <- run_quarto_render(path, envvars, quiet, on_line)
+  if (result$status != 0) {
+    cli::cli_abort(c(
+      "Quarto failed to render the site.",
+      if (quiet) render_error_log(result$stderr)
+    ))
+  }
   # Without it, GitHub Pages runs the site through Jekyll, which drops `_`
   # folders such as _quartodown/.
-  file.create(file.path(docs, ".nojekyll"))
+  file.create(file.path(docs_dir(path), ".nojekyll"))
+
+  if (quiet) {
+    cli::cli_progress_done(id = step)
+  }
+  if (is.na(end)) {
+    end <- as.numeric(Sys.time())
+  }
+  times <- stats::setNames(diff(c(starts, end)), pages)
+  cli::cli_bullets(render_time_bullets(times))
+  invisible()
+}
+
+# The file a line of Quarto's output starts rendering ("[2/31]
+# reference/foo.qmd"), with `/` separators, or NA.
+rendering_file <- function(line) {
+  line <- trimws(gsub("\r", "", line, fixed = TRUE))
+  if (!grepl("^\\[\\s*\\d+/\\d+\\]\\s", line)) {
+    return(NA_character_)
+  }
+  gsub("\\", "/", sub("^\\[[^]]*\\]\\s+", "", line), fixed = TRUE)
+}
+
+# cli bullets with the seconds Quarto took for the pages in `times` (named by
+# file): the reference pages together, each vignette, slowest first (the ten
+# slowest, the rest together), the home page, and the other pages together.
+render_time_bullets <- function(times, max_vignettes = 10) {
+  file <- as.character(names(times))
+  is_ref <- startsWith(file, "reference/") & file != "reference/index.qmd"
+  is_vignette <- startsWith(file, "vignettes/")
+  is_home <- file == "index.qmd"
+  is_other <- !(is_ref | is_vignette | is_home)
+
+  group <- function(x, label) {
+    if (length(x) > 0) {
+      plural <- if (length(x) == 1) "" else "s"
+      sprintf("%d %s%s: %s", length(x), label, plural, format_secs(sum(x)))
+    }
+  }
+  vignettes <- sort(times[is_vignette], decreasing = TRUE)
+  shown <- utils::head(vignettes, max_vignettes)
+  lines <- c(
+    group(times[is_ref], "reference page"),
+    sprintf("%s: %s", names(shown), format_secs(shown)),
+    group(vignettes[-seq_along(shown)], "more vignette"),
+    if (any(is_home)) {
+      sprintf("Home page: %s", format_secs(sum(times[is_home])))
+    },
+    group(times[is_other], "other page")
+  )
+  # Braces escaped so cli doesn't interpolate them.
+  lines <- gsub("([{}])", "\\1\\1", lines)
+  structure(lines, names = rep("*", length(lines)))
+}
+
+format_secs <- function(x) {
+  sprintf("%.1fs", x)
+}
+
+# The environment variables are set only while Quarto runs, so the progress
+# step's messages aren't colored as for the pages. `on_line` is called with
+# each line Quarto writes to stderr, where its progress goes.
+run_quarto_render <- function(path, envvars, quiet, on_line = NULL) {
+  # Colored output, as in a terminal; see ansi_to_html(). QUARTO_R, unless set
+  # already, makes Quarto run the pages' code with this R.
+  local_envvars(c(
+    envvars,
+    R_CLI_NUM_COLORS = "256",
+    if (!nzchar(Sys.getenv("QUARTO_R"))) c(QUARTO_R = R.home("bin"))
+  ))
+  # Not quarto::quarto_render(): its `quiet` passes `--quiet`, which drops
+  # Quarto's error messages too. Without it, Quarto writes its progress and
+  # errors to stderr, kept here to show the error.
+  processx::run(
+    quarto::quarto_path(),
+    c("render", project_dir(path)),
+    echo = !quiet,
+    stderr_line_callback = on_line,
+    error_on_status = FALSE
+  )
+}
+
+# The files Quarto renders in the project `dir`: those it can render, outside
+# `_`/`.` folders and not themselves `_`/`.`-prefixed.
+render_inputs <- function(dir) {
+  files <- list.files(
+    dir,
+    pattern = "\\.(qmd|md|Rmd|ipynb)$",
+    recursive = TRUE,
+    ignore.case = TRUE
+  )
+  files[!grepl("(^|/)[_.]", files)]
+}
+
+# The end of Quarto's output, from the line naming the file that failed
+# ("[2/31] reference/foo.qmd"), as cli bullets.
+render_error_log <- function(stderr) {
+  lines <- gsub("\r", "", split_lines(stderr), fixed = TRUE)
+  lines <- lines[nzchar(trimws(lines))]
+  start <- utils::tail(grep("^\\[\\s*\\d+/\\d+\\]", lines), 1)
+  if (length(start) == 1) {
+    lines <- lines[start:length(lines)]
+  }
+  # Braces escaped so cli doesn't interpolate them.
+  lines <- gsub("([{}])", "\\1\\1", utils::tail(lines, 30))
+  structure(lines, names = rep(" ", length(lines)))
+}
+
+# Empties the folder this build goes in (see site_dir()), as a stale page would
+# otherwise outlive its source. CNAME (GitHub Pages' custom domain) and hidden
+# files such as .nojekyll stay, and so does the development site in dev/,
+# which a release build doesn't replace.
+clear_site <- function(path, config = list()) {
+  dir <- site_dir(path, config)
+  files <- list.files(dir, full.names = TRUE)
+  keep <- if (dir == docs_dir(path)) c("CNAME", "dev") else "CNAME"
+  unlink(files[!basename(files) %in% keep], recursive = TRUE)
   invisible()
 }
 
 # ---- the package for the pages' code ------------------------------------------
 #
-# Quarto runs each page's code in a new R process. The package is either
-# installed into a temporary library first on its library path, or, with
-# `devel = TRUE`, loaded with pkgload::load_all() by an R profile.
+# Quarto runs each page's code in a new R process, as run_examples() does the
+# reference pages' examples, all in one. The package is either installed into
+# a temporary library first on its library path, or, with `devel = TRUE`,
+# loaded with pkgload::load_all() by an R profile.
 
 install_envvars <- function(path, scratch) {
   lib <- file.path(scratch, "library")
   dir.create(lib)
   pkg <- pkg_name(path)
-  cli::cli_inform("Installing {.pkg {pkg}} into a temporary library.")
+  cli::cli_progress_step(
+    "Installing {.pkg {pkg}} into a temporary library",
+    msg_done = "Installed {.pkg {pkg}} into a temporary library"
+  )
   output <- suppressWarnings(system2(
     file.path(R.home("bin"), "R"),
     c(
@@ -325,7 +530,7 @@ site_url <- function(path, config = list()) {
 
 # downlit finds a package's reference pages and vignettes through the
 # pkgdown.yml at its site's root.
-write_pkgdown_yml <- function(path, url = site_url(path)) {
+write_pkgdown_yml <- function(path, url = site_url(path), config = list()) {
   if (is.null(url) || is.na(url)) {
     return(invisible())
   }
@@ -340,13 +545,15 @@ write_pkgdown_yml <- function(path, url = site_url(path)) {
       ),
       articles = articles
     ),
-    file.path(docs_dir(path), "pkgdown.yml")
+    file.path(site_dir(path, config), "pkgdown.yml")
   )
 }
 
 #' Preview the built site
 #'
-#' Serves `docs/`, as built by [build_site()], in a web browser, and reloads
+#' Serves `docs/` (or `docs/dev/`, for a development site; see the
+#' Configuration section of [build_site()]), as built by [build_site()], in a
+#' web browser, and reloads
 #' the page when the site is rebuilt. The server keeps running for the rest of
 #' the R session and is reused by later calls, including [build_site()]'s
 #' (which, with a server already running, leaves the open page to reload
@@ -362,13 +569,13 @@ write_pkgdown_yml <- function(path, url = site_url(path)) {
 #' preview_site()
 #' }
 preview_site <- function(path = ".") {
-  serve_site(path, reopen = TRUE)
+  serve_site(path, read_config(path), reopen = TRUE)
 }
 
-# Serves `docs/`, starting a server unless one already serves it. `reopen`
-# opens the page again in the browser when it does.
-serve_site <- function(path, reopen) {
-  docs <- docs_dir(path)
+# Serves the site (see site_dir()), starting a server unless one already
+# serves it. `reopen` opens the page again in the browser when it does.
+serve_site <- function(path, config = list(), reopen) {
+  docs <- site_dir(path, config)
   if (!file.exists(file.path(docs, "index.html"))) {
     cli::cli_abort(c(
       "No built site found in {.path {docs}}.",

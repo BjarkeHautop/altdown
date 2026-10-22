@@ -26,7 +26,8 @@ build, for pages whose source hasn't changed since? Uses Quarto's
 \href{https://quarto.org/docs/projects/code-execution.html#freeze}{freeze},
 which keeps them in \verb{_quarto/_freeze/}.}
 
-\item{quiet}{Logical. Hide Quarto's rendering output?}
+\item{quiet}{Logical. Hide Quarto's rendering output? If a page fails to
+render, its error is shown either way.}
 
 \item{devel}{Logical. By default, the examples and vignettes run against
 the package installed from \code{path} into a temporary library. With
@@ -86,6 +87,12 @@ themes, such as \code{flatly} and \code{darkly}, or \code{.scss} files in
 \verb{_quartodown/}. By default, \code{default} and \code{darkly}.
 \item \code{redirects}: pairs of paths, from an old page to the one replacing it,
 such as \verb{["reference/old.html", "reference/new.html"]}.
+\item \code{development}: \code{mode}, \code{release} (the default) to build the site into
+\verb{docs/}, or \code{devel} to build a site for the development version into
+\verb{docs/dev/}, next to the released version's; \code{unreleased} marks the
+version as unreleased, and \code{auto} picks from the version number. The
+environment variable \code{QUARTODOWN_DEV_MODE} overrides it. The format is
+the same as pkgdown's.
 \item \code{quarto}: settings merged over the generated Quarto configuration.
 }
 

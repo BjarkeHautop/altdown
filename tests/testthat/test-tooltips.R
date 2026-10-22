@@ -607,7 +607,7 @@ test_that("postprocess_pages() links and adds tooltips to pages on disk", {
   page <- file.path(dir, "docs", "vignettes", "a.html")
   writeLines(sample_html("<p>Use <code>foo()</code>.</p>"), page)
 
-  expect_message(postprocess_pages(dir), "1 reference link across 1 file")
+  postprocess_pages(dir)
   html <- paste(readLines(page), collapse = "\n")
   expect_match(html, 'href="../reference/foo.html">foo()</a>', fixed = TRUE)
   expect_match(

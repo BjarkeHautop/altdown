@@ -1356,3 +1356,35 @@ test_that("check_config() catches mistakes the build would only hit later", {
     "known"
   )
 })
+
+test_that("copy_theme_files() marks a development site for the navbar and search engines", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  header <- file.path(dir, "_quarto", "quartodown-header.html")
+
+  # Without `development:`, there's no other site to link.
+  copy_theme_files(dir)
+  expect_false(any(grepl("quartodown-dev-mode", readLines(header))))
+
+  copy_theme_files(dir, list(development = list(mode = "release")))
+  lines <- readLines(header)
+  expect_true(
+    '<meta name="quartodown-dev-mode" content="release">' %in% lines
+  )
+  expect_false(any(grepl("noindex", lines)))
+
+  copy_theme_files(dir, list(development = list(mode = "devel")))
+  lines <- readLines(header)
+  expect_true('<meta name="quartodown-dev-mode" content="devel">' %in% lines)
+  expect_true('<meta name="robots" content="noindex">' %in% lines)
+})
+
+test_that("read_config() warns about unknown fields under `development:`", {
+  dir <- new_pkg()
+  dir.create(file.path(dir, "_quartodown"))
+  writeLines(
+    c("development:", "  mode: devel", "  destination: dev"),
+    file.path(dir, "_quartodown", "_quartodown.yml")
+  )
+  expect_warning(read_config(dir), "destination")
+})

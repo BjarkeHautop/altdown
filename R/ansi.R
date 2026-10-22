@@ -31,8 +31,8 @@ ansi_to_html <- function(lines) {
 }
 
 # The search index keeps the codes, JSON-escaped.
-strip_search_ansi <- function(path) {
-  search <- file.path(docs_dir(path), "search.json")
+strip_search_ansi <- function(docs) {
+  search <- file.path(docs, "search.json")
   if (file.exists(search)) {
     json <- readLines(search, warn = FALSE, encoding = "UTF-8")
     json <- gsub("\\\\u001b\\[[0-9;]*m", "", json)

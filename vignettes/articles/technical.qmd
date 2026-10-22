@@ -10,14 +10,19 @@ pages, and every Quarto feature works.
 
 `quartodown::build_site()` runs in three stages:
 
-1. **Before rendering**, it installs the package into a temporary library and
-   writes a Quarto project into `_quarto/`.
+1. **Before rendering**, it installs the package into a temporary library,
+   writes a Quarto project into `_quarto/` and runs the reference pages'
+   examples against that package.
 2. **During rendering**, Quarto renders `_quarto/` into `docs/`, running the
-   examples and vignettes against that package.
+   vignettes against that package.
 3. **After rendering**, it links code to its documentation, adds hover tooltips
    and writes the [redirect](../customizing.qmd#redirects) pages.
 
-In an interactive session it then serves `docs/` with `preview_site()`. The
+With [`development: mode: devel`](../customizing.qmd#development-and-release-sites),
+the site goes in `docs/dev/` instead, and a build into `docs/` leaves `dev/` as
+it is.
+
+In an interactive session it then serves the site with `preview_site()`. The
 server keeps running for the rest of the session, so after a rebuild the open
 page reloads instead of a new one opening.
 
@@ -57,6 +62,11 @@ Rdpack's `\insertRef{}`), and build-stage `\Sexpr{}` macros run with the package
 installed, as in `R CMD build`. Examples run, with their output in the same
 block as the code, prefixed with `#>`. To give a chunk's output a block of its
 own, in a vignette too, set `#| collapse: false` on it.
+
+To save Quarto starting an R process per page, all examples run beforehand in
+one R process, which resets the global environment, search path, options and
+the like between pages, as `R CMD check` does. Pages whose examples fail or
+produce HTML widgets are left for Quarto to run.
 
 If `DESCRIPTION`'s `URL` includes a GitHub, GitLab or Codeberg repository, each
 reference page and vignette links to its source file under the title.

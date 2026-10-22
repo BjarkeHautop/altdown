@@ -11,30 +11,25 @@ postprocess_pages <- function(
   topics = rd_topics(path),
   tooltips = TRUE
 ) {
-  docs <- docs_dir(path)
+  docs <- site_dir(path, config)
   index <- if (isTRUE(tooltips)) build_topic_index(path, config, topics)
   pkg <- if (length(index) > 0) pkg_name(path)
-  n_files <- 0L
-  n_links <- 0L
-  for (f in fs::dir_ls(docs, regexp = "\\.html$", recurse = TRUE)) {
+  pages <- fs::dir_ls(docs, regexp = "\\.html$", recurse = TRUE)
+  # A release build leaves the development site in dev/ as it was.
+  if (docs == docs_dir(path)) {
+    pages <- pages[!fs::path_has_parent(pages, file.path(docs, "dev"))]
+  }
+  for (f in pages) {
     lines <- readLines(f, warn = FALSE, encoding = "UTF-8")
     html <- link_code_html(protect_ansi(paste(lines, collapse = "\n")))
     if (length(index) > 0) {
       prefix <- reference_href_prefix(f, docs)
-      result <- add_tooltips_html(html, index, prefix, pkg = pkg)
-      html <- result$html
-      n_files <- n_files + (result$n > 0)
-      n_links <- n_links + result$n
+      html <- add_tooltips_html(html, index, prefix, pkg = pkg)$html
     }
     html <- paste(ansi_to_html(split_lines(html)), collapse = "\n")
     writeLines(enc2utf8(html), f, sep = "", useBytes = TRUE)
   }
-  strip_search_ansi(path)
-  if (length(index) > 0) {
-    cli::cli_inform(
-      "Added tooltips to {n_links} reference link{?s} across {n_files} file{?s}."
-    )
-  }
+  strip_search_ansi(docs)
   invisible()
 }
 

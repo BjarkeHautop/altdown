@@ -186,6 +186,8 @@ test_that("rd_to_qmd() names the Rd file whose \\Sexpr{}s fail", {
 
 test_that("rd_to_qmd() runs a section's \\Sexpr{} once, not again for the examples", {
   log <- withr::local_tempfile()
+  # Windows' backslashes would be escapes in the Rd and the R string.
+  log <- gsub("\\", "/", log, fixed = TRUE)
   qmd <- rd_qmd(c(
     "\\name{foo}",
     "\\alias{foo}",
@@ -329,7 +331,7 @@ test_that("write_man_pages() writes a page per Rd file, except unlisted internal
   write_rd(dir, "reexports", keyword = "internal")
   reference_dir <- file.path(dir, "_quarto", "reference")
 
-  expect_message(write_man_pages(dir), "1 man page")
+  write_man_pages(dir)
   expect_identical(list.files(reference_dir), "foo.qmd")
 
   unlink(reference_dir, recursive = TRUE)
@@ -340,7 +342,7 @@ test_that("write_man_pages() writes a page per Rd file, except unlisted internal
     "      - foo",
     "      - reexports"
   ))
-  expect_message(write_man_pages(dir, config), "2 man pages")
+  write_man_pages(dir, config)
   expect_setequal(list.files(reference_dir), c("foo.qmd", "reexports.qmd"))
 })
 
@@ -378,7 +380,7 @@ test_that("write_man_pages() puts the source files under the title", {
   )
   qmd <- file.path(dir, "_quarto", "reference", "foo.qmd")
 
-  expect_message(write_man_pages(dir), "1 man page")
+  write_man_pages(dir)
   expect_true(
     "<p><small class=\"dont-index\">Source: <code>R/foo.R</code></small></p>" %in%
       readLines(qmd)
@@ -389,7 +391,7 @@ test_that("write_man_pages() puts the source files under the title", {
     file = dir,
     normalize = FALSE
   )
-  expect_message(write_man_pages(dir), "1 man page")
+  write_man_pages(dir)
   expect_true(
     "<p><small class=\"dont-index\">Source: <a href=\"https://github.com/someuser/examplepkg/blob/HEAD/R/foo.R\"><code>R/foo.R</code></a></small></p>" %in%
       readLines(qmd)
@@ -398,11 +400,11 @@ test_that("write_man_pages() puts the source files under the title", {
 
 test_that("write_man_pages() and build_topic_index() handle no or an empty man/", {
   dir <- new_pkg()
-  expect_message(write_man_pages(dir), "0 man pages")
+  write_man_pages(dir)
   expect_length(build_topic_index(dir), 0)
 
   dir.create(file.path(dir, "man"))
-  expect_message(write_man_pages(dir), "0 man pages")
+  write_man_pages(dir)
   expect_length(build_topic_index(dir), 0)
   expect_length(list.files(file.path(dir, "_quarto", "reference")), 0)
 })

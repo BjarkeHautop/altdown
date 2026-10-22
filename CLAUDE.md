@@ -7,7 +7,7 @@ code in this repository.
 
 quartodown is an R package that builds Bootstrap 5 package websites with Quarto.
 It generates a Quarto website project in `_quarto/` from the package sources,
-renders it into `docs/` with `quarto::quarto_render()`, then post-processes the
+renders it into `docs/` with `quarto render` (run through `processx`), then post-processes the
 HTML. Configuration is the optional `_quartodown/_quartodown.yml`. The exported
 API is `use_quartodown()` (one-time setup, writes `_quartodown/_quartodown.yml`
 and gitignore entries), `use_quartodown_action()` (writes the GitHub Pages
@@ -100,11 +100,33 @@ quartodown::build_site() # also previews it when interactive
      paths in `quarto:` settings resolve the same (Quarto doesn't render `_`
      folders). `extra.scss` is appended to both themes and `extra.css` set as
      `css:`. `docs/.nojekyll` keeps GitHub Pages from dropping it.
-2. **Rendering** — clears `docs/` (keeping `CNAME` and hidden files), makes the
+   - Then `run_examples()` ([R/examples.R](R/examples.R)) knits every
+     reference page with R chunks in one fresh `Rscript` process
+     ([inst/scripts/run-examples.R](inst/scripts/run-examples.R)), with the
+     package's envvars, rather than Quarto starting one per page. Its hooks
+     copy those of Quarto's knitr engine (`share/rmd/hooks.R`) for the options
+     the pages use, and `example_knit_options()` takes Quarto's knitr options
+     from the generated `_quarto.yml` (NULL, leaving all pages to Quarto, for
+     settings it doesn't handle). Each page is overwritten with the executed
+     Markdown, unless knitting fails or leaves `knit_meta` (htmlwidgets) or
+     preserved HTML, in which case Quarto runs it. Between pages the script
+     clears `globalenv()`, detaches new search-path entries and resets the
+     working directory, RNG kind and changed options; options added (e.g. by
+     a namespace's `.onLoad()`) and envvars aren't reset. With `freeze`,
+     results are cached in `_quarto/_freeze/quartodown/reference/<page>/`,
+     keyed by the page's source and the knitr options.
+2. **Rendering** — clears the site's folder (`site_dir()`: `docs/`, or
+   `docs/dev/` when `dev_mode()`, from `_quartodown.yml`'s pkgdown-style
+   `development: mode:` or `QUARTODOWN_DEV_MODE`, is `devel`; that also puts
+   `site-url` under `dev/` and a `noindex` meta in `quartodown-header.html`),
+   keeping `CNAME`, hidden files and, in `docs/`, `dev/` (which
+   `postprocess_pages()` then skips too), makes the
    package available to the pages' R processes (installed into a temp library
    prepended via `R_LIBS`, or with `devel = TRUE` a generated `R_PROFILE_USER`
    profile that runs `pkgload::load_all()`; plus `R_CLI_NUM_COLORS=256` for
-   colored output), renders `_quarto/` into it (`output-dir: ../docs/`) and
+   colored output), renders `_quarto/` into it (`output-dir: ../docs/`; with
+   `processx` rather than `quarto::quarto_render()`, whose `quiet` passes
+   `--quiet`, which hides errors too, so `render_error_log()` can show them) and
    writes `docs/pkgdown.yml` (`urls` + `articles`, all downlit reads). The name
    is fixed: downlit fetches `<site URL>/pkgdown.yml` to link other packages'
    code to this site, so it must not be renamed.

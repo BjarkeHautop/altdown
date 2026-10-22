@@ -399,3 +399,170 @@ test_that("local_envvars() restores set and unset variables on exit", {
   expect_identical(Sys.getenv("QUARTODOWN_A"), "old")
   expect_identical(Sys.getenv("QUARTODOWN_B", unset = NA), NA_character_)
 })
+
+test_that("dev_mode() is `development: mode:`, release by default", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  expect_identical(dev_mode(dir), "release")
+  expect_identical(dev_mode(dir, list(development = list(mode = "devel"))), "devel")
+  expect_error(
+    dev_mode(dir, list(development = list(mode = "dev"))),
+    "development: mode:"
+  )
+
+  withr::local_envvar(QUARTODOWN_DEV_MODE = "unreleased")
+  expect_identical(
+    dev_mode(dir, list(development = list(mode = "devel"))),
+    "unreleased"
+  )
+  withr::local_envvar(QUARTODOWN_DEV_MODE = "dev")
+  expect_error(dev_mode(dir), "QUARTODOWN_DEV_MODE")
+})
+
+test_that("dev_mode() picks from the version with `mode: auto`", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  auto <- list(development = list(mode = "auto"))
+  expect_identical(dev_mode(dir, auto), "release")
+  desc::desc_set_version("1.0.0.9000", file = dir)
+  expect_identical(dev_mode(dir, auto), "devel")
+  desc::desc_set_version("0.0.0.9000", file = dir)
+  expect_identical(dev_mode(dir, auto), "unreleased")
+})
+
+test_that("a development site goes in docs/dev/, under the site URL's dev/", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  desc::desc_set_urls("https://o.github.io/examplepkg/", file = dir)
+  devel <- list(development = list(mode = "devel"))
+  expect_identical(site_dir(dir), file.path(dir, "docs"))
+  expect_identical(site_dir(dir, devel), file.path(dir, "docs", "dev"))
+
+  settings <- quarto_config(dir, devel)
+  expect_identical(settings$project$`output-dir`, "../docs/dev/")
+  expect_identical(
+    settings$website$`site-url`,
+    "https://o.github.io/examplepkg/dev"
+  )
+  expect_identical(
+    quarto_config(dir)$website$`site-url`,
+    "https://o.github.io/examplepkg"
+  )
+})
+
+test_that("clear_site() keeps the development site in a release build", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  docs <- file.path(dir, "docs")
+  dir.create(file.path(docs, "dev"), recursive = TRUE)
+  file.create(file.path(docs, c("index.html", "CNAME", "dev/index.html")))
+
+  clear_site(dir, list(development = list(mode = "devel")))
+  expect_setequal(
+    list.files(docs, recursive = TRUE),
+    c("index.html", "CNAME")
+  )
+
+  file.create(file.path(docs, "dev/index.html"))
+  clear_site(dir)
+  expect_setequal(
+    list.files(docs, recursive = TRUE),
+    c("CNAME", "dev/index.html")
+  )
+})
+
+test_that("postprocess_pages() leaves the development site to its own build", {
+  withr::local_envvar(QUARTODOWN_DEV_MODE = NA)
+  dir <- new_pkg()
+  docs <- file.path(dir, "docs")
+  dir.create(file.path(docs, "dev"), recursive = TRUE)
+  page <- "<html><body><p>Hi</p></body></html>"
+  writeLines(page, file.path(docs, "index.html"))
+  writeLines(page, file.path(docs, "dev", "index.html"))
+
+  postprocess_pages(dir, tooltips = FALSE, topics = list())
+  expect_identical(readLines(file.path(docs, "dev", "index.html")), page)
+  expect_false(identical(readLines(file.path(docs, "index.html")), page))
+})
+
+test_that("render_inputs() lists the files Quarto renders", {
+  dir <- withr::local_tempdir()
+  for (f in c("index.qmd", "NEWS.md", "reference/foo.qmd", "a/b.Rmd",
+              "_quartodown/x.md", "_freeze/y.md", ".hidden.qmd",
+              "_draft.qmd", "theme.scss")) {
+    dir.create(dirname(file.path(dir, f)), recursive = TRUE, showWarnings = FALSE)
+    file.create(file.path(dir, f))
+  }
+  expect_setequal(
+    render_inputs(dir),
+    c("index.qmd", "NEWS.md", "reference/foo.qmd", "a/b.Rmd")
+  )
+})
+
+test_that("render_error_log() keeps Quarto's output from the failing file", {
+  stderr <- paste(
+    "\r[1/3] a.qmd\r",
+    "\r[2/3] index.qmd\r",
+    "\r\r",
+    "processing file: index.qmd\r\r",
+    "Error:\r\r",
+    "! boom {x}\r\r",
+    "Quitting from index.qmd:5-7 [unnamed-chunk-1]\r\r",
+    "WARN: Error encountered when rendering files\r",
+    sep = "\n"
+  )
+  expect_identical(
+    unname(render_error_log(stderr)),
+    c(
+      "[2/3] index.qmd",
+      "processing file: index.qmd",
+      "Error:",
+      "! boom {{x}}",
+      "Quitting from index.qmd:5-7 [unnamed-chunk-1]",
+      "WARN: Error encountered when rendering files"
+    )
+  )
+  expect_identical(unname(render_error_log("ERROR: bad")), "ERROR: bad")
+})
+
+test_that("rendering_file() reads the page Quarto starts", {
+  expect_identical(rendering_file("\r[ 2/31] reference/foo.qmd\r"), "reference/foo.qmd")
+  expect_identical(rendering_file("[2/2] vignettes\\a\\b.qmd"), "vignettes/a/b.qmd")
+  expect_identical(rendering_file("processing file: index.qmd"), NA_character_)
+  expect_identical(rendering_file("1/3 [unnamed-chunk-1]"), NA_character_)
+})
+
+test_that("render_time_bullets() sums the reference and other pages", {
+  times <- c(
+    "index.qmd" = 1.25,
+    "reference/index.qmd" = 0.5,
+    "reference/a.qmd" = 1,
+    "reference/b.qmd" = 2,
+    "vignettes/fast.qmd" = 3,
+    "vignettes/articles/slow.qmd" = 20,
+    "NEWS.md" = 0.25,
+    "authors.qmd" = 0.5
+  )
+  expect_identical(
+    render_time_bullets(times),
+    structure(
+      c(
+        "2 reference pages: 3.0s",
+        "vignettes/articles/slow.qmd: 20.0s",
+        "vignettes/fast.qmd: 3.0s",
+        "Home page: 1.2s",
+        "3 other pages: 1.2s"
+      ),
+      names = rep("*", 5)
+    )
+  )
+  expect_identical(
+    unname(render_time_bullets(times, max_vignettes = 1))[2:3],
+    c("vignettes/articles/slow.qmd: 20.0s", "1 more vignette: 3.0s")
+  )
+  expect_identical(
+    unname(render_time_bullets(c("vignettes/{x}.qmd" = 1))),
+    "vignettes/{{x}}.qmd: 1.0s"
+  )
+  expect_identical(render_time_bullets(numeric()), structure(character(), names = character()))
+})
